@@ -1,0 +1,35 @@
+<nav class="flow-nav-wrapper" aria-label="Portal Navigation">
+    <div class="flow-nav">
+        <a href="{{ url_for('home') }}" class="flow-step {% if request.path == '/' or active_tab == 'register' %}active{% endif %}">
+            <span class="flow-num">1</span>
+            <div class="flow-content">
+                <span class="flow-title">Team Registration</span>
+                <span class="flow-sub">Register &amp; Get Team ID</span>
+            </div>
+        </a>
+
+        <div class="flow-divider">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+
+        <a href="{{ url_for('admin_home') }}" class="flow-step {% if request.path.startswith('/admin') or request.path == '/login' or active_tab == 'admin' %}active{% endif %}">
+            <span class="flow-num">2</span>
+            <div class="flow-content">
+                <span class="flow-title">Admin Panel</span>
+                <span class="flow-sub">Review &amp; Approve</span>
+            </div>
+        </a>
+
+        <div class="flow-divider">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+
+        <a href="{{ url_for('id_card_portal') }}" class="flow-step {% if request.path.startswith('/team/') or request.path in ('/card', '/id-card') or active_tab == 'card' %}active{% endif %}">
+            <span class="flow-num">3</span>
+            <div class="flow-content">
+                <span class="flow-title">Team ID Card</span>
+                <span class="flow-sub">View &amp; Save PDF</span>
+            </div>
+        </a>
+    </div>
+</nav>

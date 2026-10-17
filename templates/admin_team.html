@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ team.registration_code }} | TechVerse Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='team-registration.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+{% set active_tab = 'admin' %}
+{% include '_header.html' %}
+
+<main class="container">
+    {% include '_admin_nav.html' %}
+
+    <a class="back" href="{{ url_for('admin_home') }}">← Back to all teams</a>
+
+    <section class="hero">
+        <div>
+            <p class="eyebrow">{{ team.registration_code }}</p>
+            <h1>{{ team.team_name }}</h1>
+            <p>Team No: {{ team.team_number }} · Registered: {{ team.created_at }}</p>
+            <p>Total photos: {{ total_photos }}</p>
+            <div style="margin-top: 10px;">
+                {% if team.status == 'Approved' %}
+                <a href="{{ url_for('team_id_card', registration_code=team.registration_code) }}"
+                   target="_blank"
+                   class="outline-btn card-btn"
+                   style="padding: 7px 14px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 13px;">
+                    🪪 View / Print Team ID Card
+                </a>
+                {% else %}
+                <span class="muted" style="font-size: 12px;">(Official ID card available upon approval)</span>
+                {% endif %}
+            </div>
+        </div>
+        <form method="post" action="{{ url_for('admin_update_status', team_id=team.id) }}" class="status-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <select name="status">
+                {% for s in statuses %}
+                <option value="{{ s }}" {{ 'selected' if s == team.status }}>{{ s }}</option>
+                {% endfor %}
+            </select>
+            <button class="outline-btn" type="submit">Update</button>
+        </form>
+    </section>
+
+    <section class="card">
+        <div class="section-heading"><span class="number">01</span>
+            <div><h2>Leader</h2></div></div>
+        <div class="grid detail-grid">
+            <div><b>Name</b><br>{{ team.leader_name }}</div>
+            <div><b>Email</b><br>{{ team.leader_email }}</div>
+            <div><b>Phone</b><br>{{ team.leader_phone }}</div>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="section-heading"><span class="number">02</span>
+            <div><h2>Members ({{ members|length }})</h2></div></div>
+        <div class="table-wrapper">
+            <table>
+                <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Section</th><th>Year</th></tr></thead>
+                <tbody>
+                {% for m in members %}
+                <tr><td>{{ loop.index }}</td><td>{{ m.name }}</td><td>{{ m.email }}</td>
+                    <td>{{ m.section }}</td><td>Year {{ m.year }}</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    {% for a in arenas %}
+    <section class="card">
+        <div class="section-heading"><span class="number">{{ '%02d' % (loop.index + 2) }}</span>
+            <div><h2>{{ a.arena_name }}</h2></div></div>
+
+        <h3>Problem Statement</h3>
+        <p class="prewrap">{{ a.problem_statement }}</p>
+
+        <h3>Proposed Solution</h3>
+        <p class="prewrap">{{ a.proposed_solution }}</p>
+
+        <h3>GitHub</h3>
+        {% if a.github_link %}
+        <p><a href="{{ a.github_link }}" target="_blank" rel="noopener noreferrer">{{ a.github_link }}</a></p>
+        {% else %}<p class="muted">Not provided</p>{% endif %}
+
+        <h3>Evidence Photos ({{ photos.get(a.arena_name, [])|length }})</h3>
+        <div class="photo-grid">
+            {% for p in photos.get(a.arena_name, []) %}
+                {% if p.exists %}
+                <a href="{{ url_for('admin_file', stored_name=p.stored_name) }}" target="_blank">
+                    <img src="{{ url_for('admin_file', stored_name=p.stored_name) }}"
+                         alt="{{ p.original_name }}" loading="lazy">
+                    <small>{{ p.original_name }}</small>
+                </a>
+                {% else %}
+                <div class="missing">⚠ File missing on disk<br><small>{{ p.stored_name }}</small></div>
+                {% endif %}
+            {% else %}
+            <p class="muted">No photos found.</p>
+            {% endfor %}
+        </div>
+    </section>
+    {% endfor %}
+</main>
+</body>
+</html>

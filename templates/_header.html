@@ -1,0 +1,126 @@
+<header class="site-header">
+    <div class="header-container">
+        <!-- University Logo (Left) -->
+        <div class="header-left">
+            <a href="{{ url_for('home') }}" class="univ-logo-link" aria-label="JG University Homepage">
+                <img src="{{ url_for('static', filename='jglogo.png') }}"
+                     alt="JG University Logo"
+                     class="univ-logo-img">
+            </a>
+        </div>
+
+        <!-- Desktop Navigation Tabs (Center - Exactly 3 tabs) -->
+        <nav class="desktop-nav" aria-label="Main Navigation">
+            <a href="{{ url_for('home') }}"
+               class="nav-tab-link {% if request.path == '/' or active_tab == 'register' %}active{% endif %}">
+                Registration
+            </a>
+            <a href="{{ url_for('login') }}"
+               class="nav-tab-link {% if request.path.startswith('/admin') or request.path == '/login' or active_tab == 'admin' %}active{% endif %}">
+                Admin Portal
+            </a>
+            <a href="{{ url_for('verify_lookup') }}"
+               class="nav-tab-link {% if request.path.startswith('/verify') or active_tab == 'verify' %}active{% endif %}">
+                Verify Team
+            </a>
+        </nav>
+
+        <!-- TechVerse 2026 Branding (Right) -->
+        <div class="header-right">
+            <div class="techverse-branding">
+                <div class="tv-brand-title">TECHVERSE <span>2026</span></div>
+                <div class="tv-brand-tagline">INNOVATE · BUILD · TRANSFORM</div>
+            </div>
+
+            <!-- Mobile Hamburger Button (Exactly 3 horizontal lines) -->
+            <button type="button"
+                    class="hamburger-btn"
+                    id="mobileNavToggle"
+                    aria-expanded="false"
+                    aria-controls="mobileNavDrawer"
+                    aria-label="Toggle navigation menu">
+                <span class="bar bar-1"></span>
+                <span class="bar bar-2"></span>
+                <span class="bar bar-3"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Responsive Mobile Navigation Menu -->
+    <nav class="mobile-nav-drawer" id="mobileNavDrawer" aria-label="Mobile Navigation" hidden>
+        <div class="mobile-nav-inner">
+            <a href="{{ url_for('home') }}"
+               class="mobile-nav-item {% if request.path == '/' or active_tab == 'register' %}active{% endif %}">
+                <span class="icon">📝</span>
+                <span class="label">Registration</span>
+            </a>
+            <a href="{{ url_for('login') }}"
+               class="mobile-nav-item {% if request.path.startswith('/admin') or request.path == '/login' or active_tab == 'admin' %}active{% endif %}">
+                <span class="icon">🔐</span>
+                <span class="label">Admin Portal</span>
+            </a>
+            <a href="{{ url_for('verify_lookup') }}"
+               class="mobile-nav-item {% if request.path.startswith('/verify') or active_tab == 'verify' %}active{% endif %}">
+                <span class="icon">✓</span>
+                <span class="label">Verify Team</span>
+            </a>
+        </div>
+    </nav>
+</header>
+<script>
+(function() {
+    function setupMobileNav() {
+        var toggle = document.getElementById('mobileNavToggle');
+        var drawer = document.getElementById('mobileNavDrawer');
+        if (!toggle || !drawer) return;
+
+        function closeNav() {
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.classList.remove('is-active');
+            drawer.hidden = true;
+        }
+
+        function openNav() {
+            toggle.setAttribute('aria-expanded', 'true');
+            toggle.classList.add('is-active');
+            drawer.hidden = false;
+        }
+
+        toggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+            if (isExpanded) {
+                closeNav();
+            } else {
+                openNav();
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!drawer.hidden && !drawer.contains(e.target) && e.target !== toggle && !toggle.contains(e.target)) {
+                closeNav();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !drawer.hidden) {
+                closeNav();
+                toggle.focus();
+            }
+        });
+
+        var items = drawer.querySelectorAll('.mobile-nav-item');
+        items.forEach(function(item) {
+            item.addEventListener('click', function() {
+                closeNav();
+            });
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupMobileNav);
+    } else {
+        setupMobileNav();
+    }
+})();
+</script>

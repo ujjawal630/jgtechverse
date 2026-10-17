@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechVerse 2026 | Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='team-registration.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+{% set active_tab = 'admin' %}
+{% include '_header.html' %}
+
+<main class="container">
+    {% include '_admin_nav.html' %}
+
+    <section class="card">
+        <div class="stats">
+            <div class="stat">
+                <strong>{{ teams|length }}</strong>
+                <span>Shown</span>
+            </div>
+
+            {% for s in statuses %}
+            <div class="stat">
+                <strong>{{ counts.get(s, 0) }}</strong>
+                <span>{{ s }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <form method="get" class="filters">
+            <input type="search" name="q" value="{{ q }}"
+                   placeholder="Search by team, code, leader name or email">
+
+            <select name="status">
+                <option value="">All status</option>
+                {% for s in statuses %}
+                <option value="{{ s }}" {% if s == status %}selected{% endif %}>
+                    {{ s }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <button class="outline-btn" type="submit">Filter</button>
+        </form>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Team</th>
+                        <th>Leader</th>
+                        <th>Members</th>
+                        <th>Arenas</th>
+                        <th>Photos</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                {% for t in teams %}
+                    <tr>
+                        <td>{{ t.registration_code }}</td>
+                        <td>{{ t.team_name }}</td>
+                        <td>
+                            {{ t.leader_name }}<br>
+                            <small>{{ t.leader_email }}</small>
+                        </td>
+                        <td>{{ t.member_count }}</td>
+                        <td>{{ t.arena_list }}</td>
+                        <td>{{ t.photo_count }}</td>
+
+                        <td>
+                            <span class="badge {{ t.status|lower }}">
+                                {{ t.status }}
+                            </span>
+
+                            <form method="POST"
+                                  action="{{ url_for('admin_update_status', team_id=t.id) }}"
+                                  style="margin-top: 8px;">
+
+                                <input type="hidden" name="csrf_token"
+                                       value="{{ csrf_token() }}">
+
+                                <select name="status" required>
+                                    {% for s in statuses %}
+                                    <option value="{{ s }}"
+                                        {% if s == t.status %}selected{% endif %}>
+                                        {{ s }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+
+                                <button class="outline-btn" type="submit"
+                                        style="margin-top: 6px;">
+                                    Update
+                                </button>
+                            </form>
+                        </td>
+
+                        <td>{{ t.created_at }}</td>
+
+                        <td>
+                            <a class="outline-btn"
+                               href="{{ url_for('admin_team', team_id=t.id) }}">
+                                View
+                            </a>
+                            {% if t.status == 'Approved' %}
+                            <a class="outline-btn card-btn"
+                               href="{{ url_for('team_id_card', registration_code=t.registration_code) }}"
+                               target="_blank"
+                               title="View / Print Team ID Card">
+                                🪪 ID Card
+                            </a>
+                            {% else %}
+                            <span class="muted" style="font-size: 11px; display: block; margin-top: 4px;">(Pending Approval)</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="9">No registrations found.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

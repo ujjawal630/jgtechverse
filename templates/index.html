@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechVerse 2026 | Student Portal</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body>
+
+  <main class="page">
+    <section class="intro">
+      <div class="brand">TV<span>.</span></div>
+      <p class="eyebrow">JG UNIVERSITY PRESENTS</p>
+      <h1>TECHVERSE<br><span>2026</span></h1>
+      <p class="description">
+        Innovate. Build. Compete.
+        Your journey starts here.
+      </p>
+
+      <div class="event-info">
+        <div>
+          <strong>06</strong>
+          <span>Arenas</span>
+        </div>
+        <div>
+          <strong>01</strong>
+          <span>Community</span>
+        </div>
+        <div>
+          <strong>∞</strong>
+          <span>Possibilities</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="auth-card">
+      <div class="tabs">
+        <button type="button" id="loginTab"
+          class="tab active">Login</button>
+        <button type="button" id="registerTab"
+          class="tab">Register</button>
+      </div>
+
+      <div class="form-heading">
+        <h2 id="formTitle">Welcome back!</h2>
+        <p id="formSubtitle">Login to your student account.</p>
+      </div>
+
+      <form id="authForm">
+        <div id="nameGroup" class="field hidden">
+          <label for="name">Full name</label>
+          <input id="name" name="name" type="text"
+            placeholder="Enter your full name"
+            autocomplete="name">
+        </div>
+
+        <div id="phoneGroup" class="field hidden">
+          <label for="phone">Mobile number</label>
+          <input id="phone" name="phone" type="tel"
+            placeholder="Enter your mobile number"
+            autocomplete="tel">
+        </div>
+
+        <div class="field">
+          <label for="email">Email address</label>
+          <input id="email" name="email" type="email"
+            placeholder="you@example.com"
+            autocomplete="email" required>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            minlength="8" required>
+        </div>
+
+        <p id="message" class="message" role="status"
+          aria-live="polite"></p>
+
+        <button type="submit" id="submitButton"
+          class="submit-btn">Login to Portal →</button>
+      </form>
+
+      <p class="switch-text" id="switchText">
+        New to TechVerse?
+        <button type="button" id="switchButton">Create account</button>
+      </p>
+
+      <p class="footer-note">
+        TECHVERSE 2026 · JG UNIVERSITY
+      </p>
+    </section>
+  </main>
+
+</body>
+</html>

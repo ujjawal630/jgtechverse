@@ -1,0 +1,26 @@
+
+<nav class="tabs">
+    {% if current_user.role == 'admin' %}
+    <a class="{{ 'active' if request.endpoint in ('admin_home', 'admin_team') else '' }}"
+       href="{{ url_for('admin_home') }}">By Team</a>
+    {% endif %}
+
+    <a class="{{ 'active' if request.endpoint == 'admin_arena' else '' }}"
+       href="{{ url_for('admin_arena') }}">By Arena</a>
+
+    {% if current_user.role == 'admin' %}
+    <a class="{{ 'active' if request.endpoint == 'admin_users' else '' }}"
+       href="{{ url_for('admin_users') }}">Users</a>
+    {% endif %}
+
+    <span class="tabs-spacer"></span>
+
+    <span class="who">
+        {{ current_user.username }} ({{ current_user.role }})
+    </span>
+
+    <form method="post" action="{{ url_for('logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="logout-btn">Logout</button>
+    </form>
+</nav>

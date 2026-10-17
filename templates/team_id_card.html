@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team ID Card | {{ registration_code }} | TechVerse 2026</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='team-registration.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+
+    <style>
+        .id-card-viewport {
+            min-height: calc(100vh - 120px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 16px 60px;
+        }
+
+        /* Printable ID Card Container */
+        .official-id-card {
+            width: 380px;
+            max-width: 100%;
+            background: #ffffff;
+            border: 3px solid #d4af37;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            position: relative;
+            text-align: center;
+            color: #171717;
+        }
+
+        /* Header of Card */
+        .id-card-header {
+            background: #9e2028;
+            color: #ffffff;
+            padding: 20px 16px 16px;
+            border-bottom: 4px solid #d4af37;
+        }
+
+        .id-card-univ-logo {
+            max-width: 220px;
+            max-height: 48px;
+            object-fit: contain;
+            margin: 0 auto 6px;
+            display: block;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .id-card-univ-sub {
+            font-size: 10px;
+            letter-spacing: 2.5px;
+            color: #f2dca7;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Brain emblem - Reference image 2 */
+        .id-card-emblem-wrap {
+            margin: 10px auto 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .id-card-brain-img {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            display: block;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
+        }
+
+        .id-card-fest-title {
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+
+        .id-card-fest-title span {
+            color: #f0d48a;
+        }
+
+        .id-card-badge {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid #d4af37;
+            border-radius: 99px;
+            padding: 3px 12px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #f2dca7;
+            margin-top: 6px;
+            font-weight: 700;
+        }
+
+        /* Card Content */
+        .id-card-body {
+            padding: 22px 20px 18px;
+            background: #ffffff;
+        }
+
+        .id-card-field-label {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #777777;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .id-card-team-name {
+            font-size: 22px;
+            font-weight: 900;
+            color: #111111;
+            line-height: 1.25;
+            margin-bottom: 16px;
+            overflow-wrap: anywhere;
+        }
+
+        /* Code highlight box */
+        .id-card-code-box {
+            background: #fff8e8;
+            border: 1.5px solid #d4af37;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 18px;
+        }
+
+        .id-card-code-val {
+            font-size: 24px;
+            font-weight: 900;
+            color: #9e2028;
+            letter-spacing: 1.5px;
+            font-family: monospace;
+        }
+
+        /* QR Frame */
+        .id-card-qr-frame {
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 10px;
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .id-card-qr-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .id-card-scan-text {
+            font-size: 10px;
+            letter-spacing: 2px;
+            font-weight: 800;
+            color: #333333;
+        }
+
+        /* Card Footer */
+        .id-card-footer {
+            background: #111111;
+            color: #d4af37;
+            padding: 12px 10px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            font-weight: 700;
+            border-top: 3px solid #d4af37;
+        }
+
+        /* Actions bar */
+        .id-card-actions {
+            margin-top: 26px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-print-action {
+            background: #9e2028;
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(158, 32, 40, 0.45);
+            transition: all 0.2s ease;
+        }
+
+        .btn-print-action:hover {
+            background: #7a141b;
+            transform: translateY(-1px);
+        }
+
+        /* Print Optimization */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .site-header, .mobile-nav-drawer, .id-card-actions, footer, .hero, .card-unavailable {
+                display: none !important;
+            }
+
+            .id-card-viewport {
+                padding: 0 !important;
+                margin: 0 !important;
+                min-height: auto !important;
+                display: block !important;
+            }
+
+            .official-id-card {
+                margin: 30px auto !important;
+                box-shadow: none !important;
+                border: 3px solid #d4af37 !important;
+                print-color-adjust: exact !important;
+                -webkit-print-color-adjust: exact !important;
+                page-break-inside: avoid !important;
+            }
+
+            .id-card-header {
+                background: #9e2028 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .id-card-footer {
+                background: #111111 !important;
+                color: #d4af37 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    {% include '_header.html' %}
+
+    <main class="id-card-viewport">
+
+        {% if not_found %}
+        <!-- 404 / NOT FOUND STATE -->
+        <div class="card card-unavailable" style="max-width: 520px; text-align: center; padding: 36px 24px;">
+            <div style="font-size: 48px; margin-bottom: 12px;">🔍</div>
+            <h2 style="color: var(--red); margin-bottom: 10px;">Team Not Found</h2>
+            <p style="font-size: 15px; color: #444; margin-bottom: 16px;">
+                No registration record was found matching code <strong>{{ registration_code }}</strong>.
+            </p>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <a href="{{ url_for('verify_lookup') }}" class="outline-btn" style="text-decoration: none;">
+                    🔍 Verify Another Team
+                </a>
+                <a href="{{ url_for('home') }}" class="submit-btn" style="text-decoration: none;">
+                    📝 Team Registration
+                </a>
+            </div>
+        </div>
+
+        {% elif not_approved %}
+        <!-- UNAVAILABLE STATE (Pending or Rejected) -->
+        <div class="card card-unavailable" style="max-width: 520px; text-align: center; padding: 36px 24px;">
+            <div style="font-size: 48px; margin-bottom: 12px;">🔒</div>
+            <h2 style="color: var(--red); margin-bottom: 10px;">ID Card Unavailable</h2>
+            <p style="font-size: 15px; color: #444; margin-bottom: 16px;">
+                Official Team ID cards with verification QR codes are issued <strong>only to Approved teams</strong>.
+            </p>
+            <div style="background: #fdf3f4; border: 1px solid #f8c9cd; border-radius: 8px; padding: 12px; margin-bottom: 22px;">
+                <p style="margin: 0; font-size: 13px; color: #842029;">
+                    Team Registration <strong>{{ registration_code }}</strong> status: <strong>{{ status }}</strong>.
+                </p>
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <a href="{{ url_for('verify_lookup') }}" class="outline-btn" style="text-decoration: none;">
+                    🔍 Verify Team Status
+                </a>
+                <a href="{{ url_for('home') }}" class="submit-btn" style="text-decoration: none;">
+                    📝 Team Registration
+                </a>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- OFFICIAL APPROVED CREDENTIAL -->
+        <article class="official-id-card" aria-label="Official Team ID Card for {{ team_name }}">
+            <!-- Card Header -->
+            <header class="id-card-header">
+                <img src="{{ url_for('static', filename='jglogo.png') }}"
+                     alt="JG University Logo"
+                     class="id-card-univ-logo">
+                <div class="id-card-univ-sub">AHMEDABAD, GUJARAT</div>
+
+                <!-- Brain circuit emblem (Second Reference Image) -->
+                <div class="id-card-emblem-wrap">
+                    <img src="{{ url_for('static', filename='jgbrainlogo.png') }}"
+                         alt="TechVerse Brain Circuit Logo"
+                         class="id-card-brain-img">
+                </div>
+
+                <div class="id-card-fest-title">TECHVERSE <span>2026</span></div>
+                <div class="id-card-badge">OFFICIAL TEAM CREDENTIAL</div>
+            </header>
+
+            <!-- Card Body -->
+            <div class="id-card-body">
+                <div class="id-card-field-label">TEAM NAME</div>
+                <div class="id-card-team-name">{{ team_name }}</div>
+
+                <div class="id-card-code-box">
+                    <div class="id-card-field-label" style="color: #8a6a00;">UNIQUE TEAM REGISTRATION ID</div>
+                    <div class="id-card-code-val">{{ registration_code }}</div>
+                </div>
+
+                <div class="id-card-qr-frame">
+                    {% if qr_data_uri %}
+                        <img src="{{ qr_data_uri }}"
+                             alt="Verification QR code for {{ registration_code }}"
+                             class="id-card-qr-img">
+                    {% else %}
+                        <p style="font-size: 12px; color: #777;">QR Code</p>
+                    {% endif %}
+                </div>
+
+                <div class="id-card-scan-text">SCAN QR TO VERIFY TEAM</div>
+            </div>
+
+            <!-- Card Footer -->
+            <footer class="id-card-footer">
+                OFFICIAL TECHVERSE 2026 · JG UNIVERSITY
+            </footer>
+        </article>
+
+        <!-- Screen Actions -->
+        <div class="id-card-actions">
+            <button type="button" class="btn-print-action" onclick="window.print()">
+                🖨️ Print / Save as PDF
+            </button>
+            <a href="{{ url_for('verify_registration', registration_code=registration_code) }}"
+               class="outline-btn"
+               style="text-decoration: none; display: inline-flex; align-items: center;">
+                ✓ View Public Verification
+            </a>
+            <a href="{{ url_for('home') }}"
+               class="outline-btn"
+               style="text-decoration: none; display: inline-flex; align-items: center;">
+                ← Home
+            </a>
+        </div>
+        {% endif %}
+
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users | TechVerse Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='team-registration.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+{% set active_tab = 'admin' %}
+{% include '_header.html' %}
+
+<main class="container">
+    {% include '_admin_nav.html' %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, text in messages %}
+        <div class="flash {{ category }}">{{ text }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <section class="card">
+        <div class="section-heading">
+            <span class="number">+</span>
+            <div>
+                <h2>Create a user</h2>
+                <p>Judges only see the arenas you assign to them.</p>
+            </div>
+        </div>
+
+        <form method="post"
+              action="{{ url_for('admin_create_user') }}"
+              class="create-user">
+
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="grid">
+                <label>Username
+                    <input type="text"
+                           name="username"
+                           placeholder="e.g. ramesh.buddhi"
+                           minlength="3"
+                           maxlength="30"
+                           autocomplete="off"
+                           required>
+                </label>
+
+                <label>Password (minimum 8 characters)
+                    <input type="password"
+                           name="password"
+                           minlength="8"
+                           autocomplete="new-password"
+                           required>
+                </label>
+
+                <label>Role
+                    <select name="role" required>
+                        <option value="judge">Judge</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </label>
+            </div>
+
+            <p class="muted" style="margin-top:12px">
+                Arenas (for judges):
+            </p>
+
+            <div class="check-chips">
+                {% for a in arenas %}
+                <label>
+                    <input type="checkbox" name="arenas" value="{{ a }}">
+                    {{ a }}
+                </label>
+                {% endfor %}
+            </div>
+
+            <button class="outline-btn" type="submit">Create user</button>
+        </form>
+    </section>
+
+    <section class="card">
+        <div class="section-heading">
+            <span class="number">{{ users|length }}</span>
+            <div><h2>All users</h2></div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Arenas</th>
+                        <th>Reset password</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td>{{ u.username }}</td>
+                        <td>{{ u.role }}</td>
+
+                        <td>
+                            {% if u.role == 'admin' %}
+                                <span class="muted">All arenas</span>
+                            {% else %}
+                                <form method="post"
+                                      action="{{ url_for('admin_update_user_arenas', user_id=u.id) }}"
+                                      class="user-form">
+
+                                    <input type="hidden"
+                                           name="csrf_token"
+                                           value="{{ csrf_token() }}">
+
+                                    <span class="check-chips">
+                                        {% for a in arenas %}
+                                        <label>
+                                            <input type="checkbox"
+                                                   name="arenas"
+                                                   value="{{ a }}"
+                                                   {{ 'checked' if a in u.arenas else '' }}>
+                                            {{ a }}
+                                        </label>
+                                        {% endfor %}
+                                    </span>
+
+                                    <button class="outline-btn" type="submit">
+                                        Save
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <form method="post"
+                                  action="{{ url_for('admin_reset_password', user_id=u.id) }}"
+                                  class="user-form">
+
+                                <input type="hidden"
+                                       name="csrf_token"
+                                       value="{{ csrf_token() }}">
+
+                                <input type="password"
+                                       name="password"
+                                       placeholder="New password"
+                                       minlength="8"
+                                       autocomplete="new-password"
+                                       required>
+
+                                <button class="outline-btn" type="submit">
+                                    Reset
+                                </button>
+                            </form>
+                        </td>
+
+                        <td>
+                            {% if u.id != current_user.id %}
+                            <form method="post"
+                                  action="{{ url_for('admin_delete_user', user_id=u.id) }}"
+                                  onsubmit="return confirm('Delete this user?');">
+
+                                <input type="hidden"
+                                       name="csrf_token"
+                                       value="{{ csrf_token() }}">
+
+                                <button class="outline-btn danger-btn" type="submit">
+                                    Delete
+                                </button>
+                            </form>
+                            {% else %}
+                                <span class="muted">(you)</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5">No users found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

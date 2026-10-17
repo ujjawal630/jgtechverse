@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ arena_name or 'Arenas' }} | TechVerse Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='team-registration.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+{% set active_tab = 'admin' %}
+{% include '_header.html' %}
+
+<main class="container">
+    {% include '_admin_nav.html' %}
+
+    <section class="card">
+        {% if not arena_name %}
+        <div class="section-heading"><div><h2>Select an Arena</h2>
+            <p>Click an arena to see all of its teams.</p></div></div>
+        <div class="arena-cards">
+            {% for a in arenas %}
+            <a href="{{ url_for('admin_arena', arena_name=a) }}">
+                <strong>{{ a }}</strong>
+                <span>{{ counts.get(a, 0) }} teams</span>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="chips">
+            {% for a in arenas %}
+            <a href="{{ url_for('admin_arena', arena_name=a) }}"
+               class="{{ 'active' if a == arena_name }}">{{ a }} ({{ counts.get(a, 0) }})</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </section>
+
+    {% if arena_name %}
+    <p class="muted" style="color:#bbb">{{ arena_name }} — Total: {{ entries|length }} teams</p>
+
+    {% for e in entries %}
+    {% set r = e.row %}
+    <section class="card">
+        <div class="entry-head">
+            <h2>{{ loop.index }}. {{ r.team_name }}
+                <small class="muted">({{ r.registration_code }})</small></h2>
+            <span>
+                <span class="badge {{ r.status|lower }}">{{ r.status }}</span>
+                {% if current_user.role == 'admin' %}
+                <a class="outline-btn" href="{{ url_for('admin_team', team_id=r.team_id) }}">Full team</a>
+                {% endif %}
+            </span>
+        </div>
+
+        <p class="members-line">
+            {% if current_user.role == 'admin' %}Leader: {{ r.leader_name }} · {{ r.leader_email }} · {{ r.leader_phone }}<br>{% endif %}
+            Members: {% for m in e.members %}{{ m.name }} (Sec {{ m.section }}, Year {{ m.year }}){{ ', ' if not loop.last }}{% endfor %}
+        </p>
+
+        <h3>Problem Statement</h3>
+        <p class="prewrap">{{ r.problem_statement }}</p>
+
+        <h3>Proposed Solution</h3>
+        <p class="prewrap">{{ r.proposed_solution }}</p>
+
+        <h3>GitHub</h3>
+        {% if r.github_link %}
+        <p><a href="{{ r.github_link }}" target="_blank" rel="noopener noreferrer">{{ r.github_link }}</a></p>
+        {% else %}<p class="muted">Not provided</p>{% endif %}
+
+        <h3>Evidence Photos ({{ e.photos|length }})</h3>
+        <div class="photo-grid">
+            {% for p in e.photos %}
+                {% if p.exists %}
+                <a href="{{ url_for('admin_file', stored_name=p.stored_name) }}" target="_blank">
+                    <img src="{{ url_for('admin_file', stored_name=p.stored_name) }}"
+                         alt="{{ p.original_name }}" loading="lazy">
+                    <small>{{ p.original_name }}</small>
+                </a>
+                {% else %}
+                <div class="missing">⚠ File missing on disk<br><small>{{ p.stored_name }}</small></div>
+                {% endif %}
+            {% else %}
+            <p class="muted">No photos found.</p>
+            {% endfor %}
+        </div>
+    </section>
+    {% else %}
+    <section class="card"><p class="muted">There are no teams in this arena yet.</p></section>
+    {% endfor %}
+    {% endif %}
+</main>
+</body>
+</html>

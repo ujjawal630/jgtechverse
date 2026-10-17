@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | TechVerse 2026</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='team-registration.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+{% set active_tab = 'admin' %}
+{% include '_header.html' %}
+
+<main class="container">
+    <section class="card login-wrap">
+        <div class="section-heading">
+            <span class="number">&#128274;</span>
+            <div>
+                <h2>Login</h2>
+                <p>Admin and judges sign in here.</p>
+            </div>
+        </div>
+
+        {% if error %}<div class="form-error">{{ error }}</div>{% endif %}
+
+        <form method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label>
+                Username
+                <input type="text" name="username" autocomplete="username" required autofocus>
+            </label>
+            <label>
+                Password
+                <input type="password" name="password" autocomplete="current-password" required>
+            </label>
+            <button type="submit" class="submit-btn">Login</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>

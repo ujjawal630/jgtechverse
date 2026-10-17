@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Team | TechVerse 2026</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='team-registration.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+
+    {% include '_header.html' %}
+
+    <main class="container">
+        <section class="hero">
+            <div>
+                <p class="eyebrow">OFFICIAL VERIFICATION PORTAL</p>
+                <h1>Verify Team Registration</h1>
+                <p>
+                    Check the authenticity, approved arenas, and project submissions
+                    for any registered TechVerse 2026 team.
+                </p>
+            </div>
+            <img
+                class="brain-logo"
+                src="{{ url_for('static', filename='jgbrainlogo.png') }}"
+                alt="TechVerse Brain Logo"
+            >
+        </section>
+
+        <section class="card lookup-card-container">
+            <div class="section-heading">
+                <span class="number">✓</span>
+                <div>
+                    <h2>Team Credential Lookup</h2>
+                    <p>Enter the unique Registration ID printed on the team's QR credential or ID card.</p>
+                </div>
+            </div>
+
+            {% if error %}
+            <div class="form-error" role="alert" style="margin-bottom: 16px;">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form action="{{ url_for('verify_lookup') }}" method="get" class="lookup-form">
+                <div class="lookup-input-group">
+                    <label for="regCodeInput" class="visually-hidden">Registration Code</label>
+                    <input
+                        id="regCodeInput"
+                        type="text"
+                        name="code"
+                        placeholder="e.g. TV26-4827"
+                        pattern="[A-Za-z0-9\-_]+"
+                        maxlength="20"
+                        required
+                        autofocus
+                        class="lookup-input"
+                    >
+                    <button type="submit" class="submit-btn lookup-btn">
+                        Verify Team →
+                    </button>
+                </div>
+            </form>
+
+            <div class="verification-info-box">
+                <h3>📌 About Team Verification</h3>
+                <ul>
+                    <li><strong>Approved Teams:</strong> Verified credentials, approved arena problem statements, and public project evidence are displayed.</li>
+                    <li><strong>Pending Teams:</strong> Registrations under review will show an awaiting-approval notice until verified by the event admin.</li>
+                    <li><strong>Privacy Protected:</strong> Contact details, email addresses, and phone numbers remain strictly confidential.</li>
+                </ul>
+            </div>
+        </section>
+
+        <footer>
+            TECHVERSE 2026 <span>·</span> JG UNIVERSITY
+        </footer>
+    </main>
+
+</body>
+</html>

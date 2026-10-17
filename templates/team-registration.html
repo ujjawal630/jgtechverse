@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TechVerse 2026 | Team Registration</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='team-registration.css') }}"
+    >
+
+    <script
+        src="{{ url_for('static', filename='team-registration.js') }}"
+        defer
+    ></script>
+</head>
+<body>
+
+    {% set active_tab = 'register' %}
+    {% include '_header.html' %}
+
+    <main class="container">
+
+        <!-- SUCCESS MODAL POPUP -->
+        <div id="registrationSuccessModal" class="success-modal hidden" role="dialog" aria-modal="true">
+            <div class="success-modal-backdrop"></div>
+            <div class="success-modal-card">
+                <div class="success-icon">🎉</div>
+                <h2>Registration Submitted!</h2>
+                <p class="success-lead">Your team details have been recorded successfully.</p>
+
+                <div class="success-code-box">
+                    <span class="code-label">Your Unique Registration ID</span>
+                    <div class="code-display">
+                        <span id="displayRegId" class="code-value">TV26-00001</span>
+                        <button type="button" id="copyRegIdBtn" class="copy-btn">📋 Copy ID</button>
+                    </div>
+                </div>
+
+                <div class="flow-guide-box">
+                    <h4>Next Steps in the TechVerse Flow:</h4>
+                    <div class="flow-guide-step">
+                        <span class="f-num">2</span>
+                        <div>
+                            <strong>Admin Verification</strong>
+                            <p>Admin checks registrations and approves your team in the Admin Panel.</p>
+                        </div>
+                    </div>
+                    <div class="flow-guide-step">
+                        <span class="f-num">3</span>
+                        <div>
+                            <strong>Team ID Card</strong>
+                            <p>Once approved, your ID card with QR code is generated for printing / saving as PDF.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-modal-actions">
+                    <a id="viewIdCardBtn" href="#" class="btn-primary-card">🪪 View ID Card / Status →</a>
+                    <a href="{{ url_for('admin_home') }}" class="btn-secondary-admin">🔐 Go to Admin Panel</a>
+                    <button type="button" id="closeSuccessModal" class="btn-text">Register Another Team</button>
+                </div>
+            </div>
+        </div>
+
+        <section class="hero">
+            <div>
+                <p class="eyebrow">TECHVERSE 2026</p>
+                <h1>Team Registration</h1>
+                <p>
+                    Register your team, select your arenas and submit
+                    your project details.
+                </p>
+                <p>
+                    Make sure to fill in all required details correctly.
+                </p>
+            </div>
+
+            <img
+                class="brain-logo"
+                src="{{ url_for('static', filename='jgbrainlogo.png') }}"
+                alt="JG University Brain Logo"
+            >
+        </section>
+
+        <form id="teamForm" enctype="multipart/form-data">
+
+            <!-- TEAM DETAILS -->
+            <section class="card">
+                <div class="section-heading">
+                    <span class="number">01</span>
+                    <div>
+                        <h2>Team Details</h2>
+                        <p>Enter your team and leader information.</p>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <label>
+                        Team Name *
+                        <input
+                            type="text"
+                            name="teamName"
+                            placeholder="Enter team name"
+                            maxlength="150"
+                            required
+                        >
+                    </label>
+
+                    <label>
+                        Team Number
+                        <input
+                            type="text"
+                            name="teamNumber"
+                            placeholder="If already assigned"
+                            maxlength="50"
+                        >
+                    </label>
+
+                    <label>
+                        Team Leader Name *
+                        <input
+                            type="text"
+                            name="leaderName"
+                            placeholder="Leader's full name"
+                            maxlength="150"
+                            required
+                        >
+                    </label>
+
+                    <label>
+                        Team Leader Email *
+                        <input
+                            type="email"
+                            name="leaderEmail"
+                            placeholder="leader@example.com"
+                            maxlength="254"
+                            required
+                        >
+                    </label>
+
+                    <label>
+                        Team Leader Phone *
+                        <input
+                            type="tel"
+                            name="leaderPhone"
+                            placeholder="Enter phone number"
+                            pattern="[0-9+\-\s()]{8,18}"
+                            title="Enter a valid phone number using 8–18 allowed characters."
+                            required
+                        >
+                    </label>
+                </div>
+            </section>
+
+            <!-- TEAM MEMBERS -->
+            <section class="card">
+                <div class="section-heading">
+                    <span class="number">02</span>
+                    <div>
+                        <h2>Team Members</h2>
+                        <p>
+                            Add each member's name, email, section and year.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Section</th>
+                                <th scope="col">Year</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="membersBody"></tbody>
+                    </table>
+                </div>
+
+                <button
+                    type="button"
+                    id="addMember"
+                    class="outline-btn"
+                >
+                    + Add Team Member
+                </button>
+
+                <p>
+                    Add between 1 and 4 additional team members (maximum 5 people total including the team leader).
+                </p>
+            </section>
+
+            <!-- ARENA SELECTION -->
+            <section class="card">
+                <div class="section-heading">
+                    <span class="number">03</span>
+                    <div>
+                        <h2 id="arenas-title">Select Arenas</h2>
+                        <p>
+                            Select the arenas in which your team wants
+                            to participate.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="arena-grid">
+
+                    <label class="arena">
+                        <input
+                            type="checkbox"
+                            name="arenas"
+                            value="Buddhi"
+                        >
+                        <span class="gold-icon">🤖</span>
+                        <span>
+                            <strong>Buddhi</strong>
+                            <small>AI Model Building</small>
+                        </span>
+                    </label>
+
+                    <label class="arena">
+                        <input
+                            type="checkbox"
+                            name="arenas"
+                            value="Fiontar"
+                        >
+                        <span class="gold-icon">💡</span>
+                        <span>
+                            <strong>Fiontar</strong>
+                            <small>Startup &amp; Innovation</small>
+                        </span>
+                    </label>
+
+                    <label class="arena">
+                        <input
+                            type="checkbox"
+                            name="arenas"
+                            value="Talos"
+                        >
+                        <span class="red-icon">🤖</span>
+                        <span>
+                            <strong>Talos</strong>
+                            <small>Robotic Arena</small>
+                        </span>
+                    </label>
+
+                    <label class="arena">
+                        <input
+                            type="checkbox"
+                            name="arenas"
+                            value="Pegasus"
+                        >
+                        <span class="gold-icon">🚁</span>
+                        <span>
+                            <strong>Pegasus</strong>
+                            <small>Drone Fest</small>
+                        </span>
+                    </label>
+
+                    <label class="arena">
+                        <input
+                            type="checkbox"
+                            name="arenas"
+                            value="Promethia"
+                        >
+                        <span class="red-icon">💻</span>
+                        <span>
+                            <strong>Promethia</strong>
+                            <small>Coding Challenge</small>
+                        </span>
+                    </label>
+
+                    <label class="arena">
+                        <input
+                            type="checkbox"
+                            name="arenas"
+                            value="Mercatus"
+                        >
+                        <span class="gold-icon">📈</span>
+                        <span>
+                            <strong>Mercatus</strong>
+                            <small>Trading &amp; Financial Analytics</small>
+                        </span>
+                    </label>
+
+                </div>
+
+                <!-- JavaScript adds the selected arena forms here. -->
+                <div id="arenaDetails"></div>
+            </section>
+
+            <p
+                id="message"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+            ></p>
+
+            <button type="submit" class="submit-btn">
+                ➤ Submit Team Registration →
+            </button>
+
+        </form>
+
+        <footer>
+            TECHVERSE 2026 <span>·</span> JG UNIVERSITY
+        </footer>
+
+    </main>
+
+</body>
+</html>
