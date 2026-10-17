@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ team.team_name if team else 'Team Details' }} | {{ registration_code }} | TechVerse 2026</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='team-registration.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+
+    <style>
+        .details-hero {
+            background: linear-gradient(135deg, #7a141b 0%, #9e2028 60%, #b82832 100%);
+            color: #ffffff;
+            border-radius: 14px;
+            padding: 32px 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px rgba(158, 32, 40, 0.25);
+            border: 2px solid #d4af37;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .details-hero-text {
+            flex: 1 1 320px;
+        }
+
+        .details-eyebrow {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2.5px;
+            color: #f2dca7;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .details-team-title {
+            font-size: 32px;
+            font-weight: 900;
+            color: #ffffff;
+            margin: 0 0 10px;
+            line-height: 1.15;
+            letter-spacing: -0.5px;
+        }
+
+        .details-reg-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-family: monospace;
+            font-size: 16px;
+            font-weight: 700;
+            color: #f2dca7;
+        }
+
+        .details-copy-btn {
+            background: #d4af37;
+            color: #111111;
+            border: none;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .details-copy-btn:hover {
+            background: #f0d48a;
+            transform: scale(1.05);
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .status-pill.approved {
+            background: #d1e7dd;
+            color: #0f5132;
+            border: 1px solid #a3cfbb;
+        }
+
+        .status-pill.pending {
+            background: #fff3cd;
+            color: #664d03;
+            border: 1px solid #ffe69c;
+        }
+
+        .status-pill.rejected {
+            background: #f8d7da;
+            color: #842029;
+            border: 1px solid #f5c2c7;
+        }
+
+        /* Information Grid Cards */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 14px;
+        }
+
+        .info-cell {
+            background: #fdfdfd;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-cell-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #777777;
+        }
+
+        .info-cell-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #171717;
+            word-break: break-word;
+        }
+
+        .info-cell-value.highlight {
+            color: #9e2028;
+            font-family: monospace;
+            font-size: 16px;
+        }
+
+        /* Members Table / Cards */
+        .members-table-wrap {
+            margin-top: 14px;
+            overflow-x: auto;
+            border: 1px solid #eeeeee;
+            border-radius: 8px;
+        }
+
+        .members-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .members-table th {
+            background: #fafafa;
+            color: #555555;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 12px 14px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .members-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #eeeeee;
+            color: #222222;
+        }
+
+        .members-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .member-role-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #eef2ff;
+            color: #3730a3;
+        }
+
+        .member-role-badge.leader {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .privacy-notice {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #777777;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Problem Statement Presentation Cards */
+        .problem-statement-card {
+            border: 2px solid #d4af37;
+            border-radius: 12px;
+            background: #ffffff;
+            margin-bottom: 24px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .problem-header {
+            background: #9e2028;
+            color: #ffffff;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .problem-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .problem-icon {
+            font-size: 26px;
+        }
+
+        .problem-arena-name {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .problem-code-badge {
+            background: #111111;
+            color: #f2dca7;
+            border: 1px solid #d4af37;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-family: monospace;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .problem-body {
+            padding: 24px 20px;
+        }
+
+        .problem-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+            background: #fbfbfb;
+            border: 1px solid #eeeeee;
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        .problem-meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .problem-meta-label {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888888;
+        }
+
+        .problem-meta-val {
+            font-size: 13px;
+            font-weight: 700;
+            color: #222222;
+        }
+
+        .problem-section-block {
+            margin-bottom: 22px;
+        }
+
+        .problem-section-title {
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #9e2028;
+            margin: 0 0 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .problem-text-content {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #2b2b2b;
+            background: #ffffff;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 16px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .github-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f6f8fa;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 13px;
+            color: #0969da;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .github-box:hover {
+            background: #eaeef2;
+            text-decoration: underline;
+        }
+
+        .evidence-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 14px;
+            margin-top: 10px;
+        }
+
+        .evidence-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            transition: transform 0.2s;
+        }
+
+        .evidence-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .evidence-img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .evidence-caption {
+            padding: 8px;
+            font-size: 11px;
+            color: #555555;
+            word-break: break-all;
+        }
+
+        /* Action Buttons */
+        .details-action-bar {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .btn-primary-card {
+            background: #9e2028;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(158, 32, 40, 0.35);
+            transition: all 0.2s;
+        }
+
+        .btn-primary-card:hover {
+            background: #7a141b;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 600px) {
+            .details-hero {
+                padding: 22px 18px;
+            }
+
+            .details-team-title {
+                font-size: 24px;
+            }
+
+            .problem-body {
+                padding: 16px 14px;
+            }
+
+            .problem-arena-name {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    {% set active_tab = 'verify' %}
+    {% include '_header.html' %}
+
+    <main class="container">
+
+        {% if not_found %}
+        <!-- 404 / NOT FOUND STATE -->
+        <section class="details-hero" style="background: linear-gradient(135deg, #2b2b2b, #444444); border-color: #999;">
+            <div class="details-hero-text">
+                <p class="details-eyebrow">TECHVERSE 2026 VERIFICATION</p>
+                <h1 class="details-team-title">Team Not Found</h1>
+                <p style="color: #ddd; margin: 0; font-size: 14px;">
+                    No registered team record matches registration identifier
+                    <strong style="color: #f2dca7; font-family: monospace;">{{ registration_code }}</strong>.
+                </p>
+            </div>
+            <div style="font-size: 52px;">🔍</div>
+        </section>
+
+        <section class="card" style="text-align: center; padding: 40px 20px;">
+            <h2 style="color: #9e2028; margin-bottom: 12px;">Verification Record Unavailable</h2>
+            <p style="max-width: 540px; margin: 0 auto 24px; color: #555; font-size: 14px; line-height: 1.6;">
+                Please verify that the unique team registration ID from your confirmation email, credentials,
+                or ID card QR code was entered correctly.
+            </p>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <a href="{{ url_for('verify_lookup') }}" class="btn-primary-card">
+                    🔍 Search Another Registration
+                </a>
+                <a href="{{ url_for('home') }}" class="outline-btn" style="text-decoration: none; padding: 10px 18px;">
+                    📝 Register a Team
+                </a>
+            </div>
+        </section>
+
+        {% else %}
+        <!-- TEAM DETAILS & PROBLEM STATEMENT PAGE -->
+        <header class="details-hero">
+            <div class="details-hero-text">
+                <p class="details-eyebrow">OFFICIAL TECHVERSE 2026 RECORD · JG UNIVERSITY</p>
+                <h1 class="details-team-title">{{ team.team_name }}</h1>
+                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 10px;">
+                    <div class="details-reg-badge">
+                        <span id="displayRegCode">{{ team.registration_code }}</span>
+                        <button type="button" class="details-copy-btn" id="copyCodeBtn" title="Copy Registration ID">📋 Copy</button>
+                    </div>
+
+                    {% if team.status == 'Approved' %}
+                        <span class="status-pill approved">✓ Approved &amp; Verified</span>
+                    {% elif team.status == 'Pending' %}
+                        <span class="status-pill pending">⏳ Registration Submitted · Pending Verification</span>
+                    {% else %}
+                        <span class="status-pill rejected">{{ team.status }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <img
+                class="brain-logo"
+                src="{{ url_for('static', filename='jgbrainlogo.png') }}"
+                alt="TechVerse 2026 Logo"
+                style="width: 72px; height: 72px; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));"
+            >
+        </header>
+
+        <!-- SECTION 1: TEAM & INSTITUTION PROFILE -->
+        <section class="card">
+            <div class="section-heading">
+                <span class="number">01</span>
+                <div>
+                    <h2>Team &amp; Institutional Profile</h2>
+                    <p>Official verified registration credentials and institutional affiliation.</p>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-cell">
+                    <span class="info-cell-label">Registration ID</span>
+                    <span class="info-cell-value highlight">{{ team.registration_code }}</span>
+                </div>
+
+                <div class="info-cell">
+                    <span class="info-cell-label">Team Name</span>
+                    <span class="info-cell-value">{{ team.team_name }}</span>
+                </div>
+
+                <div class="info-cell">
+                    <span class="info-cell-label">Team Number</span>
+                    <span class="info-cell-value">{{ team.team_number if team.team_number and team.team_number != 'Not assigned' else 'Assigned at check-in' }}</span>
+                </div>
+
+                <div class="info-cell">
+                    <span class="info-cell-label">College / Institutional Affiliation</span>
+                    <span class="info-cell-value">
+                        {{ team.college_name or 'JG University' }}{% if team.college_city %}, {{ team.college_city }}{% endif %}{% if team.college_dept %} ({{ team.college_dept }}){% endif %}
+                    </span>
+                </div>
+
+                <div class="info-cell">
+                    <span class="info-cell-label">Team Leader</span>
+                    <span class="info-cell-value">{{ team.leader_name }}</span>
+                </div>
+
+                <div class="info-cell">
+                    <span class="info-cell-label">Total Team Size</span>
+                    <span class="info-cell-value">{{ 1 + members|length }} People (1 Leader + {{ members|length }} Members)</span>
+                </div>
+
+                <div class="info-cell">
+                    <span class="info-cell-label">Registration Status</span>
+                    <span class="info-cell-value">
+                        {% if team.status == 'Approved' %}
+                            <strong style="color: #0f5132;">Approved &amp; Verified</strong>
+                        {% elif team.status == 'Pending' %}
+                            <strong style="color: #856404;">Pending Review</strong>
+                        {% else %}
+                            {{ team.status }}
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="info-cell">
+                    <span class="info-cell-label">Submission Date</span>
+                    <span class="info-cell-value">{{ team.created_at }}</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: TEAM MEMBERS ROSTER -->
+        <section class="card">
+            <div class="section-heading">
+                <span class="number">02</span>
+                <div>
+                    <h2>Registered Team Members</h2>
+                    <p>Complete roster of authorized participants for this team.</p>
+                </div>
+            </div>
+
+            <div class="members-table-wrap">
+                <table class="members-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Member Name</th>
+                            <th scope="col">Role</th>
+                            <th scope="col">Academic Section</th>
+                            <th scope="col">Year of Study</th>
+                            <th scope="col">Affiliation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Team Leader Entry -->
+                        <tr style="background: #fffdf5;">
+                            <td><strong>1</strong></td>
+                            <td><strong>{{ team.leader_name }}</strong></td>
+                            <td><span class="member-role-badge leader">Team Leader</span></td>
+                            <td>Section Leader</td>
+                            <td>Lead Participant</td>
+                            <td>{{ team.college_name or 'JG University' }}</td>
+                        </tr>
+
+                        <!-- Team Members Entries -->
+                        {% for m in members %}
+                        <tr>
+                            <td>{{ loop.index + 1 }}</td>
+                            <td><strong>{{ m.name }}</strong></td>
+                            <td><span class="member-role-badge">Team Member</span></td>
+                            <td>Section {{ m.section }}</td>
+                            <td>Year {{ m.year }}</td>
+                            <td>{{ team.college_name or 'JG University' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="privacy-notice">
+                🔒 <em>Authorized public record. In accordance with university privacy standards, personal contact details (phone numbers and emails) remain securely protected.</em>
+            </p>
+        </section>
+
+        <!-- SECTION 3: COMPLETE PROBLEM STATEMENTS & SOLUTIONS -->
+        <section class="card">
+            <div class="section-heading">
+                <span class="number">03</span>
+                <div>
+                    <h2>Registered Arena Problem Statements</h2>
+                    <p>Full problem statements, technical requirements, objectives, and submitted solutions.</p>
+                </div>
+            </div>
+
+            {% if arenas %}
+                {% for a in arenas %}
+                <article class="problem-statement-card">
+                    <!-- Arena Header -->
+                    <div class="problem-header">
+                        <div class="problem-header-left">
+                            <span class="problem-icon">{{ a.icon }}</span>
+                            <div>
+                                <h3 class="problem-arena-name">{{ a.arena_name }}</h3>
+                                <small style="color: #f2dca7; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">
+                                    {{ a.category }}
+                                </small>
+                            </div>
+                        </div>
+                        <span class="problem-code-badge">{{ a.code }}</span>
+                    </div>
+
+                    <!-- Arena Body -->
+                    <div class="problem-body">
+                        <!-- Metadata Grid -->
+                        <div class="problem-meta-grid">
+                            <div class="problem-meta-item">
+                                <span class="problem-meta-label">Challenge Title</span>
+                                <span class="problem-meta-val">{{ a.title }}</span>
+                            </div>
+                            <div class="problem-meta-item">
+                                <span class="problem-meta-label">Theme / Domain</span>
+                                <span class="problem-meta-val">{{ a.theme }}</span>
+                            </div>
+                            <div class="problem-meta-item">
+                                <span class="problem-meta-label">Organizing Department</span>
+                                <span class="problem-meta-val">{{ a.department }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Complete Problem Statement Description -->
+                        <div class="problem-section-block">
+                            <h4 class="problem-section-title">
+                                📌 Complete Problem Statement &amp; Scope
+                            </h4>
+                            <div class="problem-text-content">{{ a.problem_statement or "Complete problem statement on file." }}</div>
+                        </div>
+
+                        <!-- Proposed Solution & Technical Implementation -->
+                        <div class="problem-section-block">
+                            <h4 class="problem-section-title">
+                                💡 Proposed Solution, Objectives &amp; Technical Approach
+                            </h4>
+                            <div class="problem-text-content">{{ a.proposed_solution or "Solution documentation on file." }}</div>
+                        </div>
+
+                        <!-- GitHub Repository Link -->
+                        <div class="problem-section-block">
+                            <h4 class="problem-section-title">
+                                💻 Project Repository
+                            </h4>
+                            {% if a.github_link %}
+                                <a href="{{ a.github_link }}" target="_blank" rel="noopener noreferrer" class="github-box">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                                    </svg>
+                                    {{ a.github_link }}
+                                </a>
+                            {% else %}
+                                <p style="font-size: 13px; color: #777; margin: 0;">No GitHub repository provided for this arena.</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Submitted Evidence Snaps -->
+                        {% set arena_uploads = [] %}
+                        {% for u in uploads %}
+                            {% if u.arena_name == a.arena_name %}
+                                {% set _ = arena_uploads.append(u) %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if arena_uploads %}
+                        <div class="problem-section-block">
+                            <h4 class="problem-section-title">
+                                📷 Submitted Project Evidence &amp; Architecture Diagrams ({{ arena_uploads|length }})
+                            </h4>
+                            <div class="evidence-gallery">
+                                {% for u in arena_uploads %}
+                                <div class="evidence-card">
+                                    <a href="{{ url_for('public_verification_snap', registration_code=team.registration_code, stored_name=u.stored_name) }}" target="_blank">
+                                        <img
+                                            src="{{ url_for('public_verification_snap', registration_code=team.registration_code, stored_name=u.stored_name) }}"
+                                            alt="{{ u.original_name }}"
+                                            class="evidence-img"
+                                            loading="lazy"
+                                        >
+                                    </a>
+                                    <div class="evidence-caption">
+                                        <strong>{{ u.original_name }}</strong>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </article>
+                {% endfor %}
+            {% else %}
+                <p style="color: #666; font-size: 14px;">No arena problem statements currently on file for this team.</p>
+            {% endif %}
+        </section>
+
+        <!-- ACTION NAVIGATION BAR -->
+        <div class="details-action-bar">
+            {% if team.status == 'Approved' %}
+            <a href="{{ url_for('team_id_card', registration_code=team.registration_code) }}" class="btn-primary-card">
+                🪪 View Official Team ID Card
+            </a>
+            {% endif %}
+
+            <a href="{{ url_for('verify_lookup') }}" class="outline-btn" style="text-decoration: none; padding: 10px 18px;">
+                🔍 Verify Another Team
+            </a>
+
+            <a href="{{ url_for('home') }}" class="outline-btn" style="text-decoration: none; padding: 10px 18px;">
+                📝 Team Registration
+            </a>
+        </div>
+        {% endif %}
+
+        <footer>
+            TECHVERSE 2026 <span>·</span> JG UNIVERSITY <span>·</span> AHMEDABAD, GUJARAT
+        </footer>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var copyBtn = document.getElementById("copyCodeBtn");
+            var codeSpan = document.getElementById("displayRegCode");
+            if (copyBtn && codeSpan) {
+                copyBtn.addEventListener("click", function() {
+                    var codeText = codeSpan.textContent.trim();
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(codeText).then(function() {
+                            copyBtn.textContent = "✅ Copied!";
+                            setTimeout(function() {
+                                copyBtn.textContent = "📋 Copy";
+                            }, 2000);
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

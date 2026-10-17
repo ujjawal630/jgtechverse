@@ -53,6 +53,7 @@
             <div><b>Name</b><br>{{ team.leader_name }}</div>
             <div><b>Email</b><br>{{ team.leader_email }}</div>
             <div><b>Phone</b><br>{{ team.leader_phone }}</div>
+            <div><b>College / Affiliation</b><br>{{ team.college_name or 'JG University' }}{% if team.college_city %}, {{ team.college_city }}{% endif %}{% if team.college_dept %} ({{ team.college_dept }}){% endif %}</div>
         </div>
     </section>
 

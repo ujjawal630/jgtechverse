@@ -15,7 +15,7 @@ const arenaDescriptions = {
     Mercatus: "Trading & Financial Analytics"
 };
 
-const MAX_ADDITIONAL_MEMBERS = 4; // Maximum 4 additional members + 1 leader = 5 people total
+const MAX_MEMBERS = 5; // Exactly 5 members allowed in the team members table
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/webp"];
 
@@ -30,17 +30,17 @@ function updateMemberNumbers() {
         row.querySelector(".remove-btn").disabled = rows.length === 1;
     });
 
-    const isMax = rows.length >= MAX_ADDITIONAL_MEMBERS;
+    const isMax = rows.length >= MAX_MEMBERS;
     addMemberButton.disabled = isMax;
     if (isMax) {
-        addMemberButton.title = "Maximum 5 total team members reached (1 leader + 4 members).";
+        addMemberButton.title = "Maximum 5 team members reached.";
     } else {
         addMemberButton.title = "Add team member";
     }
 }
 
 function addMember() {
-    if (membersBody.querySelectorAll("tr").length >= MAX_ADDITIONAL_MEMBERS) {
+    if (membersBody.querySelectorAll("tr").length >= MAX_MEMBERS) {
         return;
     }
 

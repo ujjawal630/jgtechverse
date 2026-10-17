@@ -226,6 +226,14 @@ td input, td select {
     background: #fff1f3;
 }
 
+.outline-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background: #f7f7f7;
+    border-color: #ccc;
+    color: #888;
+}
+
 .arena-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

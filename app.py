@@ -19,6 +19,7 @@ from flask import (
     abort,
     flash,
     g,
+    has_request_context,
     jsonify,
     redirect,
     render_template,
@@ -76,6 +77,57 @@ ARENAS = [
     "Mercatus",
 ]
 
+ARENA_METADATA = {
+    "Buddhi": {
+        "title": "Buddhi AI Model Building & Innovation Challenge",
+        "category": "Artificial Intelligence & Machine Learning",
+        "theme": "AI Model Building & Predictive Systems",
+        "department": "Department of Artificial Intelligence & Data Science, JG University",
+        "icon": "🤖",
+        "code_prefix": "BUD"
+    },
+    "Fiontar": {
+        "title": "Fiontar Startup & Innovation Summit",
+        "category": "Startup & Entrepreneurship",
+        "theme": "Startup & Innovation Incubation",
+        "department": "Center for Innovation, Incubation & Entrepreneurship (CIIE), JG University",
+        "icon": "💡",
+        "code_prefix": "FIO"
+    },
+    "Talos": {
+        "title": "Talos Robotic Engineering Arena",
+        "category": "Robotics & Automation",
+        "theme": "Robotic Arena, Embedded Systems & Hardware",
+        "department": "Department of Robotics & Mechatronics, JG University",
+        "icon": "⚙️",
+        "code_prefix": "TAL"
+    },
+    "Pegasus": {
+        "title": "Pegasus Aerial Robotics & Drone Fest",
+        "category": "Aerospace & Drone Technology",
+        "theme": "Drone Fest & Aerial Systems Engineering",
+        "department": "Department of Aerospace & Drone Technology, JG University",
+        "icon": "🚁",
+        "code_prefix": "PEG"
+    },
+    "Promethia": {
+        "title": "Promethia Competitive Coding Challenge",
+        "category": "Software Engineering & Algorithmic Problem Solving",
+        "theme": "Coding Challenge & Software Architecture",
+        "department": "Department of Computer Science & Engineering, JG University",
+        "icon": "💻",
+        "code_prefix": "PRO"
+    },
+    "Mercatus": {
+        "title": "Mercatus Trading & Financial Analytics",
+        "category": "FinTech & Financial Analytics",
+        "theme": "Trading & Financial Analytics Modeling",
+        "department": "School of Management & Financial Analytics, JG University",
+        "icon": "📈",
+        "code_prefix": "MER"
+    }
+}
+
 
 # ==================================================
 # DATABASE CONNECTION
@@ -103,6 +155,9 @@ def init_db():
                 registration_code TEXT UNIQUE,
                 team_name TEXT NOT NULL,
                 team_number TEXT NOT NULL,
+                college_name TEXT DEFAULT 'JG University',
+                college_city TEXT DEFAULT 'Ahmedabad',
+                college_dept TEXT DEFAULT '',
                 leader_name TEXT NOT NULL,
                 leader_email TEXT NOT NULL,
                 leader_phone TEXT NOT NULL,
@@ -148,6 +203,17 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_teams_code ON teams(registration_code);
         """)
 
+        # Migration: ensure affiliation columns exist in existing teams table
+        cursor = conn.cursor()
+        cursor.execute("PRAGMA table_info(teams)")
+        existing_cols = [row[1] for row in cursor.fetchall()]
+        if "college_name" not in existing_cols:
+            conn.execute("ALTER TABLE teams ADD COLUMN college_name TEXT DEFAULT 'JG University'")
+        if "college_city" not in existing_cols:
+            conn.execute("ALTER TABLE teams ADD COLUMN college_city TEXT DEFAULT 'Ahmedabad'")
+        if "college_dept" not in existing_cols:
+            conn.execute("ALTER TABLE teams ADD COLUMN college_dept TEXT DEFAULT ''")
+
         conn.commit()
 
     finally:
@@ -177,19 +243,45 @@ def generate_unique_registration_code(conn):
     raise RuntimeError("Unique registration code space (1000-9999) exhausted or collision limit reached.")
 
 
-def generate_team_qr(registration_code):
-    public_url = os.environ.get("PUBLIC_BASE_URL", "").strip().rstrip("/")
-    if not public_url and os.environ.get("VERCEL_URL"):
-        public_url = f"https://{os.environ.get('VERCEL_URL').strip().rstrip('/')}"
+def get_public_base_url():
+    """
+    Determine the canonical public base URL for team details and QR codes.
+    Checks environment variables first, then active request context, then deployment fallbacks.
+    Avoids temporary or generic landing pages.
+    """
+    for key in ("PUBLIC_BASE_URL", "APP_URL", "NEXT_PUBLIC_APP_URL"):
+        val = os.environ.get(key, "").strip().rstrip("/")
+        if val:
+            return val
 
-    if public_url:
-        qr_data = f"{public_url}/verify/{registration_code}"
-    else:
-        qr_data = url_for(
-            "verify_registration",
-            registration_code=registration_code,
-            _external=True
-        )
+    # Stable production URL on Vercel
+    if os.environ.get("VERCEL_PROJECT_PRODUCTION_URL"):
+        return f"https://{os.environ.get('VERCEL_PROJECT_PRODUCTION_URL').strip().rstrip('/')}"
+
+    # Active request context (handles custom domain / port and reverse proxy headers)
+    if has_request_context():
+        scheme = request.headers.get("X-Forwarded-Proto", request.scheme)
+        host = request.headers.get("X-Forwarded-Host", request.host)
+        return f"{scheme}://{host}".rstrip("/")
+
+    # Ephemeral Vercel URL fallback
+    if os.environ.get("VERCEL_URL"):
+        return f"https://{os.environ.get('VERCEL_URL').strip().rstrip('/')}"
+
+    return "http://localhost:5000"
+
+
+def generate_team_qr(registration_code, force=False):
+    """
+    Generate a high-quality QR code linking to the dedicated team details route.
+    Uses the stable unique registration code and configured public URL.
+    """
+    qr_path = QR_DIR / f"{registration_code}.png"
+    if qr_path.is_file() and not force:
+        return
+
+    base_url = get_public_base_url()
+    qr_data = f"{base_url}/team/{registration_code}"
 
     qr = qrcode.QRCode(
         version=None,
@@ -206,7 +298,7 @@ def generate_team_qr(registration_code):
         back_color="#FFFFFF"
     )
 
-    image.save(QR_DIR / f"{registration_code}.png")
+    image.save(qr_path)
 
 
 # ==================================================
@@ -286,6 +378,9 @@ def register():
 
         team_name = data.get("teamName", "").strip()
         team_number = data.get("teamNumber", "").strip()
+        college_name = data.get("collegeName", "").strip() or data.get("affiliation", "").strip()
+        college_city = data.get("collegeCity", "").strip()
+        college_dept = data.get("collegeDept", "").strip()
         leader_name = data.get("leaderName", "").strip()
         leader_email = data.get("leaderEmail", "").strip().lower()
         leader_phone = data.get("leaderPhone", "").strip()
@@ -293,6 +388,11 @@ def register():
         # Team number is optional in the current HTML.
         if not team_number:
             team_number = "Not assigned"
+
+        if not college_name:
+            college_name = "JG University"
+        if not college_city:
+            college_city = "Ahmedabad"
 
         if not all([
             team_name,
@@ -353,11 +453,11 @@ def register():
                 message="Member fields do not match. Please check the form."
             ), 400
 
-        # Team limit: 1 leader + 1 to 4 additional members (total 2 to 5 members).
-        if not (1 <= len(member_names) <= 4):
+        # Early logic: Allow up to 5 members in the team registration table.
+        if not (1 <= len(member_names) <= 5):
             return jsonify(
                 success=False,
-                message="A team must have between 2 and 5 members total (1 team leader + 1 to 4 additional members)."
+                message="A team must have between 1 and 5 members (maximum 5 members)."
             ), 400
 
         members = []
@@ -461,16 +561,22 @@ def register():
                 registration_code,
                 team_name,
                 team_number,
+                college_name,
+                college_city,
+                college_dept,
                 leader_name,
                 leader_email,
                 leader_phone,
                 status
             )
-            VALUES (?, ?, ?, ?, ?, ?, 'Pending')
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')
         """, (
             registration_code,
             team_name,
             team_number,
+            college_name,
+            college_city,
+            college_dept,
             leader_name,
             leader_email,
             leader_phone
@@ -1198,20 +1304,21 @@ def admin_delete_user(user_id):
 def verify_lookup():
     code = request.args.get("code", "").strip().upper()
     if code:
-        return redirect(url_for("verify_registration", registration_code=code))
+        return redirect(url_for("team_details", registration_code=code))
     return render_template("verify_lookup.html", active_tab="verify")
 
 
-@app.route("/verify/<registration_code>")
-def verify_registration(registration_code):
+@app.route("/team/<registration_code>", endpoint="team_details")
+@app.route("/verify/<registration_code>", endpoint="verify_registration")
+def team_details(registration_code):
     registration_code = registration_code.strip().upper()
     conn = get_db()
 
     try:
-        # Team basic details - do not expose private contact info (leader phone, email, github)
+        # 1. Team core registration details
         team = conn.execute(
             """
-            SELECT id, registration_code, team_name, status
+            SELECT id, registration_code, team_name, team_number, college_name, college_city, college_dept, leader_name, status, created_at
             FROM teams
             WHERE registration_code = ?
             """,
@@ -1220,26 +1327,27 @@ def verify_registration(registration_code):
 
         if team is None:
             return render_template(
-                "verify_registration.html",
+                "team_details.html",
                 not_found=True,
                 registration_code=registration_code,
                 active_tab="verify"
             ), 404
 
-        if team["status"] != "Approved":
-            return render_template(
-                "verify_registration.html",
-                unapproved=True,
-                team=team,
-                registration_code=team["registration_code"],
-                status=team["status"],
-                active_tab="verify"
-            )
-
-        # Team selected problem statements
-        arenas = conn.execute(
+        # 2. Team members roster (student privacy protected: emails & phones kept confidential)
+        members = conn.execute(
             """
-            SELECT arena_name, problem_statement
+            SELECT id, name, section, year
+            FROM members
+            WHERE team_id = ?
+            ORDER BY id
+            """,
+            (team["id"],)
+        ).fetchall()
+
+        # 3. Complete arena problem statements, proposed solutions & repository links
+        arenas_rows = conn.execute(
+            """
+            SELECT id, arena_name, problem_statement, proposed_solution, github_link
             FROM arenas
             WHERE team_id = ?
             ORDER BY arena_name
@@ -1247,7 +1355,31 @@ def verify_registration(registration_code):
             (team["id"],)
         ).fetchall()
 
-        # Team uploaded snaps
+        enriched_arenas = []
+        for a in arenas_rows:
+            meta = ARENA_METADATA.get(a["arena_name"], {
+                "title": f"{a['arena_name']} Challenge",
+                "category": "Technology Challenge",
+                "theme": a["arena_name"],
+                "department": "JG University",
+                "icon": "🏆",
+                "code_prefix": "PS"
+            })
+            enriched_arenas.append({
+                "id": a["id"],
+                "code": f"TV26-{meta['code_prefix']}-{a['id']:02d}",
+                "arena_name": a["arena_name"],
+                "title": meta["title"],
+                "category": meta["category"],
+                "theme": meta["theme"],
+                "department": meta["department"],
+                "icon": meta["icon"],
+                "problem_statement": a["problem_statement"],
+                "proposed_solution": a["proposed_solution"],
+                "github_link": a["github_link"]
+            })
+
+        # 4. Submitted project evidence photos
         uploads = conn.execute(
             """
             SELECT arena_name, original_name, stored_name
@@ -1262,19 +1394,21 @@ def verify_registration(registration_code):
         conn.close()
 
     return render_template(
-        "verify_registration.html",
+        "team_details.html",
         team=team,
-        arenas=arenas,
+        members=members,
+        arenas=enriched_arenas,
         uploads=uploads,
         active_tab="verify"
     )
 
 
 # ==================================================
-# PUBLIC SNAPS — APPROVED TEAMS ONLY
+# PUBLIC SNAPS — AUTHORIZED TEAM EVIDENCE
 # ==================================================
 
-@app.route("/verify/<registration_code>/snap/<path:stored_name>")
+@app.route("/team/<registration_code>/snap/<path:stored_name>", endpoint="team_details_snap")
+@app.route("/verify/<registration_code>/snap/<path:stored_name>", endpoint="public_verification_snap")
 def public_verification_snap(registration_code, stored_name):
     # Prevent directory traversal attacks
     if ".." in stored_name or stored_name.startswith("/") or "\\" in stored_name:
@@ -1289,7 +1423,6 @@ def public_verification_snap(registration_code, stored_name):
             FROM uploads AS u
             JOIN teams AS t ON t.id = u.team_id
             WHERE t.registration_code = ?
-              AND t.status = 'Approved'
               AND u.stored_name = ?
             """,
             (registration_code, stored_name)
@@ -1400,7 +1533,7 @@ def team_id_card(registration_code):
     try:
         team = conn.execute(
             """
-            SELECT registration_code, team_name, status, leader_name, leader_email
+            SELECT registration_code, team_name, college_name, college_city, college_dept, status, leader_name, leader_email
             FROM teams
             WHERE registration_code = ?
             """,
@@ -1431,11 +1564,9 @@ def team_id_card(registration_code):
             active_tab="card"
         )
 
-    # Ensure the team's QR image exists.
+    # Ensure the team's QR image exists with the dedicated team route URL.
+    generate_team_qr(registration_code, force=True)
     qr_path = QR_DIR / f"{registration_code}.png"
-
-    if not qr_path.is_file():
-        generate_team_qr(registration_code)
 
     qr_data_uri = ""
     if qr_path.is_file():
