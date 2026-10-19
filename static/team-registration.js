@@ -21,6 +21,15 @@ const arenaDescriptions = {
     Mercatus: "Trading & Quantitative Financial Analytics"
 };
 
+const arenaIcons = {
+    Buddhi: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>`,
+    Fiontar: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>`,
+    Talos: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8.01" y2="16"></line><line x1="16" y1="16" x2="16.01" y2="16"></line></svg>`,
+    Pegasus: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>`,
+    Promethia: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>`,
+    Mercatus: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line><polyline points="3 8 9 2 15 8 21 2"></polyline></svg>`
+};
+
 // DOM Elements
 const form = document.getElementById("teamForm");
 const message = document.getElementById("message");
@@ -267,64 +276,70 @@ function validateStep(stepNumber) {
             return false;
         }
 
-        const projectCards = [...(projectsContainer ? projectsContainer.querySelectorAll(".project-card") : [])];
-        if (projectCards.length === 0) {
-            showStepError("Please add at least one project submission.");
+        const arenaSections = projectsContainer ? [...projectsContainer.querySelectorAll(".tv-arena-form-section")] : [];
+        if (arenaSections.length === 0) {
+            showStepError("Please select at least one challenge arena track above to open its submission section.");
+            document.getElementById("arenas-title")?.scrollIntoView({ behavior: "smooth", block: "center" });
             return false;
         }
 
-        for (let i = 0; i < projectCards.length; i++) {
-            const card = projectCards[i];
-            const pId = card.dataset.projectId;
-            const arenaSelect = card.querySelector(".project-arena-select");
-            const titleInput = card.querySelector(".project-title-input");
-            const problemInput = card.querySelector(".project-problem-input");
-            const solutionInput = card.querySelector(".project-solution-input");
-            const ghInput = card.querySelector(".project-github-input");
-            const files = projectFilesMap.get(pId) || [];
+        for (let sIdx = 0; sIdx < arenaSections.length; sIdx++) {
+            const section = arenaSections[sIdx];
+            const arenaName = section.dataset.arena;
+            const cards = [...section.querySelectorAll(".project-card")];
 
-            const arenaVal = arenaSelect ? arenaSelect.value.trim() : "";
-            const titleVal = titleInput ? titleInput.value.trim() : "";
-            const problemVal = problemInput ? problemInput.value.trim() : "";
-            const solutionVal = solutionInput ? solutionInput.value.trim() : "";
-            const ghVal = ghInput ? ghInput.value.trim() : "";
-
-            if (!arenaVal || !selectedArenas.includes(arenaVal)) {
-                showStepError(`Project #${i + 1}: Please select a valid arena track from your selected arenas above.`, arenaSelect);
+            if (cards.length === 0) {
+                showStepError(`[${arenaName} Arena] Please add at least one question/project submission.`);
                 return false;
             }
 
-            if (!titleVal) {
-                showStepError(`Project #${i + 1}: Please enter a project title.`, titleInput);
-                return false;
-            }
+            for (let cIdx = 0; cIdx < cards.length; cIdx++) {
+                const card = cards[cIdx];
+                const pId = card.dataset.projectId;
+                const titleInput = card.querySelector(".project-title-input");
+                const problemInput = card.querySelector(".project-problem-input");
+                const solutionInput = card.querySelector(".project-solution-input");
+                const ghInput = card.querySelector(".project-github-input");
+                const files = projectFilesMap.get(pId) || [];
 
-            if (!problemVal) {
-                showStepError(`[${titleVal}] Please provide a problem statement.`, problemInput);
-                return false;
-            }
+                const titleVal = titleInput ? titleInput.value.trim() : "";
+                const problemVal = problemInput ? problemInput.value.trim() : "";
+                const solutionVal = solutionInput ? solutionInput.value.trim() : "";
+                const ghVal = ghInput ? ghInput.value.trim() : "";
+                const entryLabel = `[${arenaName} — Question #${cIdx + 1}]`;
 
-            if (!solutionVal) {
-                showStepError(`[${titleVal}] Please explain your proposed solution and architecture.`, solutionInput);
-                return false;
-            }
+                if (!titleVal) {
+                    showStepError(`${entryLabel} Please enter a project title.`, titleInput);
+                    return false;
+                }
 
-            const ghCheck = validateGitHubRepoUrl(ghVal);
-            if (!ghCheck.valid) {
-                showStepError(`[${titleVal}] ${ghCheck.message}`, ghInput);
-                return false;
-            }
+                if (!problemVal) {
+                    showStepError(`${entryLabel} Please provide a problem statement / challenge question.`, problemInput);
+                    return false;
+                }
 
-            if (files.length === 0) {
-                showStepError(`[${titleVal}] Please upload at least one evidence/architecture image.`);
-                card.querySelector(".tv-upload-dropzone, .project-evidence-input")?.scrollIntoView({ behavior: "smooth", block: "center" });
-                return false;
-            }
+                if (!solutionVal) {
+                    showStepError(`${entryLabel} Please explain your proposed solution and architecture.`, solutionInput);
+                    return false;
+                }
 
-            const fileError = validateFiles(files);
-            if (fileError) {
-                showStepError(`[${titleVal}] ${fileError}`);
-                return false;
+                const ghCheck = validateGitHubRepoUrl(ghVal);
+                if (!ghCheck.valid) {
+                    showStepError(`${entryLabel} ${ghCheck.message}`, ghInput);
+                    return false;
+                }
+
+                if (files.length === 0) {
+                    showStepError(`${entryLabel} Please upload at least one evidence/architecture image.`);
+                    card.querySelector(".tv-upload-dropzone, .project-evidence-input")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                    return false;
+                }
+
+                const fileError = validateFiles(files);
+                if (fileError) {
+                    showStepError(`${entryLabel} ${fileError}`);
+                    return false;
+                }
             }
         }
 
@@ -567,34 +582,13 @@ function validateGitHubRepoUrl(url) {
 }
 
 // ==========================================================================
-// MULTI-PROJECT CONTROLS & ARENA SYNCHRONIZATION
+// DEDICATED ARENA SECTIONS & MULTI-QUESTION SUBMISSION CONTROLS
 // ==========================================================================
 
 function getSelectedArenas() {
     return [...arenaCheckboxes]
         .filter(checkbox => checkbox.checked)
         .map(checkbox => checkbox.value);
-}
-
-function updateProjectNumbers() {
-    const cards = projectsContainer ? projectsContainer.querySelectorAll(".project-card") : [];
-    const count = cards.length;
-
-    cards.forEach((card, index) => {
-        const numSpan = card.querySelector(".project-num");
-        if (numSpan) {
-            numSpan.textContent = `#${index + 1}`;
-        }
-        const removeBtn = card.querySelector(".remove-project-btn");
-        if (removeBtn) {
-            removeBtn.disabled = count <= 1;
-            removeBtn.title = count <= 1 ? "At least one project submission is required." : "Remove this project entry";
-        }
-    });
-
-    if (projectCountNotice) {
-        projectCountNotice.textContent = `${count} Project${count === 1 ? "" : "s"} Added`;
-    }
 }
 
 function updateProjectFileDisplay(card, projectId) {
@@ -650,74 +644,68 @@ function updateProjectFileDisplay(card, projectId) {
     });
 }
 
-function updateCardArenaBadge(card, arena) {
-    const badge = card.querySelector(".project-arena-badge-display");
-    if (!badge) return;
-    if (arena) {
-        const desc = arenaDescriptions[arena] ? ` · ${arenaDescriptions[arena]}` : "";
-        badge.textContent = `Track: ${arena}${desc}`;
-        badge.style.display = "inline-block";
-    } else {
-        badge.textContent = "";
-        badge.style.display = "none";
+function renderEmptyArenasNotice() {
+    if (!projectsContainer) return;
+    projectsContainer.innerHTML = `
+        <div class="empty-arenas-notice">
+            <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--color-crimson-light); color: var(--color-crimson); display: grid; place-items: center; margin: 0 auto 12px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <polyline points="9 11 12 14 22 4"></polyline>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
+            </div>
+            <h3 style="font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: var(--color-text-primary); margin: 0 0 6px;">Select Challenge Arenas Above</h3>
+            <p style="font-size: 13.5px; color: var(--color-text-muted); max-width: 460px; margin: 0 auto;">Choose one or more challenge arena tracks in Stage 04 above. Each selected arena will open its own dedicated submission section here.</p>
+        </div>
+    `;
+    updateTotalProjectCount();
+}
+
+function updateTotalProjectCount() {
+    const totalCards = projectsContainer ? projectsContainer.querySelectorAll(".project-card").length : 0;
+    const totalArenas = projectsContainer ? projectsContainer.querySelectorAll(".tv-arena-form-section").length : 0;
+
+    if (projectCountNotice) {
+        if (totalArenas === 0) {
+            projectCountNotice.textContent = "0 Projects Added";
+        } else {
+            projectCountNotice.textContent = `${totalCards} Question${totalCards === 1 ? '' : 's'} across ${totalArenas} Arena${totalArenas === 1 ? '' : 's'}`;
+        }
     }
 }
 
-function updateAllProjectArenaDropdowns() {
-    if (!projectsContainer) return;
-    const selectedArenas = getSelectedArenas();
-    const cards = projectsContainer.querySelectorAll(".project-card");
+function updateArenaSectionEntryNumbers(arenaSection) {
+    if (!arenaSection) return;
+    const cards = arenaSection.querySelectorAll(".project-card");
+    const count = cards.length;
 
-    cards.forEach(card => {
-        const select = card.querySelector(".project-arena-select");
-        if (!select) return;
-
-        const currentVal = select.value;
-        select.innerHTML = "";
-
-        if (selectedArenas.length === 0) {
-            const opt = document.createElement("option");
-            opt.value = "";
-            opt.textContent = "-- Select arena track(s) in Section 04 above first --";
-            select.appendChild(opt);
-            select.disabled = true;
-            updateCardArenaBadge(card, "");
-            return;
+    cards.forEach((card, index) => {
+        const numSpan = card.querySelector(".entry-num");
+        if (numSpan) {
+            numSpan.textContent = `#${index + 1}`;
         }
-
-        select.disabled = false;
-
-        const defaultOpt = document.createElement("option");
-        defaultOpt.value = "";
-        defaultOpt.textContent = "-- Choose Selected Arena Track * --";
-        select.appendChild(defaultOpt);
-
-        selectedArenas.forEach(arena => {
-            const opt = document.createElement("option");
-            opt.value = arena;
-            opt.textContent = `${arena} — ${arenaDescriptions[arena] || arena}`;
-            select.appendChild(opt);
-        });
-
-        if (selectedArenas.includes(currentVal)) {
-            select.value = currentVal;
-        } else if (selectedArenas.length === 1 && !currentVal) {
-            select.value = selectedArenas[0];
+        const removeBtn = card.querySelector(".remove-project-btn");
+        if (removeBtn) {
+            removeBtn.disabled = count <= 1;
+            removeBtn.title = count <= 1
+                ? "At least one question is required for this arena. Uncheck the arena above to remove the entire track."
+                : "Remove this question entry";
+            removeBtn.style.opacity = count <= 1 ? "0.4" : "1";
         }
-
-        updateCardArenaBadge(card, select.value);
     });
+
+    const countBadge = arenaSection.querySelector(".arena-q-count");
+    if (countBadge) {
+        countBadge.textContent = `${count} Question${count === 1 ? '' : 's'} / Project${count === 1 ? '' : 's'}`;
+    }
+
+    updateTotalProjectCount();
 }
 
-function addProject(preselectedArena = "") {
-    if (!projectsContainer) return;
-
-    if (preselectedArena) {
-        const cb = document.querySelector(`input[name="arenas"][value="${preselectedArena}"]`);
-        if (cb && !cb.checked) {
-            cb.checked = true;
-        }
-    }
+function addQuestionToArena(arenaName) {
+    const entriesContainer = document.getElementById(`entriesContainer_${arenaName}`);
+    if (!entriesContainer) return;
 
     const projectId = `proj_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
     projectFilesMap.set(projectId, []);
@@ -725,38 +713,32 @@ function addProject(preselectedArena = "") {
     const card = document.createElement("div");
     card.className = "project-card";
     card.dataset.projectId = projectId;
+    card.dataset.arena = arenaName;
 
     card.innerHTML = `
+        <input type="hidden" class="project-arena-val" name="projectArena[]" value="${escapeHtml(arenaName)}">
         <div class="project-card-header">
             <div class="project-header-title">
-                <span class="project-badge">Project <span class="project-num">#1</span></span>
-                <span class="project-arena-badge-display" style="display:none;"></span>
+                <span class="project-badge">${escapeHtml(arenaName)} · Question <span class="entry-num">#1</span></span>
+                <span class="project-arena-badge-display">Track: ${escapeHtml(arenaName)}</span>
             </div>
-            <button type="button" class="remove-project-btn" title="Remove this project" style="display:inline-flex; align-items:center; gap:5px;">
+            <button type="button" class="remove-project-btn" title="Remove this question entry" style="display:inline-flex; align-items:center; gap:5px;">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                <span>Remove Project</span>
+                <span>Remove Question</span>
             </button>
         </div>
 
         <div class="project-fields-grid">
-            <label>
-                <span>Arena Track<span class="field-required-star">*</span></span>
-                <select class="project-arena-select" aria-label="Arena Track for this project" required>
-                    <option value="">-- Choose Selected Arena Track * --</option>
-                </select>
-                <small class="field-hint">Select the challenge track this specific project addresses.</small>
-            </label>
-
-            <label>
-                <span>Project Title<span class="field-required-star">*</span></span>
+            <label class="wide">
+                <span>Project / Problem Title<span class="field-required-star">*</span></span>
                 <input type="text" class="project-title-input" placeholder="e.g. Autonomous Solar Navigation Rover" maxlength="200" aria-label="Project Title" required>
-                <small class="field-hint">A clear, distinctive name for this project entry.</small>
+                <small class="field-hint">A clear, distinctive name for this project or challenge solution under ${escapeHtml(arenaName)}.</small>
             </label>
 
             <label class="wide">
-                <span>Problem Statement<span class="field-required-star">*</span></span>
-                <textarea class="project-problem-input" placeholder="What specific problem, real-world limitation, or engineering constraint does this project solve?" maxlength="2000" aria-label="Problem Statement for this project" required></textarea>
-                <small class="field-hint">Clearly define the problem context, beneficiaries, and technical challenges.</small>
+                <span>Problem Statement / Challenge Question<span class="field-required-star">*</span></span>
+                <textarea class="project-problem-input" placeholder="What specific problem, real-world limitation, or engineering constraint does this project address?" maxlength="2000" aria-label="Problem Statement for this project" required></textarea>
+                <small class="field-hint">Clearly define the problem context, challenge questions, and technical constraints.</small>
             </label>
 
             <label class="wide">
@@ -792,12 +774,6 @@ function addProject(preselectedArena = "") {
             </div>
         </div>
     `;
-
-    // Event: Arena change updates badge
-    const arenaSelect = card.querySelector(".project-arena-select");
-    arenaSelect.addEventListener("change", () => {
-        updateCardArenaBadge(card, arenaSelect.value);
-    });
 
     // Event: GitHub URL validation on blur & input
     const ghInput = card.querySelector(".project-github-input");
@@ -908,63 +884,85 @@ function addProject(preselectedArena = "") {
         }
     });
 
-    // Remove project
+    // Remove single question entry from this arena
     const removeBtn = card.querySelector(".remove-project-btn");
     removeBtn.addEventListener("click", () => {
-        const allCards = projectsContainer.querySelectorAll(".project-card");
-        if (allCards.length > 1) {
+        const parentArenaSection = card.closest(".tv-arena-form-section");
+        const allCardsInArena = entriesContainer.querySelectorAll(".project-card");
+        if (allCardsInArena.length > 1) {
             projectFilesMap.delete(projectId);
             card.remove();
-            updateProjectNumbers();
+            if (parentArenaSection) {
+                updateArenaSectionEntryNumbers(parentArenaSection);
+            }
         }
     });
 
-    projectsContainer.appendChild(card);
-    updateAllProjectArenaDropdowns();
+    entriesContainer.appendChild(card);
 
-    if (preselectedArena) {
-        arenaSelect.value = preselectedArena;
-        updateCardArenaBadge(card, preselectedArena);
+    const parentSection = card.closest(".tv-arena-form-section");
+    if (parentSection) {
+        updateArenaSectionEntryNumbers(parentSection);
     }
-
-    updateProjectNumbers();
 }
 
-function getNextArenaForNewProject() {
-    const selected = getSelectedArenas();
-    if (selected.length === 0) return "";
-    if (selected.length === 1) return selected[0];
+function createArenaSection(arenaName) {
+    if (!projectsContainer) return null;
 
-    const cards = projectsContainer ? [...projectsContainer.querySelectorAll(".project-card")] : [];
-    const assignedArenas = cards.map(c => c.querySelector(".project-arena-select")?.value).filter(Boolean);
-
-    // 1. Any selected arena not yet assigned to any project card
-    const unassigned = selected.filter(arena => !assignedArenas.includes(arena));
-    if (unassigned.length > 0) {
-        return unassigned[0];
+    // Remove empty notice if present
+    const emptyNotice = projectsContainer.querySelector(".empty-arenas-notice");
+    if (emptyNotice) {
+        emptyNotice.remove();
     }
 
-    // 2. Rotate to the next arena after the last card's arena
-    const lastCard = cards[cards.length - 1];
-    const lastArena = lastCard?.querySelector(".project-arena-select")?.value;
-    const lastIndex = selected.indexOf(lastArena);
-    if (lastIndex !== -1) {
-        return selected[(lastIndex + 1) % selected.length];
-    }
+    const section = document.createElement("div");
+    section.className = "tv-arena-form-section";
+    section.id = `arenaSection_${arenaName}`;
+    section.dataset.arena = arenaName;
 
-    // 3. Fallback: cycle based on least used
-    const counts = {};
-    selected.forEach(a => { counts[a] = 0; });
-    assignedArenas.forEach(a => { if (counts[a] !== undefined) counts[a]++; });
-    let bestArena = selected[0];
-    let minCount = Infinity;
-    selected.forEach(a => {
-        if (counts[a] < minCount) {
-            minCount = counts[a];
-            bestArena = a;
-        }
+    const iconSvg = arenaIcons[arenaName] || `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>`;
+    const descText = arenaDescriptions[arenaName] || `${arenaName} Track`;
+
+    section.innerHTML = `
+        <div class="tv-arena-section-header">
+            <div class="tv-arena-section-info">
+                <div class="tv-arena-section-icon" aria-hidden="true">
+                    ${iconSvg}
+                </div>
+                <div>
+                    <h3 class="tv-arena-section-title">
+                        <span>${escapeHtml(arenaName)} Arena</span>
+                        <span class="project-arena-badge-display">Track: ${escapeHtml(arenaName)}</span>
+                    </h3>
+                    <p class="tv-arena-section-desc">${escapeHtml(descText)}</p>
+                </div>
+            </div>
+            <span class="tv-arena-questions-count-badge arena-q-count">1 Question / Project</span>
+        </div>
+
+        <div class="arena-entries-container" id="entriesContainer_${arenaName}"></div>
+
+        <div class="arena-section-actions">
+            <button type="button" class="add-arena-question-btn" data-arena="${escapeHtml(arenaName)}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Add Another Question / Project for ${escapeHtml(arenaName)}</span>
+            </button>
+            <span class="muted" style="font-size:12px;">Add multiple challenge questions or problem solutions for this arena.</span>
+        </div>
+    `;
+
+    // Bind Add Another Question button
+    const addQBtn = section.querySelector(".add-arena-question-btn");
+    addQBtn.addEventListener("click", () => {
+        addQuestionToArena(arenaName);
     });
-    return bestArena;
+
+    projectsContainer.appendChild(section);
+
+    // Add first question entry for this arena
+    addQuestionToArena(arenaName);
+
+    return section;
 }
 
 function handleArenaCheckboxChange(event) {
@@ -973,78 +971,72 @@ function handleArenaCheckboxChange(event) {
     const isChecked = checkbox.checked;
 
     if (isChecked) {
-        // User checked an arena track
-        updateAllProjectArenaDropdowns();
-
-        const cards = projectsContainer ? [...projectsContainer.querySelectorAll(".project-card")] : [];
-
-        // Check if there is an unassigned card (e.g. initial empty card)
-        const unassignedCard = cards.find(c => {
-            const sel = c.querySelector(".project-arena-select");
-            return !sel || !sel.value;
-        });
-
-        if (unassignedCard) {
-            const sel = unassignedCard.querySelector(".project-arena-select");
-            if (sel) {
-                sel.value = arenaName;
-                updateCardArenaBadge(unassignedCard, arenaName);
-            }
-        } else {
-            // Check if any card already has this arena assigned
-            const alreadyHasCard = cards.some(c => c.querySelector(".project-arena-select")?.value === arenaName);
-            if (!alreadyHasCard) {
-                // Open a new form specifically for this newly selected arena
-                addProject(arenaName);
+        // User selected an arena: create a fresh detail section for this arena
+        // Previous arena sections remain completely unchanged!
+        let section = document.getElementById(`arenaSection_${arenaName}`);
+        if (!section) {
+            section = createArenaSection(arenaName);
+            if (section && typeof section.scrollIntoView === "function") {
+                section.scrollIntoView({ behavior: "smooth", block: "nearest" });
             }
         }
     } else {
-        // User unchecked an arena track
-        const cards = projectsContainer ? [...projectsContainer.querySelectorAll(".project-card")] : [];
-        const matchingCards = cards.filter(c => c.querySelector(".project-arena-select")?.value === arenaName);
-
-        matchingCards.forEach(card => {
-            const currentTotalCards = projectsContainer.querySelectorAll(".project-card").length;
-            if (currentTotalCards > 1) {
-                const pId = card.dataset.projectId;
-                projectFilesMap.delete(pId);
-                card.remove();
-            } else {
-                // If it's the only remaining card, don't remove the card, but reset its arena selection
-                const sel = card.querySelector(".project-arena-select");
-                if (sel) {
-                    sel.value = "";
+        // User unchecked this arena: remove its section and clean up its files
+        const section = document.getElementById(`arenaSection_${arenaName}`);
+        if (section) {
+            section.querySelectorAll(".project-card").forEach(c => {
+                const pId = c.dataset.projectId;
+                if (pId) {
+                    projectFilesMap.delete(pId);
                 }
-                updateCardArenaBadge(card, "");
-            }
-        });
+            });
+            section.remove();
+        }
 
-        updateAllProjectArenaDropdowns();
-        updateProjectNumbers();
+        // If no arena sections remain, show empty notice
+        const remainingSections = projectsContainer ? projectsContainer.querySelectorAll(".tv-arena-form-section") : [];
+        if (remainingSections.length === 0) {
+            renderEmptyArenasNotice();
+        }
     }
+
+    updateTotalProjectCount();
 }
 
 function syncInitialArenasAndProjects() {
     const selected = getSelectedArenas();
     if (selected.length > 0) {
-        if (projectsContainer) {
-            projectsContainer.replaceChildren();
-            projectFilesMap.clear();
-        }
         selected.forEach(arena => {
-            addProject(arena);
+            if (!document.getElementById(`arenaSection_${arena}`)) {
+                createArenaSection(arena);
+            }
         });
     } else {
-        if (!projectsContainer || projectsContainer.querySelectorAll(".project-card").length === 0) {
-            addProject();
-        }
+        renderEmptyArenasNotice();
     }
 }
 
 if (addProjectBtn) {
     addProjectBtn.addEventListener("click", () => {
-        const nextArena = getNextArenaForNewProject();
-        addProject(nextArena);
+        const selected = getSelectedArenas();
+        if (selected.length === 0) {
+            showStepError("Please select at least one challenge arena track above first.");
+            document.getElementById("arenas-title")?.scrollIntoView({ behavior: "smooth", block: "center" });
+            return;
+        }
+
+        // Add another question to the last selected arena
+        const lastArena = selected[selected.length - 1];
+        addQuestionToArena(lastArena);
+
+        const lastSection = document.getElementById(`arenaSection_${lastArena}`);
+        if (lastSection) {
+            const cards = lastSection.querySelectorAll(".project-card");
+            const newCard = cards[cards.length - 1];
+            if (newCard) {
+                newCard.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        }
     });
 }
 
@@ -1052,7 +1044,7 @@ arenaCheckboxes.forEach(checkbox => {
     checkbox.addEventListener("change", handleArenaCheckboxChange);
 });
 
-// Initialize projects matching any checked arenas, or create default card
+// Initialize projects matching any checked arenas, or create empty prompt
 syncInitialArenasAndProjects();
 
 // ==========================================================================
@@ -1101,26 +1093,29 @@ function renderReviewSummary() {
 
     // Gather Step 4 data (Arenas & Projects)
     const selectedArenas = getSelectedArenas();
-    const projectCards = [...(projectsContainer ? projectsContainer.querySelectorAll(".project-card") : [])];
+    const arenaSections = projectsContainer ? [...projectsContainer.querySelectorAll(".tv-arena-form-section")] : [];
     const projectsList = [];
 
-    projectCards.forEach((card, idx) => {
-        const pId = card.dataset.projectId;
-        const arena = card.querySelector(".project-arena-select")?.value.trim() || "";
-        const title = card.querySelector(".project-title-input")?.value.trim() || "";
-        const problem = card.querySelector(".project-problem-input")?.value.trim() || "";
-        const solution = card.querySelector(".project-solution-input")?.value.trim() || "";
-        const github = card.querySelector(".project-github-input")?.value.trim() || "";
-        const files = projectFilesMap.get(pId) || [];
+    arenaSections.forEach(section => {
+        const arena = section.dataset.arena;
+        const cards = section.querySelectorAll(".project-card");
+        cards.forEach((card, idx) => {
+            const pId = card.dataset.projectId;
+            const title = card.querySelector(".project-title-input")?.value.trim() || "";
+            const problem = card.querySelector(".project-problem-input")?.value.trim() || "";
+            const solution = card.querySelector(".project-solution-input")?.value.trim() || "";
+            const github = card.querySelector(".project-github-input")?.value.trim() || "";
+            const files = projectFilesMap.get(pId) || [];
 
-        projectsList.push({
-            num: idx + 1,
-            arena,
-            title,
-            problem,
-            solution,
-            github,
-            filesCount: files.length
+            projectsList.push({
+                arena,
+                qNum: idx + 1,
+                title,
+                problem,
+                solution,
+                github,
+                filesCount: files.length
+            });
         });
     });
 
@@ -1164,13 +1159,13 @@ function renderReviewSummary() {
             <div style="background:var(--color-bg-subtle); border:1px solid var(--color-border-subtle); border-left:3.5px solid var(--color-crimson); border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:10px;">
                 <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="font-family:var(--font-heading); font-weight:800; font-size:12px; background:var(--color-bg-surface); padding:2px 8px; border-radius:4px; border:1px solid var(--color-border-subtle);">Project #${p.num}</span>
+                        <span style="font-family:var(--font-heading); font-weight:800; font-size:12px; background:var(--color-bg-surface); padding:2px 8px; border-radius:4px; border:1px solid var(--color-border-subtle);">${escapeHtml(p.arena)} · Question #${p.qNum}</span>
                         <strong style="font-size:13.5px; color:var(--color-text-primary);">${escapeHtml(p.title || 'Untitled Project')}</strong>
                     </div>
                     <span class="tv-review-chip track-chip">Track: ${escapeHtml(p.arena || 'Unassigned')}</span>
                 </div>
                 <div style="font-size:12px; color:var(--color-text-body); margin-bottom:6px; line-height:1.4;">
-                    <strong>Problem:</strong> ${escapeHtml(p.problem ? (p.problem.length > 140 ? p.problem.slice(0, 140) + '...' : p.problem) : '—')}
+                    <strong>Problem / Challenge:</strong> ${escapeHtml(p.problem ? (p.problem.length > 140 ? p.problem.slice(0, 140) + '...' : p.problem) : '—')}
                 </div>
                 <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; font-size:11.5px; padding-top:6px; border-top:1px dashed var(--color-border-subtle);">
                     <div style="display:flex; align-items:center; gap:5px; font-family:var(--font-mono); color:var(--color-crimson);">
@@ -1353,7 +1348,7 @@ if (form) {
         // Append aligned, ordered project fields and attached image files
         projectCards.forEach((card, index) => {
             const pId = card.dataset.projectId;
-            const arenaVal = card.querySelector(".project-arena-select")?.value.trim() || "";
+            const arenaVal = card.dataset.arena || card.closest(".tv-arena-form-section")?.dataset.arena || card.querySelector(".project-arena-val")?.value.trim() || "";
             const titleVal = card.querySelector(".project-title-input")?.value.trim() || "";
             const problemVal = card.querySelector(".project-problem-input")?.value.trim() || "";
             const solutionVal = card.querySelector(".project-solution-input")?.value.trim() || "";
@@ -1421,10 +1416,7 @@ if (form) {
             }
             addMember();
             projectFilesMap.clear();
-            if (projectsContainer) {
-                projectsContainer.replaceChildren();
-            }
-            addProject();
+            renderEmptyArenasNotice();
             furthestStepReached = 1;
             goToStep(1);
 

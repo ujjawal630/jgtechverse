@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=JetBrains+Mono:wght@500;600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
     <link
         rel="stylesheet"
-        href="{{ url_for('static', filename='team-registration.css') }}?v=9.1"
+        href="{{ url_for('static', filename='team-registration.css') }}?v=9.2"
     >
 
     <style>
@@ -189,7 +189,7 @@
     </style>
 
     <script
-        src="{{ url_for('static', filename='team-registration.js') }}?v=8.0"
+        src="{{ url_for('static', filename='team-registration.js') }}?v=9.0"
         defer
     ></script>
 </head>
@@ -1343,11 +1343,11 @@
                             <div class="tv-step-header-left">
                                 <span class="tv-step-badge-num">05</span>
                                 <div class="tv-step-header-text">
-                                    <h2 id="projects-title">Project Submissions</h2>
-                                    <p>Submit one or more distinct project proposals for your selected arenas. Each entry requires a mandatory public GitHub repository link and evidence images.</p>
+                                    <h2 id="projects-title">Arena Submissions &amp; Project Questions</h2>
+                                    <p>Each selected arena opens its own dedicated submission section below. You can submit one or multiple project questions / problem solutions under each selected arena track.</p>
                                 </div>
                             </div>
-                            <span id="projectCountNotice" class="member-count-badge">1 Project Added</span>
+                            <span id="projectCountNotice" class="member-count-badge">0 Projects Added</span>
                         </div>
 
                         <div id="projectsContainer"></div>
@@ -1363,9 +1363,9 @@
                                     <line x1="12" y1="5" x2="12" y2="19"></line>
                                     <line x1="5" y1="12" x2="19" y2="12"></line>
                                 </svg>
-                                <span>Add Another Project</span>
+                                <span>Add Another Question / Project</span>
                             </button>
-                            <span class="muted" style="font-size: 12.5px;">You can register multiple projects under different tracks.</span>
+                            <span class="muted" style="font-size: 12.5px;">Each selected arena allows multiple project questions / problem submissions.</span>
                         </div>
 
                         <div class="step-nav-bar">

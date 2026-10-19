@@ -5863,6 +5863,163 @@ textarea.is-invalid ~ .field-error-msg {
     }
 }
 
+/* ========================================================================== */
+/* DEDICATED ARENA SUBMISSION SECTIONS & MULTI-QUESTION BUILDER              */
+/* ========================================================================== */
+
+.tv-arena-form-section {
+    background: #ffffff;
+    border: 1.5px solid var(--color-border-subtle);
+    border-top: 4px solid var(--color-crimson);
+    border-radius: 12px;
+    margin-top: 24px;
+    margin-bottom: 24px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    animation: tvSectionFadeIn 0.25s ease-out;
+}
+
+@keyframes tvSectionFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tv-arena-form-section:hover {
+    border-color: var(--color-border-default);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+}
+
+.tv-arena-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+    border-bottom: 1.5px solid var(--color-bg-subtle);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.tv-arena-section-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.tv-arena-section-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--color-crimson-light);
+    border: 1px solid var(--color-crimson-border);
+    color: var(--color-crimson);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.tv-arena-section-title {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--color-text-primary);
+    line-height: 1.2;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.tv-arena-section-desc {
+    margin: 3px 0 0 0;
+    font-size: 13px;
+    color: var(--color-text-muted);
+}
+
+.tv-arena-questions-count-badge {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 6px;
+    background: var(--color-bg-subtle);
+    border: 1px solid var(--color-border-subtle);
+    color: var(--color-text-primary);
+}
+
+.arena-entries-container {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.arena-entries-container .project-card {
+    margin-top: 0;
+    background: #ffffff;
+    border: 1px solid var(--color-border-subtle);
+    border-left: 3.5px solid var(--color-crimson);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+.arena-entries-container .project-card:hover {
+    border-color: var(--color-border-default);
+    border-left-color: var(--color-crimson);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+}
+
+.arena-section-actions {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--color-border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.add-arena-question-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-crimson);
+    background: var(--color-crimson-light);
+    border: 1px solid var(--color-crimson-border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.add-arena-question-btn:hover {
+    background: var(--color-crimson);
+    color: #ffffff !important;
+    border-color: var(--color-crimson);
+    box-shadow: 0 2px 8px rgba(158, 28, 20, 0.25);
+}
+
+.empty-arenas-notice {
+    text-align: center;
+    padding: 44px 20px;
+    background: var(--color-bg-subtle);
+    border: 2px dashed var(--color-border-subtle);
+    border-radius: 12px;
+    margin-top: 16px;
+}
+
 @media print {
     .site-header, .mobile-nav-drawer, .flow-nav-wrapper, header.navbar, .actions, .portal-search-card, .pending-banner, .back-nav-bar, .tv-portal-banner, .tv-hero-actions, .tv-dash-action-deck, .tv-copy-btn, .tv-github-copy-btn, footer {
         display: none !important;
