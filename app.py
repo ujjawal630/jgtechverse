@@ -1012,7 +1012,7 @@ STATUSES = ["Pending", "Approved", "Rejected"]
 # First-time admin account. It is created only when the users table is empty.
 # Set ADMIN_PASSWORD in environment variables or .env file.
 DEFAULT_ADMIN_USERNAME = "admin"
-DEFAULT_ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
+DEFAULT_ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "TechVerse@2026")
 
 
 def load_secret_key():
@@ -1060,14 +1060,24 @@ def init_users():
             )
         """)
 
-        total = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
-        if total == 0:
-            conn.execute(
-                "INSERT INTO users (username, password_hash, role, arenas) "
-                "VALUES (?, ?, 'admin', '')",
-                (DEFAULT_ADMIN_USERNAME,
-                 generate_password_hash(DEFAULT_ADMIN_PASSWORD))
-            )
+        # Keep default administrative accounts synchronized with configured password
+        admin_accounts = [
+            (DEFAULT_ADMIN_USERNAME, "admin"),
+            ("techverse_admin", "admin")
+        ]
+        for uname, role in admin_accounts:
+            existing = conn.execute("SELECT id FROM users WHERE username = ?", (uname,)).fetchone()
+            if not existing:
+                conn.execute(
+                    "INSERT INTO users (username, password_hash, role, arenas) "
+                    "VALUES (?, ?, ?, '')",
+                    (uname, generate_password_hash(DEFAULT_ADMIN_PASSWORD), role)
+                )
+            else:
+                conn.execute(
+                    "UPDATE users SET password_hash = ? WHERE username = ?",
+                    (generate_password_hash(DEFAULT_ADMIN_PASSWORD), uname)
+                )
         conn.commit()
     finally:
         conn.close()
