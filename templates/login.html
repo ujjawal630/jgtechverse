@@ -417,6 +417,10 @@
             <div class="login-card-header">
                 <h2 class="login-card-title">Authorized Sign In</h2>
                 <p class="login-card-subtitle">Enter your assigned administrative or judging credentials.</p>
+                <div style="margin-top: 10px; font-size: 13px; color: #1e293b; background: #f1f5f9; border-radius: 6px; padding: 7px 12px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 6px;">
+                    <span style="font-size: 14px;">🔑</span>
+                    <span>Admin ID: <strong>admin</strong> &nbsp;|&nbsp; Pass: <strong>admin123</strong></span>
+                </div>
             </div>
 
             {% if error %}
@@ -447,7 +451,7 @@
                                id="usernameInput"
                                name="username"
                                class="form-input"
-                               placeholder="Enter your username"
+                               placeholder="admin"
                                autocomplete="username"
                                autocapitalize="none"
                                autocorrect="off"
@@ -471,7 +475,7 @@
                                id="passwordInput"
                                name="password"
                                class="form-input"
-                               placeholder="Enter your password"
+                               placeholder="admin123"
                                autocomplete="current-password"
                                autocapitalize="none"
                                autocorrect="off"
