@@ -3,110 +3,389 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ team.registration_code }} | TechVerse Admin</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='team-registration.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <title>{{ team.team_name }} ({{ team.registration_code }}) | TechVerse Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='team-registration.css') }}?v=9.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}?v=9.0">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
-<body>
+<body class="admin-body">
 {% set active_tab = 'admin' %}
 {% include '_header.html' %}
 
-<main class="container">
+<main class="container admin-container" id="main-content">
     {% include '_admin_nav.html' %}
 
-    <a class="back" href="{{ url_for('admin_home') }}">← Back to all teams</a>
+    <!-- Breadcrumb -->
+    <div class="admin-breadcrumb-bar">
+        <a class="admin-back-btn back" href="{{ url_for('admin_home') }}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Back to all teams</span>
+        </a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current">{{ team.registration_code }}</span>
+    </div>
 
-    <section class="hero">
-        <div>
-            <p class="eyebrow">{{ team.registration_code }}</p>
-            <h1>{{ team.team_name }}</h1>
-            <p>Team No: {{ team.team_number }} · Registered: {{ team.created_at }}</p>
-            <p>Total photos: {{ total_photos }}</p>
-            <div style="margin-top: 10px;">
+    <!-- Executive Team Profile Header -->
+    <header class="admin-profile-hero hero" role="region" aria-label="Team Header and Status">
+        <div class="admin-profile-hero-content">
+            <div class="admin-hero-eyebrow-row">
+                <div class="code-pill code-pill-lg">
+                    <code>{{ team.registration_code }}</code>
+                </div>
+                <span class="badge {{ team.status|lower }}">
+                    <span class="status-indicator-dot" aria-hidden="true"></span>
+                    {{ team.status }}
+                </span>
+                <span class="admin-meta-pill">
+                    Team No: <strong>{{ team.team_number or 'Unassigned' }}</strong>
+                </span>
+            </div>
+
+            <h1 class="admin-profile-title">{{ team.team_name }}</h1>
+
+            <div class="admin-hero-meta-strip">
+                <span class="meta-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <span>{{ team.college_name or 'JG University' }}{% if team.college_city %}, {{ team.college_city }}{% endif %}</span>
+                </span>
+                <span class="meta-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>Registered {{ team.created_at }}</span>
+                </span>
+                <span class="meta-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <span>{{ total_photos }} Evidence Photo{{ 's' if total_photos != 1 else '' }}</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Status Controller & Credential Actions -->
+        <div class="admin-hero-actions-deck">
+            <form method="post" action="{{ url_for('admin_update_status', team_id=team.id) }}" class="admin-status-control-form status-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label for="heroStatusSelect" class="status-control-label">Update Qualification Status</label>
+                <div class="status-control-group">
+                    <select id="heroStatusSelect" name="status" class="admin-select" required>
+                        {% for s in statuses %}
+                        <option value="{{ s }}" {{ 'selected' if s == team.status }}>{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                    <button class="admin-btn admin-btn-primary outline-btn" type="submit">
+                        <span>Save Status</span>
+                    </button>
+                </div>
+            </form>
+
+            <div class="hero-id-card-action">
                 {% if team.status == 'Approved' %}
                 <a href="{{ url_for('team_id_card', registration_code=team.registration_code) }}"
                    target="_blank"
-                   class="outline-btn card-btn"
-                   style="padding: 7px 14px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 13px;">
-                    🪪 View / Print Team ID Card
+                   class="admin-btn admin-btn-gold card-btn outline-btn"
+                   title="Generate and Print Official Event Credential ID Card">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                        <circle cx="9" cy="10" r="2"></circle>
+                        <line x1="15" y1="8" x2="17" y2="8"></line>
+                        <line x1="15" y1="12" x2="17" y2="12"></line>
+                        <line x1="7" y1="16" x2="17" y2="16"></line>
+                    </svg>
+                    <span>View / Print Team ID Card</span>
                 </a>
                 {% else %}
-                <span class="muted" style="font-size: 12px;">(Official ID card available upon approval)</span>
+                <div class="id-card-pending-notice muted">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span>Official ID Card unlocks once status is <strong>Approved</strong></span>
+                </div>
                 {% endif %}
             </div>
         </div>
-        <form method="post" action="{{ url_for('admin_update_status', team_id=team.id) }}" class="status-form">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <select name="status">
-                {% for s in statuses %}
-                <option value="{{ s }}" {{ 'selected' if s == team.status }}>{{ s }}</option>
-                {% endfor %}
-            </select>
-            <button class="outline-btn" type="submit">Update</button>
-        </form>
-    </section>
+    </header>
 
-    <section class="card">
-        <div class="section-heading"><span class="number">01</span>
-            <div><h2>Leader</h2></div></div>
-        <div class="grid detail-grid">
-            <div><b>Name</b><br>{{ team.leader_name }}</div>
-            <div><b>Email</b><br>{{ team.leader_email }}</div>
-            <div><b>Phone</b><br>{{ team.leader_phone }}</div>
-            <div><b>College / Affiliation</b><br>{{ team.college_name or 'JG University' }}{% if team.college_city %}, {{ team.college_city }}{% endif %}{% if team.college_dept %} ({{ team.college_dept }}){% endif %}</div>
+    <!-- SECTION 1: Team Leader & Institutional Profile -->
+    <section class="admin-card card">
+        <div class="admin-card-header section-heading">
+            <span class="section-indicator-num number">01</span>
+            <div>
+                <h2 class="admin-card-title">Team Leader &amp; Institutional Affiliation</h2>
+                <p class="admin-card-subtitle">Primary authorized contact and collegiate academic profile.</p>
+            </div>
+        </div>
+
+        <div class="admin-detail-matrix detail-grid">
+            <div class="matrix-item">
+                <span class="matrix-label">Leader Full Name</span>
+                <span class="matrix-value leader-name-val">{{ team.leader_name }}</span>
+            </div>
+            <div class="matrix-item">
+                <span class="matrix-label">Primary Email</span>
+                <span class="matrix-value"><code>{{ team.leader_email }}</code></span>
+            </div>
+            <div class="matrix-item">
+                <span class="matrix-label">Contact Phone</span>
+                <span class="matrix-value"><code>{{ team.leader_phone }}</code></span>
+            </div>
+            <div class="matrix-item">
+                <span class="matrix-label">Academic Cohort</span>
+                <span class="matrix-value">
+                    {% if team.leader_section %}Section <strong>{{ team.leader_section }}</strong>{% endif %}
+                    {% if team.leader_year %} · Year <strong>{{ team.leader_year }}</strong>{% endif %}
+                    {% if not team.leader_section and not team.leader_year %}<span class="muted">Not specified</span>{% endif %}
+                </span>
+            </div>
+            <div class="matrix-item matrix-span-2">
+                <span class="matrix-label">Institutional Affiliation &amp; Department</span>
+                <span class="matrix-value">
+                    {{ team.college_name or 'JG University' }}
+                    {% if team.college_city %}, {{ team.college_city }}{% endif %}
+                    {% if team.college_dept %} — <em>{{ team.college_dept }}</em>{% endif %}
+                </span>
+            </div>
         </div>
     </section>
 
-    <section class="card">
-        <div class="section-heading"><span class="number">02</span>
-            <div><h2>Members ({{ members|length }})</h2></div></div>
-        <div class="table-wrapper">
-            <table>
-                <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Section</th><th>Year</th></tr></thead>
+    <!-- SECTION 2: Complete Team Roster -->
+    <section class="admin-card card">
+        <div class="admin-card-header section-heading">
+            <span class="section-indicator-num number">02</span>
+            <div>
+                <h2 class="admin-card-title">Registered Team Members ({{ members|length }})</h2>
+                <p class="admin-card-subtitle">Authorized participants registered under this team code.</p>
+            </div>
+        </div>
+
+        <div class="table-wrapper admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 60px;">#</th>
+                        <th scope="col">Member Name</th>
+                        <th scope="col">Email Address</th>
+                        <th scope="col">Academic Section</th>
+                        <th scope="col">Year of Study</th>
+                    </tr>
+                </thead>
                 <tbody>
                 {% for m in members %}
-                <tr><td>{{ loop.index }}</td><td>{{ m.name }}</td><td>{{ m.email }}</td>
-                    <td>{{ m.section }}</td><td>Year {{ m.year }}</td></tr>
+                    <tr class="admin-row">
+                        <td><span class="row-num-pill">{{ loop.index }}</span></td>
+                        <td><strong>{{ m.name }}</strong></td>
+                        <td><code>{{ m.email }}</code></td>
+                        <td><span class="academic-chip">Section {{ m.section or 'N/A' }}</span></td>
+                        <td><span class="academic-chip">Year {{ m.year or 'N/A' }}</span></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="empty-table-cell muted">No additional team members registered.</td>
+                    </tr>
                 {% endfor %}
                 </tbody>
             </table>
         </div>
     </section>
 
+    <!-- SECTION 3+: Projects by Arena Track -->
     {% for a in arenas %}
-    <section class="card">
-        <div class="section-heading"><span class="number">{{ '%02d' % (loop.index + 2) }}</span>
-            <div><h2>{{ a.arena_name }}</h2></div></div>
+    <section class="admin-card card project-card-block">
+        <div class="admin-card-header section-heading">
+            <span class="section-indicator-num number">{{ '%02d' % (loop.index + 2) }}</span>
+            <div class="project-header-text">
+                <div class="project-arena-strip">
+                    <span class="arena-tag-badge {{ a.arena_name }}">
+                        Arena Track: {{ a.arena_name }}
+                    </span>
+                    {% if a.title %}
+                    <h2 class="project-title-h2">{{ a.title }}</h2>
+                    {% else %}
+                    <h2 class="project-title-h2">{{ a.arena_name }} Project</h2>
+                    {% endif %}
+                </div>
+                <p class="admin-card-subtitle">Detailed engineering submission and technical problem statement.</p>
+            </div>
+        </div>
 
-        <h3>Problem Statement</h3>
-        <p class="prewrap">{{ a.problem_statement }}</p>
+        {% if a.flagged_for_review %}
+        <div class="admin-review-flag-box" role="alert">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <div>
+                <strong>Flagged for Review:</strong>
+                <span>{{ a.review_notes or 'Submission requires manual administrative verification.' }}</span>
+            </div>
+        </div>
+        {% endif %}
 
-        <h3>Proposed Solution</h3>
-        <p class="prewrap">{{ a.proposed_solution }}</p>
+        <!-- Problem Statement -->
+        <div class="project-statement-block">
+            <h3 class="technical-subheading">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span>Problem Statement</span>
+            </h3>
+            <p class="prewrap statement-text">{{ a.problem_statement }}</p>
+        </div>
 
-        <h3>GitHub</h3>
-        {% if a.github_link %}
-        <p><a href="{{ a.github_link }}" target="_blank" rel="noopener noreferrer">{{ a.github_link }}</a></p>
-        {% else %}<p class="muted">Not provided</p>{% endif %}
+        <!-- Proposed Solution -->
+        <div class="project-statement-block">
+            <h3 class="technical-subheading">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Proposed Solution &amp; Engineering Architecture</span>
+            </h3>
+            <p class="prewrap statement-text">{{ a.proposed_solution }}</p>
+        </div>
 
-        <h3>Evidence Photos ({{ photos.get(a.arena_name, [])|length }})</h3>
-        <div class="photo-grid">
-            {% for p in photos.get(a.arena_name, []) %}
-                {% if p.exists %}
-                <a href="{{ url_for('admin_file', stored_name=p.stored_name) }}" target="_blank">
-                    <img src="{{ url_for('admin_file', stored_name=p.stored_name) }}"
-                         alt="{{ p.original_name }}" loading="lazy">
-                    <small>{{ p.original_name }}</small>
+        <!-- GitHub Repository URL -->
+        <div class="project-github-block">
+            <h3 class="technical-subheading">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+                <span>Validated GitHub Repository</span>
+            </h3>
+
+            {% if a.github_link %}
+            <div class="repo-display-card">
+                <svg class="github-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                </svg>
+                <a href="{{ a.github_link }}" target="_blank" rel="noopener noreferrer" class="repo-url-link">
+                    {{ a.github_link }}
                 </a>
-                {% else %}
-                <div class="missing">⚠ File missing on disk<br><small>{{ p.stored_name }}</small></div>
-                {% endif %}
+                <button type="button" class="admin-copy-repo-btn copy-repo-btn" data-clipboard="{{ a.github_link }}" title="Copy repository URL" aria-label="Copy repository link">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                </button>
+            </div>
             {% else %}
-            <p class="muted">No photos found.</p>
-            {% endfor %}
+            <p class="muted no-repo-text">No GitHub repository link submitted.</p>
+            {% endif %}
+        </div>
+
+        <!-- Editable Project Drawer -->
+        <details class="admin-project-edit-drawer">
+            <summary class="edit-drawer-summary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 20h9"></path>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <span>Edit Project Details &amp; Repository Link</span>
+            </summary>
+
+            <form method="post" action="{{ url_for('admin_edit_project', team_id=team.id, project_id=a.id) }}" class="admin-edit-project-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-row">
+                    <label class="admin-form-label" for="proj_title_{{ a.id }}">
+                        <span>Project Title</span>
+                        <input type="text" id="proj_title_{{ a.id }}" name="title" value="{{ a.title or '' }}" placeholder="Project Title" class="admin-form-input">
+                    </label>
+                </div>
+
+                <div class="form-row">
+                    <label class="admin-form-label" for="proj_prob_{{ a.id }}">
+                        <span>Problem Statement</span>
+                        <textarea id="proj_prob_{{ a.id }}" name="problem_statement" rows="3" class="admin-form-textarea">{{ a.problem_statement }}</textarea>
+                    </label>
+                </div>
+
+                <div class="form-row">
+                    <label class="admin-form-label" for="proj_sol_{{ a.id }}">
+                        <span>Proposed Solution</span>
+                        <textarea id="proj_sol_{{ a.id }}" name="proposed_solution" rows="3" class="admin-form-textarea">{{ a.proposed_solution }}</textarea>
+                    </label>
+                </div>
+
+                <div class="form-row">
+                    <label class="admin-form-label" for="proj_gh_{{ a.id }}">
+                        <span>GitHub Repository URL</span>
+                        <input type="url" id="proj_gh_{{ a.id }}" name="github_link" value="{{ a.github_link or '' }}" placeholder="https://github.com/owner/repository" class="admin-form-input">
+                        <small class="field-hint">Leave blank or unchanged to preserve the existing repository link.</small>
+                    </label>
+                </div>
+
+                <div class="form-actions-row">
+                    <button type="submit" class="admin-btn admin-btn-primary outline-btn">
+                        <span>Save Project Changes</span>
+                    </button>
+                </div>
+            </form>
+        </details>
+
+        <!-- Evidence Photos Gallery -->
+        {% set proj_photos = photos.get(a.id, photos.get(a.arena_name, [])) %}
+        <div class="project-evidence-section">
+            <h3 class="technical-subheading">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <span>Evidence Photos &amp; Architectural Diagrams ({{ proj_photos|length }})</span>
+            </h3>
+
+            <div class="admin-photo-grid photo-grid">
+                {% for p in proj_photos %}
+                    {% if p.exists %}
+                    <a href="{{ url_for('admin_file', stored_name=p.stored_name) }}" target="_blank" rel="noopener noreferrer" class="admin-photo-card" title="Click to inspect original image">
+                        <div class="photo-img-wrap">
+                            <img src="{{ url_for('admin_file', stored_name=p.stored_name) }}"
+                                 alt="{{ p.original_name }}"
+                                 loading="lazy">
+                        </div>
+                        <div class="photo-meta">
+                            <span class="photo-filename">{{ p.original_name }}</span>
+                            <span class="photo-inspect-tag">Inspect ↗</span>
+                        </div>
+                    </a>
+                    {% else %}
+                    <div class="admin-photo-missing missing" role="alert">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span>File Missing on Disk<br><small><code>{{ p.stored_name }}</code></small></span>
+                    </div>
+                    {% endif %}
+                {% else %}
+                <div class="admin-empty-photos muted">
+                    <p>No architectural evidence photos uploaded for this track.</p>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </section>
     {% endfor %}
 </main>
+
+{% include '_footer.html' %}
 </body>
 </html>

@@ -1,0 +1,560 @@
+/* ==========================================================================
+   JG TECHVERSE 2026 — MOTION DESIGN SYSTEM & INTERACTION TOKENS
+   Stage 7: Production-Grade Motion, Microinteractions & Accessibility
+   ========================================================================== */
+
+:root {
+    /* Timing & Duration Tokens */
+    --tv-duration-instant: 100ms;
+    --tv-duration-fast: 180ms;
+    --tv-duration-base: 280ms;
+    --tv-duration-medium: 420ms;
+    --tv-duration-slow: 650ms;
+    --tv-duration-epic: 900ms;
+
+    /* Easing Tokens */
+    --tv-ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+    --tv-ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --tv-ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --tv-ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+    --tv-ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    /* Elevation Shadows for Interactive Elements */
+    --tv-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    --tv-shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+    --tv-shadow-lg: 0 12px 28px -4px rgba(0, 0, 0, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.04);
+    --tv-shadow-crimson-glow: 0 6px 20px -4px rgba(158, 28, 20, 0.25);
+    --tv-shadow-gold-glow: 0 6px 20px -4px rgba(212, 175, 55, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   0. Scroll Progress Indicator (Global Top Bar)
+   -------------------------------------------------------------------------- */
+.tv-scroll-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #9e1c14 0%, #d4af37 50%, #9e1c14 100%);
+    background-size: 200% 100%;
+    transform-origin: 0% 50%;
+    transform: scaleX(0);
+    z-index: 99999;
+    pointer-events: none;
+    transition: opacity var(--tv-duration-fast) ease;
+}
+
+/* --------------------------------------------------------------------------
+   1. Progressive Enhancement & Initial State Protection
+   Ensure all content is 100% visible by default if JS/GSAP is disabled
+   -------------------------------------------------------------------------- */
+.tv-hero-content,
+.tv-focal-monolith,
+.tv-section-header,
+.tv-arena-card,
+.tv-metric-card,
+.tv-step-card,
+.multi-project-card {
+    opacity: 1;
+    transform: none;
+}
+
+/* When JS motion system initializes, subtle classes can be applied */
+html.js-motion-ready .tv-reveal-pending {
+    opacity: 0;
+    will-change: transform, opacity;
+}
+
+/* --------------------------------------------------------------------------
+   2. Buttons & Interactive Controls Microinteractions
+   -------------------------------------------------------------------------- */
+.tv-hero-cta-btn,
+.tv-hero-secondary-btn,
+.submit-btn,
+.step-next-btn,
+.step-prev-btn,
+.btn-primary-card,
+.btn-secondary-card,
+.tv-banner-btn-primary,
+.tv-banner-btn-secondary {
+    position: relative;
+    transition: transform var(--tv-duration-fast) var(--tv-ease-out-expo),
+                box-shadow var(--tv-duration-fast) var(--tv-ease-smooth),
+                background-color var(--tv-duration-fast) var(--tv-ease-smooth),
+                border-color var(--tv-duration-fast) var(--tv-ease-smooth),
+                color var(--tv-duration-fast) var(--tv-ease-smooth) !important;
+    will-change: transform, box-shadow;
+}
+
+.tv-hero-cta-btn:hover,
+.submit-btn:hover,
+.btn-primary-card:hover,
+.tv-banner-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--tv-shadow-crimson-glow), var(--tv-shadow-md);
+}
+
+.tv-hero-cta-btn:active,
+.submit-btn:active,
+.btn-primary-card:active,
+.tv-banner-btn-primary:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: var(--tv-shadow-sm);
+}
+
+/* Subtle SVG icon slide on button hover */
+.tv-hero-cta-btn svg,
+.btn-primary-card svg,
+.tv-banner-btn-primary svg,
+.step-next-btn svg {
+    transition: transform var(--tv-duration-fast) var(--tv-ease-out-back);
+}
+
+.tv-hero-cta-btn:hover svg,
+.btn-primary-card:hover svg,
+.tv-banner-btn-primary:hover svg,
+.step-next-btn:hover svg {
+    transform: translateX(3px);
+}
+
+.step-prev-btn svg {
+    transition: transform var(--tv-duration-fast) var(--tv-ease-out-back);
+}
+.step-prev-btn:hover svg {
+    transform: translateX(-3px);
+}
+
+/* Focus Treatment */
+.tv-hero-cta-btn:focus-visible,
+.tv-hero-secondary-btn:focus-visible,
+.submit-btn:focus-visible,
+.btn-primary-card:focus-visible,
+.nav-tab-link:focus-visible {
+    outline: 2px solid #9e1c14 !important;
+    outline-offset: 3px !important;
+}
+
+/* --------------------------------------------------------------------------
+   3. Arena Track Cards Microinteractions
+   -------------------------------------------------------------------------- */
+.tv-arena-card {
+    transition: transform var(--tv-duration-medium) var(--tv-ease-out-expo),
+                box-shadow var(--tv-duration-medium) var(--tv-ease-out-expo),
+                border-color var(--tv-duration-base) var(--tv-ease-smooth),
+                background-color var(--tv-duration-base) var(--tv-ease-smooth) !important;
+    will-change: transform, box-shadow;
+}
+
+.tv-arena-card:hover {
+    transform: translateY(-6px);
+}
+
+.tv-arena-card.crimson-track:hover {
+    border-color: rgba(158, 28, 20, 0.45);
+    box-shadow: 0 14px 28px -6px rgba(158, 28, 20, 0.16), 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.tv-arena-card.gold-track:hover {
+    border-color: rgba(212, 175, 55, 0.55);
+    box-shadow: 0 14px 28px -6px rgba(212, 175, 55, 0.18), 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.tv-arena-card-icon {
+    transition: transform var(--tv-duration-base) var(--tv-ease-out-back),
+                background-color var(--tv-duration-base) var(--tv-ease-smooth);
+}
+
+.tv-arena-card:hover .tv-arena-card-icon {
+    transform: translateY(-2px) scale(1.08);
+}
+
+.tv-arena-card-action {
+    transition: transform var(--tv-duration-fast) var(--tv-ease-out-back),
+                color var(--tv-duration-fast) var(--tv-ease-smooth);
+}
+
+.tv-arena-card:hover .tv-arena-card-action {
+    transform: translateX(4px);
+}
+
+/* --------------------------------------------------------------------------
+   4. Metric Cards & Quick Links
+   -------------------------------------------------------------------------- */
+.tv-metric-card {
+    transition: transform var(--tv-duration-base) var(--tv-ease-out-expo),
+                box-shadow var(--tv-duration-base) var(--tv-ease-smooth),
+                border-color var(--tv-duration-base) var(--tv-ease-smooth) !important;
+}
+
+.tv-metric-card:hover {
+    transform: translateY(-3px);
+    border-color: #9e1c14;
+    box-shadow: var(--tv-shadow-md);
+}
+
+.tv-quick-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: color var(--tv-duration-fast) ease,
+                transform var(--tv-duration-fast) ease;
+}
+
+.tv-quick-link:hover {
+    color: #9e1c14 !important;
+    transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   5. Hero Focal Monolith Animation & Continuous Circuit Motion
+   -------------------------------------------------------------------------- */
+.tv-focal-monolith {
+    transition: box-shadow var(--tv-duration-slow) var(--tv-ease-smooth),
+                border-color var(--tv-duration-slow) var(--tv-ease-smooth);
+}
+
+.tv-focal-monolith:hover {
+    border-color: rgba(212, 175, 55, 0.4);
+    box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.1), var(--tv-shadow-gold-glow);
+}
+
+/* Continuous SVG Circuit Ambient Rotation */
+@keyframes tvCircuitSpin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.tv-circuit-svg {
+    animation: tvCircuitSpin 90s linear infinite;
+    transform-origin: center center;
+    will-change: transform;
+}
+
+/* Brain Logo Floating Ambient Motion */
+@keyframes tvBrainFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-4px);
+    }
+}
+
+.tv-brain-monolith-img {
+    animation: tvBrainFloat 4s ease-in-out infinite;
+    will-change: transform;
+}
+
+/* Live Status Dot Pulse */
+@keyframes tvPulseRing {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 7px rgba(34, 197, 94, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    }
+}
+
+.tv-live-dot,
+.status-live-dot {
+    animation: tvPulseRing 2.4s infinite cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+/* --------------------------------------------------------------------------
+   6. Form Steps & Dynamic Entries Transitions
+   -------------------------------------------------------------------------- */
+.tv-form-step {
+    transition: opacity var(--tv-duration-medium) var(--tv-ease-out-expo),
+                transform var(--tv-duration-medium) var(--tv-ease-out-expo);
+}
+
+.tv-stepper-bar-fill {
+    transition: width var(--tv-duration-medium) var(--tv-ease-out-back) !important;
+}
+
+.tv-stepper-pill {
+    transition: all var(--tv-duration-fast) var(--tv-ease-smooth) !important;
+}
+
+.tv-stepper-pill:hover:not(.active) {
+    transform: translateY(-1px);
+}
+
+/* Dynamically Appended Member Rows */
+@keyframes tvRowEnter {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#membersBody tr {
+    animation: tvRowEnter var(--tv-duration-base) var(--tv-ease-out-expo) forwards;
+}
+
+/* Dynamically Appended Project Cards */
+@keyframes tvCardEnter {
+    from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.985);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.multi-project-card {
+    animation: tvCardEnter var(--tv-duration-medium) var(--tv-ease-out-expo) forwards;
+}
+
+/* Error Banner Shake Feedback */
+@keyframes tvErrorShake {
+    0%, 100% { transform: translateX(0); }
+    15% { transform: translateX(-6px); }
+    30% { transform: translateX(6px); }
+    45% { transform: translateX(-4px); }
+    60% { transform: translateX(4px); }
+    75% { transform: translateX(-2px); }
+    90% { transform: translateX(2px); }
+}
+
+.tv-banner-shake {
+    animation: tvErrorShake 0.45s ease-in-out;
+}
+
+/* --------------------------------------------------------------------------
+   7. Modals & Dialog Transitions
+   -------------------------------------------------------------------------- */
+.success-modal {
+    transition: opacity var(--tv-duration-base) var(--tv-ease-smooth),
+                visibility var(--tv-duration-base) var(--tv-ease-smooth);
+}
+
+.success-modal.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.success-modal:not(.hidden) {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.success-modal-card {
+    transition: transform var(--tv-duration-medium) var(--tv-ease-out-back),
+                opacity var(--tv-duration-base) var(--tv-ease-smooth);
+}
+
+.success-modal.hidden .success-modal-card {
+    transform: scale(0.92) translateY(14px);
+    opacity: 0;
+}
+
+.success-modal:not(.hidden) .success-modal-card {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   8. FAQ Details Accordion Smooth Chevron & Focus
+   -------------------------------------------------------------------------- */
+.tv-faq-item summary {
+    cursor: pointer;
+    transition: color var(--tv-duration-fast) ease,
+                background-color var(--tv-duration-fast) ease;
+}
+
+.tv-faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.tv-faq-item summary svg.chevron,
+.tv-faq-item summary .chevron-icon {
+    transition: transform var(--tv-duration-base) var(--tv-ease-out-back);
+}
+
+.tv-faq-item[open] summary svg.chevron,
+.tv-faq-item[open] summary .chevron-icon {
+    transform: rotate(90deg);
+}
+
+/* --------------------------------------------------------------------------
+   9. Mobile Navigation Drawer Refinement
+   -------------------------------------------------------------------------- */
+.hamburger-btn {
+    transition: transform var(--tv-duration-fast) var(--tv-ease-smooth);
+}
+
+.hamburger-btn:active {
+    transform: scale(0.92);
+}
+
+.hamburger-btn .bar {
+    transition: transform var(--tv-duration-base) var(--tv-ease-out-expo),
+                opacity var(--tv-duration-base) var(--tv-ease-smooth),
+                background-color var(--tv-duration-fast) ease;
+}
+
+.hamburger-btn.is-active .bar-1 {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.hamburger-btn.is-active .bar-2 {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.hamburger-btn.is-active .bar-3 {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
+.mobile-drawer-backdrop {
+    transition: opacity var(--tv-duration-base) var(--tv-ease-smooth);
+}
+
+.mobile-nav-drawer {
+    transition: transform var(--tv-duration-medium) var(--tv-ease-out-expo);
+}
+
+/* --------------------------------------------------------------------------
+   10. Administrative Console Restrained Motion
+   -------------------------------------------------------------------------- */
+.admin-tab {
+    transition: all var(--tv-duration-fast) var(--tv-ease-smooth);
+}
+
+.admin-tab:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.admin-card {
+    transition: box-shadow var(--tv-duration-fast) ease,
+                border-color var(--tv-duration-fast) ease;
+}
+
+.admin-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: var(--tv-shadow-sm);
+}
+
+.admin-table tbody tr {
+    transition: background-color var(--tv-duration-fast) ease;
+}
+
+.admin-table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Copy Link Toast / Badge animation */
+@keyframes tvCopiedBadge {
+    0% {
+        transform: scale(0.85);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.08);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.tv-copied-active {
+    animation: tvCopiedBadge 0.3s var(--tv-ease-out-back) forwards;
+}
+
+/* --------------------------------------------------------------------------
+   11. Luminous Content Reveal Highlight Animation
+   -------------------------------------------------------------------------- */
+@keyframes tvRevealHighlight {
+    0% {
+        box-shadow: 0 0 0 0 rgba(158, 28, 20, 0.45);
+        outline: 2px solid transparent;
+    }
+    35% {
+        box-shadow: 0 0 0 10px rgba(158, 28, 20, 0.16), 0 16px 36px rgba(158, 28, 20, 0.14);
+        outline: 2px solid rgba(158, 28, 20, 0.55);
+        outline-offset: 4px;
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(158, 28, 20, 0);
+        outline: 2px solid transparent;
+        outline-offset: 0;
+    }
+}
+
+.tv-reveal-highlight {
+    animation: tvRevealHighlight 1.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+/* Global smooth scrolling */
+html {
+    scroll-behavior: smooth !important;
+    scroll-padding-top: 86px;
+}
+
+/* --------------------------------------------------------------------------
+   12. ACCESSIBILITY: PREFERS-REDUCED-MOTION OVERRIDES (WCAG 2.2 AA)
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto !important;
+    }
+
+    *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .tv-scroll-progress-bar {
+        display: none !important;
+    }
+
+    .tv-circuit-svg,
+    .tv-brain-monolith-img,
+    .tv-live-dot,
+    .status-live-dot,
+    .tv-banner-shake,
+    .tv-reveal-highlight {
+        animation: none !important;
+    }
+
+    .tv-arena-card:hover,
+    .tv-metric-card:hover,
+    .tv-hero-cta-btn:hover,
+    .submit-btn:hover {
+        transform: none !important;
+    }
+
+    .success-modal-card {
+        transform: none !important;
+    }
+
+    html.js-motion-ready .tv-reveal-pending {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}

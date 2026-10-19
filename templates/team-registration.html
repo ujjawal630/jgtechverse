@@ -7,13 +7,189 @@
 
     <title>TechVerse 2026 | Team Registration</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=JetBrains+Mono:wght@500;600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
     <link
         rel="stylesheet"
-        href="{{ url_for('static', filename='team-registration.css') }}"
+        href="{{ url_for('static', filename='team-registration.css') }}?v=9.1"
     >
 
+    <style>
+        /* Critical Hero & Monolith styles for instantaneous high-fidelity rendering */
+        .tv-editorial-hero {
+            display: grid;
+            grid-template-columns: 1.18fr 0.82fr;
+            gap: 40px;
+            align-items: center;
+            padding: 36px 0 52px;
+        }
+        @media (max-width: 991px) {
+            .tv-editorial-hero {
+                grid-template-columns: 1fr;
+                gap: 32px;
+                padding: 24px 0 40px;
+            }
+        }
+        .tv-hero-title {
+            font-family: var(--font-heading, 'Archivo', sans-serif);
+            font-size: clamp(34px, 4.6vw, 58px);
+            font-weight: 800;
+            line-height: 1.06;
+            letter-spacing: -0.02em;
+            color: #171717;
+            margin: 0 0 16px 0;
+        }
+        .tv-hero-title .tv-title-crimson { color: #9e1c14; }
+        .tv-hero-tagline {
+            font-family: var(--font-body, 'Source Sans 3', sans-serif);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #525252;
+            margin-bottom: 14px;
+        }
+        .tv-hero-lead {
+            font-family: var(--font-body, 'Source Sans 3', sans-serif);
+            font-size: 16.5px;
+            font-weight: 400;
+            line-height: 1.65;
+            color: #374151;
+            max-width: 580px;
+            margin: 0 0 24px 0;
+        }
+        .tv-hero-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 28px;
+            max-width: 600px;
+        }
+        @media (max-width: 640px) {
+            .tv-hero-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .tv-metric-card {
+            background: #ffffff;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            padding: 10px 12px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        .tv-metric-value {
+            font-family: var(--font-heading, 'Archivo', sans-serif);
+            font-size: 21px;
+            font-weight: 700;
+            color: #9e1c14;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .tv-metric-label {
+            font-family: var(--font-body, 'Source Sans 3', sans-serif);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #4b5563;
+            line-height: 1.25;
+        }
+        .tv-hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .tv-hero-cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #9e1c14;
+            color: #ffffff !important;
+            border-radius: 6px;
+            font-family: var(--font-body, 'Source Sans 3', sans-serif);
+            font-size: 14.5px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(158, 28, 20, 0.25);
+        }
+        .tv-hero-secondary-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: #ffffff;
+            color: #171717 !important;
+            border: 1px solid #d4d4d4;
+            border-radius: 6px;
+            font-family: var(--font-body, 'Source Sans 3', sans-serif);
+            font-size: 14.5px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            text-decoration: none;
+        }
+        .tv-hero-quick-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 12.5px;
+            color: #525252;
+            flex-wrap: wrap;
+        }
+        .tv-quick-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #262626;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .tv-focal-monolith {
+            background: #ffffff;
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            max-width: 460px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .tv-circuit-ring-wrap {
+            width: 140px;
+            height: 140px;
+            max-width: 140px;
+            max-height: 140px;
+            position: relative;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 14px;
+        }
+        .tv-circuit-svg {
+            position: absolute;
+            inset: 0;
+            width: 140px;
+            height: 140px;
+            max-width: 140px;
+            max-height: 140px;
+            color: #d4af37;
+        }
+        .tv-brain-monolith-img {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            position: relative;
+            z-index: 2;
+        }
+    </style>
+
     <script
-        src="{{ url_for('static', filename='team-registration.js') }}"
+        src="{{ url_for('static', filename='team-registration.js') }}?v=7.0"
         defer
     ></script>
 </head>
@@ -22,21 +198,32 @@
     {% set active_tab = 'register' %}
     {% include '_header.html' %}
 
-    <main class="container">
+    <main class="container" id="main-content">
 
         <!-- SUCCESS MODAL POPUP -->
-        <div id="registrationSuccessModal" class="success-modal hidden" role="dialog" aria-modal="true">
+        <div id="registrationSuccessModal" class="success-modal hidden" role="dialog" aria-modal="true" aria-labelledby="successModalTitle">
             <div class="success-modal-backdrop"></div>
             <div class="success-modal-card">
-                <div class="success-icon">🎉</div>
-                <h2>Registration Submitted!</h2>
+                <div class="success-icon" aria-hidden="true">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                </div>
+                <h2 id="successModalTitle">Registration Submitted!</h2>
                 <p class="success-lead">Your team details have been recorded successfully.</p>
 
                 <div class="success-code-box">
                     <span class="code-label">Your Unique Registration ID</span>
                     <div class="code-display">
                         <span id="displayRegId" class="code-value">TV26-00001</span>
-                        <button type="button" id="copyRegIdBtn" class="copy-btn">📋 Copy ID</button>
+                        <button type="button" id="copyRegIdBtn" class="copy-btn">
+                            <svg class="copy-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right: 4px; vertical-align: -2px;">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span class="copy-text">Copy ID</span>
+                        </button>
                     </div>
                 </div>
 
@@ -45,320 +232,1325 @@
                     <div class="flow-guide-step">
                         <span class="f-num">2</span>
                         <div>
-                            <strong>Admin Verification</strong>
-                            <p>Admin checks registrations and approves your team in the Admin Panel.</p>
+                            <strong>Verification &amp; Committee Review</strong>
+                            <p>Your team submission will be reviewed by the event committee for eligibility and arena track assignments.</p>
                         </div>
                     </div>
                     <div class="flow-guide-step">
                         <span class="f-num">3</span>
                         <div>
-                            <strong>Team ID Card</strong>
-                            <p>Once approved, your ID card with QR code is generated for printing / saving as PDF.</p>
+                            <strong>Official Team ID Card</strong>
+                            <p>Once approved, your ID card with QR code is generated for verification and saving as a credential.</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="success-modal-actions">
-                    <a id="viewIdCardBtn" href="#" class="btn-primary-card">🪪 View ID Card / Status →</a>
-                    <a href="{{ url_for('admin_home') }}" class="btn-secondary-admin">🔐 Go to Admin Panel</a>
+                    <a id="viewIdCardBtn" href="#" class="btn-primary-card" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                            <circle cx="9" cy="10" r="2"></circle>
+                            <line x1="15" y1="8" x2="17" y2="8"></line>
+                            <line x1="15" y1="12" x2="17" y2="12"></line>
+                            <path d="M7 16h4"></path>
+                        </svg>
+                        <span>View ID Card / Status</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </a>
+                    <a href="{{ url_for('verify_lookup') }}" class="btn-secondary-card" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <span>Check Verification</span>
+                    </a>
                     <button type="button" id="closeSuccessModal" class="btn-text">Register Another Team</button>
                 </div>
             </div>
         </div>
 
-        <section class="hero">
-            <div>
-                <p class="eyebrow">TECHVERSE 2026</p>
-                <h1>Team Registration</h1>
-                <p>
-                    Register your team, select your arenas and submit
-                    your project details.
+        <!-- 1. EDITORIAL CONFERENCE HERO -->
+        <section class="tv-editorial-hero" id="hero">
+            <div class="tv-hero-content">
+                <div class="tv-live-pill">
+                    <span class="tv-live-dot"></span>
+                    <span>JG University · In Collaboration with Coding Pro</span>
+                </div>
+
+                <div class="tv-hero-tagline">INNOVATE · BUILD · TRANSFORM</div>
+
+                <h1 class="tv-hero-title">
+                    TECHVERSE <span class="tv-title-crimson">2026</span>
+                </h1>
+
+                <p class="tv-hero-lead">
+                    The flagship inter-collegiate technology symposium and challenge arena. Student engineers, developers, and innovators collaborate to architect, build, and deploy high-impact solutions across six specialized technology arenas.
                 </p>
-                <p>
-                    Make sure to fill in all required details correctly.
+
+                <!-- Truthful Event Metrics Bar -->
+                <div class="tv-hero-metrics">
+                    <div class="tv-metric-card">
+                        <div class="tv-metric-value">06</div>
+                        <div class="tv-metric-label">Challenge Arenas</div>
+                    </div>
+                    <div class="tv-metric-card">
+                        <div class="tv-metric-value">1–5</div>
+                        <div class="tv-metric-label">Members / Team</div>
+                    </div>
+                    <div class="tv-metric-card">
+                        <div class="tv-metric-value">Multi</div>
+                        <div class="tv-metric-label">Project Submissions</div>
+                    </div>
+                    <div class="tv-metric-card">
+                        <div class="tv-metric-value">QR</div>
+                        <div class="tv-metric-label">Verified Credential</div>
+                    </div>
+                </div>
+
+                <!-- Action Controls -->
+                <div class="tv-hero-actions">
+                    <a href="#registration" class="tv-hero-cta-btn">
+                        <span>Register Your Team</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </a>
+                    <a href="#arenas" class="tv-hero-secondary-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                        </svg>
+                        <span>Explore 6 Arenas</span>
+                    </a>
+                </div>
+
+                <div class="tv-hero-quick-links">
+                    <span>Quick Access:</span>
+                    <a href="{{ url_for('verify_lookup') }}" class="tv-quick-link">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <span>Verify Team Status</span>
+                    </a>
+                    <span style="color: var(--color-border-default);">·</span>
+                    <a href="{{ url_for('id_card_portal') }}" class="tv-quick-link">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                            <circle cx="9" cy="10" r="2"></circle>
+                        </svg>
+                        <span>Get Team ID Card</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Asymmetric Visual Focal Point Monolith -->
+            <div class="tv-focal-monolith" aria-hidden="true">
+                <div class="tv-monolith-header">
+                    <span>COORD [23.0225° N, 72.5714° E]</span>
+                    <span class="tv-monolith-badge">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span>OFFICIAL PORTAL</span>
+                    </span>
+                </div>
+
+                <div class="tv-monolith-center">
+                    <!-- 2. Existing Circular JG Visual -->
+                    <div class="tv-circuit-ring-wrap" style="width: 120px; height: 120px; position: relative; margin: 0 auto 16px;">
+                        <svg class="tv-circuit-svg" width="120" height="120" viewBox="0 0 140 140" fill="none" stroke="currentColor" stroke-width="1.2" style="position: absolute; inset: 0; width: 100%; height: 100%;">
+                            <circle cx="70" cy="70" r="66" stroke-dasharray="4 6" opacity="0.4"></circle>
+                            <circle cx="70" cy="70" r="54" stroke-dasharray="8 4" opacity="0.6"></circle>
+                            <circle cx="70" cy="70" r="42" opacity="0.25"></circle>
+                            <line x1="70" y1="4" x2="70" y2="18"></line>
+                            <line x1="70" y1="122" x2="70" y2="136"></line>
+                            <line x1="4" y1="70" x2="18" y2="70"></line>
+                            <line x1="122" y1="70" x2="136" y2="70"></line>
+                        </svg>
+                        <img
+                            class="tv-brain-monolith-img"
+                            src="{{ url_for('static', filename='jgbrainlogo.png') }}"
+                            alt="JG Visual"
+                            width="60"
+                            height="60"
+                            style="width: 60px; height: 60px; object-fit: contain; position: relative; z-index: 2;"
+                        >
+                    </div>
+
+                    <!-- 3. Horizontally Aligned Co-Branding Row: [ JG UNIVERSITY LOGO ] × [ CODING PRO LOGO ] -->
+                    <div class="tv-brand-lockup-row" role="img" aria-label="JG University and Coding Pro Partnership">
+                        <img
+                            src="{{ url_for('static', filename='jglogo.png') }}"
+                            alt="JG University Logo"
+                            class="tv-brand-logo tv-brand-jg"
+                            width="135"
+                            height="32"
+                        >
+                        <span class="tv-brand-lockup-sep" aria-hidden="true">&times;</span>
+                        <img
+                            src="{{ url_for('static', filename='codingpro_logo.png') }}"
+                            alt="Coding Pro Logo"
+                            class="tv-brand-logo tv-brand-codingpro"
+                            width="118"
+                            height="32"
+                        >
+                    </div>
+
+                    <!-- 4. TechVerse 2026 Innovation Stage Tagline -->
+                    <div class="tv-monolith-subtitle">TechVerse 2026 Innovation Stage</div>
+                </div>
+
+                <div class="tv-arena-mini-ticker">
+                    <div class="tv-mini-track">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line></svg>
+                        <span>Buddhi</span>
+                    </div>
+                    <div class="tv-mini-track">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="9" y1="18" x2="15" y2="18"></line><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>
+                        <span>Fiontar</span>
+                    </div>
+                    <div class="tv-mini-track">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle></svg>
+                        <span>Talos</span>
+                    </div>
+                    <div class="tv-mini-track">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="2" x2="12" y2="6"></line></svg>
+                        <span>Pegasus</span>
+                    </div>
+                    <div class="tv-mini-track">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                        <span>Promethia</span>
+                    </div>
+                    <div class="tv-mini-track">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 8 9 2 15 8 21 2"></polyline></svg>
+                        <span>Mercatus</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. FOUNDATION & EVENT PILLARS -->
+        <section class="tv-section" id="overview">
+            <div class="tv-section-header text-center">
+                <div class="tv-section-eyebrow">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                    </svg>
+                    <span>01 / Event Foundation</span>
+                </div>
+                <h2 class="tv-section-title">Engineered for Builders. Built for Execution.</h2>
+                <p class="tv-section-lead">
+                    TechVerse 2026 departs from conventional hackathons with an architecture engineered for rigor, multi-domain participation, and verifiable open-source execution.
                 </p>
             </div>
 
-            <img
-                class="brain-logo"
-                src="{{ url_for('static', filename='jgbrainlogo.png') }}"
-                alt="JG University Brain Logo"
-            >
+            <div class="tv-pillars-grid">
+                <div class="tv-pillar-card">
+                    <div class="tv-pillar-icon-box">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Multi-Track Participation</h3>
+                    <p>
+                        Teams are not locked into a single track. Your team can select multiple arenas and submit independent, specialized project solutions tailored to each domain's challenge statement.
+                    </p>
+                    <div class="tv-pillar-meta">INDEPENDENT SUBMISSIONS PER TRACK</div>
+                </div>
+
+                <div class="tv-pillar-card gold-accent">
+                    <div class="tv-pillar-icon-box">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path>
+                            <path d="M9 18c-4.51 2-5-2-7-2"></path>
+                        </svg>
+                    </div>
+                    <h3>Open-Source Code Rigor</h3>
+                    <p>
+                        Every submission requires a valid, accessible GitHub repository URL. Our evaluation committee and AI-assisted review tooling audit repository architecture, commit hygiene, and code quality.
+                    </p>
+                    <div class="tv-pillar-meta">MANDATORY GITHUB REPOSITORY URL</div>
+                </div>
+
+                <div class="tv-pillar-card blue-accent">
+                    <div class="tv-pillar-icon-box">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                            <circle cx="9" cy="10" r="2"></circle>
+                            <path d="M15 8h2"></path>
+                            <path d="M15 12h2"></path>
+                            <path d="M7 16h10"></path>
+                        </svg>
+                    </div>
+                    <h3>QR-Secured Credentials</h3>
+                    <p>
+                        Once approved by domain judges, each team receives an official digital credential with an encrypted QR token, enabling fast on-site verification, stage entry, and verifiable proof of participation.
+                    </p>
+                    <div class="tv-pillar-meta">INSTANT STATUS &amp; ID CARD LOOKUP</div>
+                </div>
+            </div>
         </section>
 
-        <form id="teamForm" enctype="multipart/form-data">
-
-            <!-- TEAM DETAILS -->
-            <section class="card">
-                <div class="section-heading">
-                    <span class="number">01</span>
-                    <div>
-                        <h2>Team Details</h2>
-                        <p>Enter your team and leader information.</p>
-                    </div>
+        <!-- 3. SIX CHALLENGE ARENAS SHOWCASE -->
+        <section class="tv-section" id="arenas">
+            <div class="tv-section-header">
+                <div class="tv-section-eyebrow">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span>02 / Challenge Domains</span>
                 </div>
-
-                <div class="grid">
-                    <label>
-                        Team Name *
-                        <input
-                            type="text"
-                            name="teamName"
-                            placeholder="Enter team name"
-                            maxlength="150"
-                            required
-                        >
-                    </label>
-
-                    <label>
-                        Team Number
-                        <input
-                            type="text"
-                            name="teamNumber"
-                            placeholder="If already assigned"
-                            maxlength="50"
-                        >
-                    </label>
-
-                    <label>
-                        Team Leader Name *
-                        <input
-                            type="text"
-                            name="leaderName"
-                            placeholder="Leader's full name"
-                            maxlength="150"
-                            required
-                        >
-                    </label>
-
-                    <label>
-                        Team Leader Email *
-                        <input
-                            type="email"
-                            name="leaderEmail"
-                            placeholder="leader@example.com"
-                            maxlength="254"
-                            required
-                        >
-                    </label>
-
-                    <label>
-                        Team Leader Phone *
-                        <input
-                            type="tel"
-                            name="leaderPhone"
-                            placeholder="Enter phone number"
-                            pattern="[0-9+\-\s()]{8,18}"
-                            title="Enter a valid phone number using 8–18 allowed characters."
-                            required
-                        >
-                    </label>
-                </div>
-            </section>
-
-            <!-- INSTITUTIONAL AFFILIATION -->
-            <section class="card">
-                <div class="section-heading">
-                    <span class="number">02</span>
-                    <div>
-                        <h2>Institutional Affiliation</h2>
-                        <p>Provide your college or university information for this inter-college hackathon.</p>
-                    </div>
-                </div>
-
-                <div class="grid">
-                    <label>
-                        College / University Name *
-                        <input
-                            type="text"
-                            name="collegeName"
-                            placeholder="e.g. JG University / Nirma University / IIT Gandhinagar"
-                            maxlength="200"
-                            required
-                        >
-                    </label>
-
-                    <label>
-                        Campus / City *
-                        <input
-                            type="text"
-                            name="collegeCity"
-                            placeholder="e.g. Ahmedabad, Gujarat"
-                            maxlength="100"
-                            required
-                        >
-                    </label>
-
-                    <label>
-                        Department / Branch
-                        <input
-                            type="text"
-                            name="collegeDept"
-                            placeholder="e.g. Computer Science & Engineering"
-                            maxlength="150"
-                        >
-                    </label>
-                </div>
-            </section>
-
-            <!-- TEAM MEMBERS -->
-            <section class="card">
-                <div class="section-heading">
-                    <span class="number">03</span>
-                    <div>
-                        <h2>Team Members</h2>
-                        <p>
-                            Add each member's name, email, section and year.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Section</th>
-                                <th scope="col">Year</th>
-                                <th scope="col">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="membersBody"></tbody>
-                    </table>
-                </div>
-
-                <button
-                    type="button"
-                    id="addMember"
-                    class="outline-btn"
-                >
-                    + Add Team Member
-                </button>
-
-                <p>
-                    Add up to 5 team members (maximum 5 members).
+                <h2 class="tv-section-title">Six Specialized Arenas. One TechVerse.</h2>
+                <p class="tv-section-lead">
+                    Choose from six distinct competition tracks representing core pillars of modern engineering. Teams can register for one or multiple tracks with independent project solutions.
                 </p>
-            </section>
+            </div>
 
-            <!-- ARENA SELECTION -->
-            <section class="card">
-                <div class="section-heading">
-                    <span class="number">04</span>
+            <div class="tv-arenas-grid">
+                <!-- 1. Buddhi -->
+                <div class="tv-arena-card gold-track">
+                    <div class="tv-arena-card-top">
+                        <span class="tv-arena-code">AR-01</span>
+                        <div class="tv-arena-card-icon" aria-hidden="true">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                                <rect x="9" y="9" width="6" height="6"></rect>
+                                <line x1="9" y1="1" x2="9" y2="4"></line>
+                                <line x1="15" y1="1" x2="15" y2="4"></line>
+                                <line x1="9" y1="20" x2="9" y2="23"></line>
+                                <line x1="15" y1="20" x2="15" y2="23"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="tv-arena-name">Buddhi</div>
+                    <div class="tv-arena-discipline">AI Model Building</div>
+                    <p class="tv-arena-desc">
+                        Design, train, and deploy advanced artificial intelligence and machine learning models. Solve complex prediction, multimodal reasoning, vision, or generative tasks with high-performance pipelines.
+                    </p>
+                    <div class="tv-arena-tags">
+                        <span class="tv-tech-tag">Deep Learning</span>
+                        <span class="tv-tech-tag">Neural Nets</span>
+                        <span class="tv-tech-tag">Computer Vision</span>
+                    </div>
+                    <a href="#registration" class="tv-arena-card-action" data-arena="Buddhi">
+                        <span>Select Buddhi in Registration</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                    </a>
+                </div>
+
+                <!-- 2. Fiontar -->
+                <div class="tv-arena-card gold-track">
+                    <div class="tv-arena-card-top">
+                        <span class="tv-arena-code">AR-02</span>
+                        <div class="tv-arena-card-icon" aria-hidden="true">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="9" y1="18" x2="15" y2="18"></line>
+                                <line x1="10" y1="22" x2="14" y2="22"></line>
+                                <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="tv-arena-name">Fiontar</div>
+                    <div class="tv-arena-discipline">Startup &amp; Innovation</div>
+                    <p class="tv-arena-desc">
+                        Transform technical prototypes into scalable venture models. Defend problem-market fit, commercial viability, scalable architecture, and defend your prototype pitch before domain leaders.
+                    </p>
+                    <div class="tv-arena-tags">
+                        <span class="tv-tech-tag">Venture Pitch</span>
+                        <span class="tv-tech-tag">Product MVP</span>
+                        <span class="tv-tech-tag">Business Model</span>
+                    </div>
+                    <a href="#registration" class="tv-arena-card-action" data-arena="Fiontar">
+                        <span>Select Fiontar in Registration</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                    </a>
+                </div>
+
+                <!-- 3. Talos -->
+                <div class="tv-arena-card crimson-track">
+                    <div class="tv-arena-card-top">
+                        <span class="tv-arena-code">AR-03</span>
+                        <div class="tv-arena-card-icon" aria-hidden="true">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                                <circle cx="12" cy="5" r="2"></circle>
+                                <path d="M12 7v4"></path>
+                                <line x1="8" y1="16" x2="8.01" y2="16"></line>
+                                <line x1="16" y1="16" x2="16.01" y2="16"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="tv-arena-name">Talos</div>
+                    <div class="tv-arena-discipline">Robotic Arena</div>
+                    <p class="tv-arena-desc">
+                        Mechatronic engineering and robotics control. Build autonomous or remote-operated robotic systems that navigate complex physical obstacles, process sensory input, and execute precision actuation.
+                    </p>
+                    <div class="tv-arena-tags">
+                        <span class="tv-tech-tag">Embedded Systems</span>
+                        <span class="tv-tech-tag">Sensor Fusion</span>
+                        <span class="tv-tech-tag">Actuation</span>
+                    </div>
+                    <a href="#registration" class="tv-arena-card-action" data-arena="Talos">
+                        <span>Select Talos in Registration</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                    </a>
+                </div>
+
+                <!-- 4. Pegasus -->
+                <div class="tv-arena-card gold-track">
+                    <div class="tv-arena-card-top">
+                        <span class="tv-arena-code">AR-04</span>
+                        <div class="tv-arena-card-icon" aria-hidden="true">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <line x1="12" y1="2" x2="12" y2="6"></line>
+                                <line x1="12" y1="18" x2="12" y2="22"></line>
+                                <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+                                <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                                <line x1="2" y1="12" x2="6" y2="12"></line>
+                                <line x1="18" y1="12" x2="22" y2="12"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="tv-arena-name">Pegasus</div>
+                    <div class="tv-arena-discipline">Drone Fest</div>
+                    <p class="tv-arena-desc">
+                        Unmanned aerial vehicles (UAVs) and aerial navigation. Compete in autonomous pathfinding, payload stabilization, aerial surveillance, telemetry data analysis, and precision drone piloting.
+                    </p>
+                    <div class="tv-arena-tags">
+                        <span class="tv-tech-tag">UAV Avionics</span>
+                        <span class="tv-tech-tag">Flight Control</span>
+                        <span class="tv-tech-tag">Telemetry</span>
+                    </div>
+                    <a href="#registration" class="tv-arena-card-action" data-arena="Pegasus">
+                        <span>Select Pegasus in Registration</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                    </a>
+                </div>
+
+                <!-- 5. Promethia -->
+                <div class="tv-arena-card crimson-track">
+                    <div class="tv-arena-card-top">
+                        <span class="tv-arena-code">AR-05</span>
+                        <div class="tv-arena-card-icon" aria-hidden="true">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="16 18 22 12 16 6"></polyline>
+                                <polyline points="8 6 2 12 8 18"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="tv-arena-name">Promethia</div>
+                    <div class="tv-arena-discipline">Coding Challenge</div>
+                    <p class="tv-arena-desc">
+                        High-stakes algorithmic challenge and software engineering sprint. Solve complex algorithmic constraints, optimize runtime complexity, architect scalable backends, and maintain production standards.
+                    </p>
+                    <div class="tv-arena-tags">
+                        <span class="tv-tech-tag">Algorithms</span>
+                        <span class="tv-tech-tag">Data Structures</span>
+                        <span class="tv-tech-tag">Systems Code</span>
+                    </div>
+                    <a href="#registration" class="tv-arena-card-action" data-arena="Promethia">
+                        <span>Select Promethia in Registration</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                    </a>
+                </div>
+
+                <!-- 6. Mercatus -->
+                <div class="tv-arena-card gold-track">
+                    <div class="tv-arena-card-top">
+                        <span class="tv-arena-code">AR-06</span>
+                        <div class="tv-arena-card-icon" aria-hidden="true">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                                <polyline points="3 8 9 2 15 8 21 2"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="tv-arena-name">Mercatus</div>
+                    <div class="tv-arena-discipline">Trading &amp; Financial Analytics</div>
+                    <p class="tv-arena-desc">
+                        Quantitative finance and algorithmic market simulation. Build predictive risk models, statistical arbitrage algorithms, and high-frequency data pipelines for modern market analytics.
+                    </p>
+                    <div class="tv-arena-tags">
+                        <span class="tv-tech-tag">Quantitative Models</span>
+                        <span class="tv-tech-tag">Financial Data</span>
+                        <span class="tv-tech-tag">Algorithmic Trading</span>
+                    </div>
+                    <a href="#registration" class="tv-arena-card-action" data-arena="Mercatus">
+                        <span>Select Mercatus in Registration</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. PARTICIPATION LIFECYCLE -->
+        <section class="tv-section" id="process">
+            <div class="tv-section-header">
+                <div class="tv-section-eyebrow">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                    <span>03 / Event Lifecycle</span>
+                </div>
+                <h2 class="tv-section-title">From Registration to Verified Credential</h2>
+                <p class="tv-section-lead">
+                    A three-stage journey ensuring academic validation, committee review, and official QR credential issuance for all competing teams.
+                </p>
+            </div>
+
+            <div class="tv-pipeline">
+                <div class="tv-pipeline-step">
+                    <div class="tv-step-badge">1</div>
+                    <div class="tv-step-phase">Stage 01</div>
+                    <h3>Team &amp; Project Submission</h3>
+                    <p>
+                        Form a team of 1–5 students, complete academic details, select arena tracks, and submit project proposals with mandatory GitHub repository URLs and evidence documentation.
+                    </p>
+                </div>
+
+                <div class="tv-pipeline-step step-2">
+                    <div class="tv-step-badge">2</div>
+                    <div class="tv-step-phase">Stage 02</div>
+                    <h3>Committee Review &amp; Audit</h3>
+                    <p>
+                        The TechVerse evaluation committee reviews submissions, evaluates problem statements, audits open-source repositories, and marks registration status as Approved.
+                    </p>
+                </div>
+
+                <div class="tv-pipeline-step step-3">
+                    <div class="tv-step-badge">3</div>
+                    <div class="tv-step-phase">Stage 03</div>
+                    <h3>QR Credential &amp; Stage Entry</h3>
+                    <p>
+                        Upon approval, access your verified ID card with a cryptographic QR code at the ID Card Portal for event-day check-in, judging evaluations, and project presentations.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. GUIDELINES & ELIGIBILITY -->
+        <section class="tv-section" id="guidelines">
+            <div class="tv-section-header">
+                <div class="tv-section-eyebrow">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span>04 / Guidelines &amp; Rules</span>
+                </div>
+                <h2 class="tv-section-title">Standards, Integrity &amp; Participation Rules</h2>
+                <p class="tv-section-lead">
+                    Key participation criteria to ensure fair competition, verified academic identity, and open-source project evaluation.
+                </p>
+            </div>
+
+            <div class="tv-guidelines-grid">
+                <div class="tv-guideline-card">
+                    <div class="tv-guideline-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
                     <div>
-                        <h2 id="arenas-title">Select Arenas</h2>
-                        <p>
-                            Select the arenas in which your team wants
-                            to participate.
-                        </p>
+                        <h4>Team Size &amp; Composition</h4>
+                        <p>Teams can consist of 1 to 5 members from recognized colleges and universities. Inter-disciplinary and cross-year teams are actively encouraged.</p>
                     </div>
                 </div>
 
-                <div class="arena-grid">
-
-                    <label class="arena">
-                        <input
-                            type="checkbox"
-                            name="arenas"
-                            value="Buddhi"
-                        >
-                        <span class="gold-icon">🤖</span>
-                        <span>
-                            <strong>Buddhi</strong>
-                            <small>AI Model Building</small>
-                        </span>
-                    </label>
-
-                    <label class="arena">
-                        <input
-                            type="checkbox"
-                            name="arenas"
-                            value="Fiontar"
-                        >
-                        <span class="gold-icon">💡</span>
-                        <span>
-                            <strong>Fiontar</strong>
-                            <small>Startup &amp; Innovation</small>
-                        </span>
-                    </label>
-
-                    <label class="arena">
-                        <input
-                            type="checkbox"
-                            name="arenas"
-                            value="Talos"
-                        >
-                        <span class="red-icon">🤖</span>
-                        <span>
-                            <strong>Talos</strong>
-                            <small>Robotic Arena</small>
-                        </span>
-                    </label>
-
-                    <label class="arena">
-                        <input
-                            type="checkbox"
-                            name="arenas"
-                            value="Pegasus"
-                        >
-                        <span class="gold-icon">🚁</span>
-                        <span>
-                            <strong>Pegasus</strong>
-                            <small>Drone Fest</small>
-                        </span>
-                    </label>
-
-                    <label class="arena">
-                        <input
-                            type="checkbox"
-                            name="arenas"
-                            value="Promethia"
-                        >
-                        <span class="red-icon">💻</span>
-                        <span>
-                            <strong>Promethia</strong>
-                            <small>Coding Challenge</small>
-                        </span>
-                    </label>
-
-                    <label class="arena">
-                        <input
-                            type="checkbox"
-                            name="arenas"
-                            value="Mercatus"
-                        >
-                        <span class="gold-icon">📈</span>
-                        <span>
-                            <strong>Mercatus</strong>
-                            <small>Trading &amp; Financial Analytics</small>
-                        </span>
-                    </label>
-
+                <div class="tv-guideline-card">
+                    <div class="tv-guideline-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4>Mandatory GitHub Repositories</h4>
+                        <p>Every project submission must provide a valid open-source GitHub repository URL. Empty links or non-GitHub hosts are rejected by automated validation.</p>
+                    </div>
                 </div>
 
-                <!-- JavaScript adds the selected arena forms here. -->
-                <div id="arenaDetails"></div>
-            </section>
+                <div class="tv-guideline-card">
+                    <div class="tv-guideline-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4>Multiple Project Capacity</h4>
+                        <p>A single team may register projects across multiple selected arenas. Each project has its own problem statement, solution, repository, and optional evidence images.</p>
+                    </div>
+                </div>
 
-            <p
-                id="message"
-                role="status"
-                aria-live="polite"
-                aria-atomic="true"
-            ></p>
+                <div class="tv-guideline-card">
+                    <div class="tv-guideline-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4>Privacy &amp; Data Security</h4>
+                        <p>Student email addresses and phone numbers remain strictly confidential. Public verification pages only display team names, arena tracks, and approved project summaries.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-            <button type="submit" class="submit-btn">
-                ➤ Submit Team Registration →
-            </button>
+        <!-- 6. OFFICIAL TEAM REGISTRATION PORTAL -->
+        <section class="tv-section" id="registration">
+            <div class="tv-section-header">
+                <div class="tv-section-eyebrow">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <span>05 / Official Submission</span>
+                </div>
+                <h2 class="tv-section-title">Team Registration &amp; Project Entry</h2>
+                <p class="tv-section-lead">
+                    Fill in your team details, academic credentials, selected arena tracks, and project submissions below. Ensure all details are verified before submitting.
+                </p>
+            </div>
 
-        </form>
+            <form id="teamForm" enctype="multipart/form-data" novalidate>
 
-        <footer>
-            TECHVERSE 2026 <span>·</span> JG UNIVERSITY
-        </footer>
+                <!-- STEPPER PROGRESS BAR & TABS -->
+                <div class="tv-registration-stepper" role="tablist" aria-label="Registration Progress">
+                    <div class="tv-stepper-track-wrap">
+                        <div class="tv-stepper-meta">
+                            <span>Registration Progress</span>
+                            <span class="tv-stepper-meta-active" id="stepperPercentText">Step 1 of 5 · 20% Complete</span>
+                        </div>
+                        <div class="tv-stepper-bar">
+                            <div class="tv-stepper-bar-fill" id="stepperProgressFill" style="width: 20%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="tv-stepper-pills">
+                        <button type="button" class="tv-stepper-pill active" data-step="1" id="stepPill1" role="tab" aria-selected="true" aria-controls="formStep1">
+                            <span class="tv-pill-num">
+                                <span class="tv-pill-val">1</span>
+                                <svg class="tv-pill-check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </span>
+                            <span class="tv-pill-text">
+                                <span class="tv-pill-sub">STEP 01</span>
+                                <span class="tv-pill-title">Team &amp; Leader</span>
+                            </span>
+                        </button>
+
+                        <button type="button" class="tv-stepper-pill" data-step="2" id="stepPill2" role="tab" aria-selected="false" aria-controls="formStep2">
+                            <span class="tv-pill-num">
+                                <span class="tv-pill-val">2</span>
+                                <svg class="tv-pill-check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </span>
+                            <span class="tv-pill-text">
+                                <span class="tv-pill-sub">STEP 02</span>
+                                <span class="tv-pill-title">Academic Info</span>
+                            </span>
+                        </button>
+
+                        <button type="button" class="tv-stepper-pill" data-step="3" id="stepPill3" role="tab" aria-selected="false" aria-controls="formStep3">
+                            <span class="tv-pill-num">
+                                <span class="tv-pill-val">3</span>
+                                <svg class="tv-pill-check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </span>
+                            <span class="tv-pill-text">
+                                <span class="tv-pill-sub">STEP 03</span>
+                                <span class="tv-pill-title">Team Roster</span>
+                            </span>
+                        </button>
+
+                        <button type="button" class="tv-stepper-pill" data-step="4" id="stepPill4" role="tab" aria-selected="false" aria-controls="formStep4">
+                            <span class="tv-pill-num">
+                                <span class="tv-pill-val">4</span>
+                                <svg class="tv-pill-check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </span>
+                            <span class="tv-pill-text">
+                                <span class="tv-pill-sub">STEP 04</span>
+                                <span class="tv-pill-title">Arenas &amp; Projects</span>
+                            </span>
+                        </button>
+
+                        <button type="button" class="tv-stepper-pill" data-step="5" id="stepPill5" role="tab" aria-selected="false" aria-controls="formStep5">
+                            <span class="tv-pill-num">
+                                <span class="tv-pill-val">5</span>
+                                <svg class="tv-pill-check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </span>
+                            <span class="tv-pill-text">
+                                <span class="tv-pill-sub">STEP 05</span>
+                                <span class="tv-pill-title">Review &amp; Submit</span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP-LEVEL ERROR BANNER -->
+                <div id="stepErrorBanner" class="tv-form-banner tv-banner-error" style="display:none;" role="alert">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    <span id="stepErrorText">Please review the highlighted fields before proceeding.</span>
+                </div>
+
+                <!-- ============================================== -->
+                <!-- STAGE 01: TEAM IDENTITY & LEADER CONTACT       -->
+                <!-- ============================================== -->
+                <div class="tv-form-step active" id="formStep1" data-step="1" role="tabpanel" aria-labelledby="stepPill1">
+                    <section class="tv-step-card">
+                        <div class="tv-step-header">
+                            <div class="tv-step-header-left">
+                                <span class="tv-step-badge-num">01</span>
+                                <div class="tv-step-header-text">
+                                    <h2>Team &amp; Leader Details</h2>
+                                    <p>Establish your team identity and primary leader contact credentials for official communications.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid">
+                            <label for="teamNameInput">
+                                <span>Team Name<span class="field-required-star">*</span></span>
+                                <input
+                                    type="text"
+                                    name="teamName"
+                                    id="teamNameInput"
+                                    placeholder="e.g. Apex Neural Systems"
+                                    maxlength="150"
+                                    required
+                                >
+                                <small class="field-hint">Your official team name displayed on badges, leaderboards, and certificates.</small>
+                                <span class="field-error-msg">Please enter a team name.</span>
+                            </label>
+
+                            <label for="teamNumberInput">
+                                <span>Team Assigned Number (Optional)</span>
+                                <input
+                                    type="text"
+                                    name="teamNumber"
+                                    id="teamNumberInput"
+                                    placeholder="Leave blank if not yet assigned"
+                                    maxlength="50"
+                                >
+                                <small class="field-hint">Optional preliminary code if provided by faculty or department.</small>
+                            </label>
+
+                            <label for="leaderNameInput">
+                                <span>Team Leader Full Name<span class="field-required-star">*</span></span>
+                                <input
+                                    type="text"
+                                    name="leaderName"
+                                    id="leaderNameInput"
+                                    placeholder="e.g. Rohit Sharma"
+                                    maxlength="150"
+                                    required
+                                >
+                                <small class="field-hint">Primary point of contact for the judging panel and committee.</small>
+                                <span class="field-error-msg">Please enter the leader's full name.</span>
+                            </label>
+
+                            <label for="leaderEmailInput">
+                                <span>Team Leader Email Address<span class="field-required-star">*</span></span>
+                                <input
+                                    type="email"
+                                    name="leaderEmail"
+                                    id="leaderEmailInput"
+                                    placeholder="leader@institution.edu"
+                                    maxlength="254"
+                                    required
+                                >
+                                <small class="field-hint">Official confirmation emails and digital credentials are sent here.</small>
+                                <span class="field-error-msg">Please enter a valid leader email address.</span>
+                            </label>
+
+                            <label class="wide" for="leaderPhoneInput">
+                                <span>Team Leader Phone Number<span class="field-required-star">*</span></span>
+                                <input
+                                    type="tel"
+                                    name="leaderPhone"
+                                    id="leaderPhoneInput"
+                                    placeholder="+91 98765 43210"
+                                    pattern="[0-9+\-\s()]{8,18}"
+                                    title="Enter a valid phone number using 8–18 allowed characters."
+                                    required
+                                >
+                                <small class="field-hint">Used for urgent event-day coordination, check-in updates, and arena schedules.</small>
+                                <span class="field-error-msg">Please enter a valid phone number (8–18 digits).</span>
+                            </label>
+                        </div>
+
+                        <div class="step-nav-bar">
+                            <span class="step-counter-text">Stage 01 of 05 · Team Identity</span>
+                            <div class="step-nav-actions">
+                                <button type="button" class="step-next-btn" data-next="2">
+                                    <span>Continue to Academic Info</span>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- ============================================== -->
+                <!-- STAGE 02: INSTITUTIONAL & ACADEMIC CREDENTIALS -->
+                <!-- ============================================== -->
+                <div class="tv-form-step" id="formStep2" data-step="2" role="tabpanel" aria-labelledby="stepPill2">
+                    <section class="tv-step-card">
+                        <div class="tv-step-header">
+                            <div class="tv-step-header-left">
+                                <span class="tv-step-badge-num">02</span>
+                                <div class="tv-step-header-text">
+                                    <h2>Institutional Affiliation &amp; Academic Credentials</h2>
+                                    <p>Verify your collegiate affiliation, campus location, and academic standing for inter-collegiate eligibility.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid">
+                            <label for="collegeNameInput">
+                                <span>College / University Name<span class="field-required-star">*</span></span>
+                                <input
+                                    type="text"
+                                    name="collegeName"
+                                    id="collegeNameInput"
+                                    list="collegeDatalist"
+                                    placeholder="e.g. JG University / Nirma University / IIT Gandhinagar"
+                                    maxlength="200"
+                                    required
+                                >
+                                <small class="field-hint">Select from suggestions or enter your institution's full name.</small>
+                                <span class="field-error-msg">Please enter your college or university name.</span>
+                            </label>
+
+                            <datalist id="collegeDatalist">
+                                <option value="JG University"></option>
+                                <option value="Nirma University"></option>
+                                <option value="IIT Gandhinagar"></option>
+                                <option value="Gujarat University"></option>
+                                <option value="Ahmedabad University"></option>
+                                <option value="Pandit Deendayal Energy University (PDEU)"></option>
+                                <option value="Dhirubhai Ambani IICT (DA-IICT)"></option>
+                                <option value="L.D. College of Engineering"></option>
+                                <option value="VGEC Chandkheda"></option>
+                                <option value="Charusat University"></option>
+                                <option value="Parul University"></option>
+                                <option value="SVNIT Surat"></option>
+                            </datalist>
+
+                            <label for="collegeCityInput">
+                                <span>Campus / City<span class="field-required-star">*</span></span>
+                                <input
+                                    type="text"
+                                    name="collegeCity"
+                                    id="collegeCityInput"
+                                    placeholder="e.g. Ahmedabad, Gujarat"
+                                    maxlength="100"
+                                    required
+                                >
+                                <small class="field-hint">Primary campus city and state.</small>
+                                <span class="field-error-msg">Please enter your campus city.</span>
+                            </label>
+
+                            <label for="collegeDeptInput">
+                                <span>Department / Discipline (Optional)</span>
+                                <input
+                                    type="text"
+                                    name="collegeDept"
+                                    id="collegeDeptInput"
+                                    placeholder="e.g. Computer Science &amp; Engineering"
+                                    maxlength="150"
+                                >
+                                <small class="field-hint">e.g. Artificial Intelligence, Mechanical, Electronics, IT, or Management.</small>
+                            </label>
+
+                            <label for="leaderSectionInput">
+                                <span>Leader Academic Section<span class="field-required-star">*</span></span>
+                                <input
+                                    type="text"
+                                    name="leaderSection"
+                                    id="leaderSectionInput"
+                                    list="sectionDatalist"
+                                    placeholder="e.g. A, B, C, or Section code"
+                                    maxlength="50"
+                                    required
+                                >
+                                <small class="field-hint">Leader's classroom section code or division.</small>
+                                <span class="field-error-msg">Please enter the leader's academic section.</span>
+                            </label>
+
+                            <datalist id="sectionDatalist">
+                                <option value="A"></option>
+                                <option value="B"></option>
+                                <option value="C"></option>
+                                <option value="D"></option>
+                                <option value="E"></option>
+                                <option value="F"></option>
+                            </datalist>
+
+                            <label for="leaderYearInput">
+                                <span>Leader Year of Study<span class="field-required-star">*</span></span>
+                                <select name="leaderYear" id="leaderYearInput" required>
+                                    <option value="">-- Select Academic Year --</option>
+                                    <option value="1">1st Year (Freshman)</option>
+                                    <option value="2">2nd Year (Sophomore)</option>
+                                    <option value="3">3rd Year (Junior)</option>
+                                    <option value="4">4th Year (Senior)</option>
+                                </select>
+                                <small class="field-hint">Current academic year for leader verification.</small>
+                                <span class="field-error-msg">Please select the leader's year of study.</span>
+                            </label>
+                        </div>
+
+                        <div class="step-nav-bar">
+                            <span class="step-counter-text">Stage 02 of 05 · Academic Affiliation</span>
+                            <div class="step-nav-actions">
+                                <button type="button" class="step-prev-btn" data-prev="1">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                                    <span>Previous Step</span>
+                                </button>
+                                <button type="button" class="step-next-btn" data-next="3">
+                                    <span>Continue to Team Roster</span>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- ============================================== -->
+                <!-- STAGE 03: TEAM MEMBERS ROSTER                  -->
+                <!-- ============================================== -->
+                <div class="tv-form-step" id="formStep3" data-step="3" role="tabpanel" aria-labelledby="stepPill3">
+                    <section class="tv-step-card">
+                        <div class="tv-step-header">
+                            <div class="tv-step-header-left">
+                                <span class="tv-step-badge-num">03</span>
+                                <div class="tv-step-header-text">
+                                    <h2>Team Members Roster</h2>
+                                    <p>Register all student members on your team. Cross-disciplinary and cross-year teams are actively encouraged.</p>
+                                </div>
+                            </div>
+                            <span class="member-count-badge" id="memberCountBadge">1 / 5 Members Added</span>
+                        </div>
+
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th scope="col" style="width: 45px;">#</th>
+                                        <th scope="col">Full Name *</th>
+                                        <th scope="col">Email Address *</th>
+                                        <th scope="col" style="width: 140px;">Section *</th>
+                                        <th scope="col" style="width: 150px;">Year *</th>
+                                        <th scope="col" style="width: 70px; text-align: center;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="membersBody"></tbody>
+                            </table>
+                        </div>
+
+                        <div style="margin-top: 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                            <button
+                                type="button"
+                                id="addMember"
+                                class="outline-btn"
+                                style="margin-top: 0; display: inline-flex; align-items: center; gap: 6px;"
+                            >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                <span>Add Team Member</span>
+                            </button>
+                            <span id="memberLimitNotice" class="muted" style="font-size: 12.5px; font-weight: 600;">Maximum 5 members permitted.</span>
+                        </div>
+
+                        <div class="member-policy-box">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--color-gold-dark); flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            <div>
+                                <strong>Team Size Policy:</strong> Teams must have between 1 and 5 members in the roster. Every registered member receives an official credential badge with entry clearance on competition day.
+                            </div>
+                        </div>
+
+                        <div class="step-nav-bar">
+                            <span class="step-counter-text">Stage 03 of 05 · Member Roster</span>
+                            <div class="step-nav-actions">
+                                <button type="button" class="step-prev-btn" data-prev="2">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                                    <span>Previous Step</span>
+                                </button>
+                                <button type="button" class="step-next-btn" data-next="4">
+                                    <span>Continue to Arenas &amp; Projects</span>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- ============================================== -->
+                <!-- STAGE 04: ARENAS & PROJECT SUBMISSIONS         -->
+                <!-- ============================================== -->
+                <div class="tv-form-step" id="formStep4" data-step="4" role="tabpanel" aria-labelledby="stepPill4">
+                    <!-- ARENA TRACKS SELECTION -->
+                    <section class="tv-step-card">
+                        <div class="tv-step-header">
+                            <div class="tv-step-header-left">
+                                <span class="tv-step-badge-num">04</span>
+                                <div class="tv-step-header-text">
+                                    <h2 id="arenas-title">Challenge Arena Tracks</h2>
+                                    <p>Select all arenas your team intends to enter. You can submit one or more projects across your selected arenas.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="arena-grid">
+                            <!-- 1. Buddhi -->
+                            <label class="arena">
+                                <input type="checkbox" name="arenas" value="Buddhi">
+                                <span class="gold-icon arena-symbol" aria-hidden="true">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                                        <rect x="9" y="9" width="6" height="6"></rect>
+                                        <line x1="9" y1="1" x2="9" y2="4"></line>
+                                        <line x1="15" y1="1" x2="15" y2="4"></line>
+                                        <line x1="9" y1="20" x2="9" y2="23"></line>
+                                        <line x1="15" y1="20" x2="15" y2="23"></line>
+                                        <line x1="20" y1="9" x2="23" y2="9"></line>
+                                        <line x1="20" y1="14" x2="23" y2="14"></line>
+                                        <line x1="1" y1="9" x2="4" y2="9"></line>
+                                        <line x1="1" y1="14" x2="4" y2="14"></line>
+                                    </svg>
+                                </span>
+                                <span>
+                                    <strong>Buddhi</strong>
+                                    <small>AI Model Building</small>
+                                </span>
+                            </label>
+
+                            <!-- 2. Fiontar -->
+                            <label class="arena">
+                                <input type="checkbox" name="arenas" value="Fiontar">
+                                <span class="gold-icon arena-symbol" aria-hidden="true">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="9" y1="18" x2="15" y2="18"></line>
+                                        <line x1="10" y1="22" x2="14" y2="22"></line>
+                                        <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
+                                    </svg>
+                                </span>
+                                <span>
+                                    <strong>Fiontar</strong>
+                                    <small>Startup &amp; Innovation</small>
+                                </span>
+                            </label>
+
+                            <!-- 3. Talos -->
+                            <label class="arena">
+                                <input type="checkbox" name="arenas" value="Talos">
+                                <span class="red-icon arena-symbol" aria-hidden="true">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                                        <circle cx="12" cy="5" r="2"></circle>
+                                        <path d="M12 7v4"></path>
+                                        <line x1="8" y1="16" x2="8.01" y2="16"></line>
+                                        <line x1="16" y1="16" x2="16.01" y2="16"></line>
+                                    </svg>
+                                </span>
+                                <span>
+                                    <strong>Talos</strong>
+                                    <small>Robotic Arena</small>
+                                </span>
+                            </label>
+
+                            <!-- 4. Pegasus -->
+                            <label class="arena">
+                                <input type="checkbox" name="arenas" value="Pegasus">
+                                <span class="gold-icon arena-symbol" aria-hidden="true">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                        <line x1="12" y1="2" x2="12" y2="6"></line>
+                                        <line x1="12" y1="18" x2="12" y2="22"></line>
+                                        <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+                                        <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                                        <line x1="2" y1="12" x2="6" y2="12"></line>
+                                        <line x1="18" y1="12" x2="22" y2="12"></line>
+                                        <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+                                        <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+                                    </svg>
+                                </span>
+                                <span>
+                                    <strong>Pegasus</strong>
+                                    <small>Drone Fest</small>
+                                </span>
+                            </label>
+
+                            <!-- 5. Promethia -->
+                            <label class="arena">
+                                <input type="checkbox" name="arenas" value="Promethia">
+                                <span class="red-icon arena-symbol" aria-hidden="true">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="16 18 22 12 16 6"></polyline>
+                                        <polyline points="8 6 2 12 8 18"></polyline>
+                                    </svg>
+                                </span>
+                                <span>
+                                    <strong>Promethia</strong>
+                                    <small>Coding Challenge</small>
+                                </span>
+                            </label>
+
+                            <!-- 6. Mercatus -->
+                            <label class="arena">
+                                <input type="checkbox" name="arenas" value="Mercatus">
+                                <span class="gold-icon arena-symbol" aria-hidden="true">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                                        <polyline points="3 8 9 2 15 8 21 2"></polyline>
+                                    </svg>
+                                </span>
+                                <span>
+                                    <strong>Mercatus</strong>
+                                    <small>Trading &amp; Analytics</small>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div id="arenaDetails" style="display: none;"></div>
+                    </section>
+
+                    <!-- DYNAMIC MULTI-PROJECT BUILDER -->
+                    <section class="tv-step-card" id="projectsSection">
+                        <div class="tv-step-header">
+                            <div class="tv-step-header-left">
+                                <span class="tv-step-badge-num">05</span>
+                                <div class="tv-step-header-text">
+                                    <h2 id="projects-title">Project Submissions</h2>
+                                    <p>Submit one or more distinct project proposals for your selected arenas. Each entry requires a mandatory public GitHub repository link and evidence images.</p>
+                                </div>
+                            </div>
+                            <span id="projectCountNotice" class="member-count-badge">1 Project Added</span>
+                        </div>
+
+                        <div id="projectsContainer"></div>
+
+                        <div class="project-actions-bar" style="margin-top: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding-top: 14px; border-top: 1px dashed var(--color-border-subtle);">
+                            <button
+                                type="button"
+                                id="addProjectBtn"
+                                class="outline-btn"
+                                style="margin-top: 0; display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; font-weight: 700;"
+                            >
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                <span>Add Another Project</span>
+                            </button>
+                            <span class="muted" style="font-size: 12.5px;">You can register multiple projects under different tracks.</span>
+                        </div>
+
+                        <div class="step-nav-bar">
+                            <span class="step-counter-text">Stage 04 of 05 · Arenas &amp; Projects</span>
+                            <div class="step-nav-actions">
+                                <button type="button" class="step-prev-btn" data-prev="3">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                                    <span>Previous Step</span>
+                                </button>
+                                <button type="button" class="step-next-btn" data-next="5">
+                                    <span>Review Submission Summary</span>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- ============================================== -->
+                <!-- STAGE 05: REVIEW & OFFICIAL SUBMISSION         -->
+                <!-- ============================================== -->
+                <div class="tv-form-step" id="formStep5" data-step="5" role="tabpanel" aria-labelledby="stepPill5">
+                    <section class="tv-step-card">
+                        <div class="tv-step-header">
+                            <div class="tv-step-header-left">
+                                <span class="tv-step-badge-num">05</span>
+                                <div class="tv-step-header-text">
+                                    <h2>Review &amp; Official Submission</h2>
+                                    <p>Carefully verify your team information, institutional affiliation, member roster, and project entries before submitting.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DYNAMIC LIVE REVIEW SUMMARY CARDS -->
+                        <div id="reviewSummaryContainer" class="tv-review-section">
+                            <div style="text-align: center; padding: 24px; color: var(--color-text-muted);">
+                                Loading your registration summary...
+                            </div>
+                        </div>
+
+                        <!-- SUBMISSION ACKNOWLEDGEMENT -->
+                        <div class="tv-confirm-box">
+                            <input type="checkbox" id="confirmAccuracyCheckbox" required checked>
+                            <label for="confirmAccuracyCheckbox" class="tv-confirm-text">
+                                <strong>Declaration of Originality &amp; Academic Integrity:</strong> I certify that all information submitted is accurate, team members are officially affiliated with our stated college, and all GitHub repositories represent original project source code in compliance with the TechVerse 2026 Code of Conduct.
+                            </label>
+                        </div>
+
+                        <!-- STATUS & SUBMIT ACTION -->
+                        <p
+                            id="message"
+                            role="status"
+                            aria-live="polite"
+                            aria-atomic="true"
+                        ></p>
+
+                        <div class="step-nav-bar" style="margin-top: 24px;">
+                            <span class="step-counter-text">Stage 05 of 05 · Final Verification</span>
+                            <div class="step-nav-actions">
+                                <button type="button" class="step-prev-btn" data-prev="4">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                                    <span>Edit Arenas &amp; Projects</span>
+                                </button>
+                                <button type="submit" class="submit-btn" id="submitFormBtn" style="margin-top: 0; width: auto; min-width: 260px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <span class="btn-spinner"></span>
+                                    <span id="submitBtnText">Submit Team Registration</span>
+                                    <svg class="btn-icon-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        <polyline points="12 5 19 12 12 19"></polyline>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </form>
+        </section>
+
+        <!-- 7. FREQUENTLY ASKED QUESTIONS -->
+        <section class="tv-section" id="faq">
+            <div class="tv-section-header text-center">
+                <div class="tv-section-eyebrow">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    <span>06 / Questions &amp; Answers</span>
+                </div>
+                <h2 class="tv-section-title">Frequently Asked Questions</h2>
+                <p class="tv-section-lead">
+                    Common questions regarding team registration, multi-track participation, repository requirements, and ID card credentials.
+                </p>
+            </div>
+
+            <div class="tv-faq-list">
+                <details class="tv-faq-item">
+                    <summary class="tv-faq-summary">
+                        <span>Can our team participate in more than one arena track?</span>
+                        <svg class="tv-faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </summary>
+                    <div class="tv-faq-content">
+                        Yes. Unlike rigid single-track hackathons, TechVerse 2026 allows teams to select multiple arenas in Section 04 and submit independent project proposals for each selected arena in Section 05. Each project is evaluated separately.
+                    </div>
+                </details>
+
+                <details class="tv-faq-item">
+                    <summary class="tv-faq-summary">
+                        <span>Why is a public GitHub repository URL mandatory?</span>
+                        <svg class="tv-faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </summary>
+                    <div class="tv-faq-content">
+                        TechVerse 2026 values genuine engineering and open-source rigor. Domain judges and automated review tools evaluate repository structure, commit history, and code implementation to ensure originality and technical depth.
+                    </div>
+                </details>
+
+                <details class="tv-faq-item">
+                    <summary class="tv-faq-summary">
+                        <span>What is the permitted team size and composition?</span>
+                        <svg class="tv-faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </summary>
+                    <div class="tv-faq-content">
+                        Teams may have between 1 and 5 members (including the team leader). The registration form strictly enforces a maximum of 5 members. Inter-departmental and cross-year student collaborations are welcome.
+                    </div>
+                </details>
+
+                <details class="tv-faq-item">
+                    <summary class="tv-faq-summary">
+                        <span>How do we check our team's verification status?</span>
+                        <svg class="tv-faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </summary>
+                    <div class="tv-faq-content">
+                        After submitting, keep note of your unique Registration ID (e.g. TV26-00001). Visit the <a href="{{ url_for('verify_lookup') }}" style="color: var(--color-crimson); font-weight: 700;">Verification Portal</a> at any time to check whether your submission is Pending, Approved, or flagged for review.
+                    </div>
+                </details>
+
+                <details class="tv-faq-item">
+                    <summary class="tv-faq-summary">
+                        <span>How is our official Team ID Card generated?</span>
+                        <svg class="tv-faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </summary>
+                    <div class="tv-faq-content">
+                        Your official credential is generated automatically once submitted. You can access, print, or save your digital ID card with its scannable QR verification code at the <a href="{{ url_for('id_card_portal') }}" style="color: var(--color-crimson); font-weight: 700;">ID Card Portal</a>.
+                    </div>
+                </details>
+            </div>
+
+            <!-- Returning Participants Action Banner -->
+            <div class="tv-portal-banner">
+                <div class="tv-banner-text">
+                    <h3>Already Registered for TechVerse 2026?</h3>
+                    <p>Track your submission approval status in real-time or retrieve your official Team ID Card with encrypted QR verification.</p>
+                </div>
+                <div class="tv-banner-actions">
+                    <a href="{{ url_for('verify_lookup') }}" class="tv-banner-btn-primary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <span>Check Verification</span>
+                    </a>
+                    <a href="{{ url_for('id_card_portal') }}" class="tv-banner-btn-secondary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                            <circle cx="9" cy="10" r="2"></circle>
+                        </svg>
+                        <span>Get Team ID Card</span>
+                    </a>
+                </div>
+            </div>
+        </section>
 
     </main>
+
+    {% include '_footer.html' %}
 
 </body>
 </html>

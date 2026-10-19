@@ -1,0 +1,49 @@
+<footer class="site-footer" role="contentinfo">
+    <div class="footer-container">
+        <!-- Brand & Description -->
+        <div class="footer-brand-col">
+            <a href="{{ url_for('home') }}" class="footer-brand-link" aria-label="JG University — TECHVERSE 2026 Homepage">
+                <img src="{{ url_for('static', filename='jglogo.png') }}"
+                     alt="JG University Logo"
+                     class="footer-logo-img"
+                     width="150"
+                     height="32">
+            </a>
+            <p class="footer-description">
+                <strong>TECHVERSE 2026</strong> is the national flagship technology symposium organized by <strong>JG University</strong>, Ahmedabad in strategic collaboration with <strong>Coding Pro</strong>.
+            </p>
+        </div>
+
+        <!-- Clean Navigation Links -->
+        <nav class="footer-nav-col" aria-label="Footer Navigation">
+            <ul class="footer-nav-list">
+                <li><a href="{{ url_for('home') }}#registration" class="footer-link">Registration</a></li>
+                <li><a href="{{ url_for('home') }}#arenas" class="footer-link">Arenas</a></li>
+                <li><a href="{{ url_for('verify_lookup') }}" class="footer-link">Verify Team</a></li>
+                <li><a href="{{ url_for('id_card_portal') }}" class="footer-link">Team ID Card</a></li>
+                {% if current_user %}
+                <li><a href="{{ url_for('admin_home') }}" class="footer-link">Admin Console</a></li>
+                {% else %}
+                <li><a href="{{ url_for('login') }}" class="footer-link">Staff Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Bottom Row Divider & Concise Copyright -->
+    <div class="footer-bottom-bar">
+        <div class="footer-bottom-inner">
+            <p class="footer-copyright">
+                &copy; 2026 JG TECHVERSE &middot; JG University &times; Coding Pro. All rights reserved.
+            </p>
+            <p class="footer-location">
+                Ahmedabad, Gujarat, India
+            </p>
+        </div>
+    </div>
+</footer>
+
+<!-- GSAP 3.12.5 & JG TechVerse Interaction System -->
+<script src="{{ url_for('static', filename='gsap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ScrollTrigger.min.js') }}"></script>
+<script src="{{ url_for('static', filename='motion.js') }}?v=7.0" defer></script>

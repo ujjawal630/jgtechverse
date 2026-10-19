@@ -1,130 +1,283 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechVerse 2026 | Admin</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='team-registration.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <title>Registration & Team Operations | TechVerse 2026 Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='team-registration.css') }}?v=9.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}?v=9.0">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
-<body>
+<body class="admin-body">
 {% set active_tab = 'admin' %}
 {% include '_header.html' %}
 
-<main class="container">
+<main class="container admin-container" id="main-content">
     {% include '_admin_nav.html' %}
 
-    <section class="card">
-        <div class="stats">
-            <div class="stat">
-                <strong>{{ teams|length }}</strong>
-                <span>Shown</span>
-            </div>
+    <!-- Page Header -->
+    <header class="admin-page-header">
+        <div class="admin-header-main">
+            <p class="admin-eyebrow">
+                <span class="admin-eyebrow-tag">REGISTRATION DESK</span>
+                <span>TECHVERSE 2026 · CENTRAL OPERATIONS</span>
+            </p>
+            <h1 class="admin-page-title">Team Registrations &amp; Approvals</h1>
+            <p class="admin-page-desc">
+                Review verified credentials, audit team rosters, inspect multi-project arena submissions, and manage official qualification status.
+            </p>
+        </div>
+    </header>
 
-            {% for s in statuses %}
-            <div class="stat">
-                <strong>{{ counts.get(s, 0) }}</strong>
-                <span>{{ s }}</span>
+    <!-- Operational KPI Metrics Strip -->
+    <section class="admin-kpi-strip" aria-label="Registration Statistics">
+        <div class="admin-kpi-card total">
+            <div class="kpi-header">
+                <span class="kpi-label">Teams Displayed</span>
+                <span class="kpi-icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    </svg>
+                </span>
             </div>
-            {% endfor %}
+            <div class="kpi-value">{{ teams|length }}</div>
+            <div class="kpi-subtext">Active filter matching</div>
         </div>
 
-        <form method="get" class="filters">
-            <input type="search" name="q" value="{{ q }}"
-                   placeholder="Search by team, code, leader name or email">
+        {% for s in statuses %}
+        <div class="admin-kpi-card {{ s|lower }}">
+            <div class="kpi-header">
+                <span class="kpi-label">{{ s }} Registrations</span>
+                <span class="kpi-indicator {{ s|lower }}" aria-hidden="true"></span>
+            </div>
+            <div class="kpi-value">{{ counts.get(s, 0) }}</div>
+            <div class="kpi-subtext">
+                {% if s == 'Approved' %}Verified event badges
+                {% elif s == 'Pending' %}Awaiting evaluation
+                {% else %}Flagged / Withdrawn
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </section>
 
-            <select name="status">
-                <option value="">All status</option>
-                {% for s in statuses %}
-                <option value="{{ s }}" {% if s == status %}selected{% endif %}>
-                    {{ s }}
-                </option>
-                {% endfor %}
-            </select>
+    <!-- Operational Table Card -->
+    <section class="admin-card">
+        <!-- Filter and Search Toolbar -->
+        <div class="admin-toolbar">
+            <form method="get" class="admin-search-form" role="search" aria-label="Filter teams">
+                <div class="admin-search-field">
+                    <svg class="admin-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <label for="adminSearchInput" class="visually-hidden">Search registrations</label>
+                    <input type="search"
+                           id="adminSearchInput"
+                           name="q"
+                           value="{{ q }}"
+                           placeholder="Search by team name, code, leader, or email..."
+                           aria-label="Search registrations"
+                           class="admin-input-search">
+                    {% if q %}
+                    <a href="{{ url_for('admin_home', status=status) }}" class="search-clear-btn" title="Clear search query" aria-label="Clear search">✕</a>
+                    {% endif %}
+                </div>
 
-            <button class="outline-btn" type="submit">Filter</button>
-        </form>
+                <div class="admin-select-field">
+                    <label for="statusSelect" class="visually-hidden">Filter by status</label>
+                    <select id="statusSelect" name="status" class="admin-select">
+                        <option value="">All Statuses ({{ counts.values()|sum if counts else 0 }})</option>
+                        {% for s in statuses %}
+                        <option value="{{ s }}" {% if s == status %}selected{% endif %}>
+                            {{ s }} ({{ counts.get(s, 0) }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-        <div class="table-wrapper">
-            <table>
+                <button class="admin-btn admin-btn-primary" type="submit">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                    <span>Apply Filter</span>
+                </button>
+
+                {% if q or status %}
+                <a href="{{ url_for('admin_home') }}" class="admin-btn admin-btn-ghost">Reset Filters</a>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- Dense Enterprise Data Table -->
+        <div class="table-wrapper admin-table-wrapper">
+            <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>Code</th>
-                        <th>Team</th>
-                        <th>Leader</th>
-                        <th>Members</th>
-                        <th>Arenas</th>
-                        <th>Photos</th>
-                        <th>Status</th>
-                        <th>Created</th>
-                        <th>Details</th>
+                        <th scope="col" style="width: 130px;">Registration ID</th>
+                        <th scope="col" style="min-width: 170px;">Team Name</th>
+                        <th scope="col" style="min-width: 190px;">Team Leader</th>
+                        <th scope="col" style="text-align: center; width: 85px;">Roster</th>
+                        <th scope="col" style="min-width: 160px;">Arena Tracks</th>
+                        <th scope="col" style="text-align: center; width: 75px;">Evidence</th>
+                        <th scope="col" style="min-width: 175px;">Approval Status</th>
+                        <th scope="col" style="width: 130px;">Registered</th>
+                        <th scope="col" style="text-align: right; min-width: 130px;">Actions</th>
                     </tr>
                 </thead>
 
                 <tbody>
                 {% for t in teams %}
-                    <tr>
-                        <td>{{ t.registration_code }}</td>
-                        <td>{{ t.team_name }}</td>
+                    <tr class="admin-row">
+                        <!-- Code -->
                         <td>
-                            {{ t.leader_name }}<br>
-                            <small>{{ t.leader_email }}</small>
-                        </td>
-                        <td>{{ t.member_count }}</td>
-                        <td>{{ t.arena_list }}</td>
-                        <td>{{ t.photo_count }}</td>
-
-                        <td>
-                            <span class="badge {{ t.status|lower }}">
-                                {{ t.status }}
+                            <span class="code-pill">
+                                <code>{{ t.registration_code }}</code>
                             </span>
-
-                            <form method="POST"
-                                  action="{{ url_for('admin_update_status', team_id=t.id) }}"
-                                  style="margin-top: 8px;">
-
-                                <input type="hidden" name="csrf_token"
-                                       value="{{ csrf_token() }}">
-
-                                <select name="status" required>
-                                    {% for s in statuses %}
-                                    <option value="{{ s }}"
-                                        {% if s == t.status %}selected{% endif %}>
-                                        {{ s }}
-                                    </option>
-                                    {% endfor %}
-                                </select>
-
-                                <button class="outline-btn" type="submit"
-                                        style="margin-top: 6px;">
-                                    Update
-                                </button>
-                            </form>
                         </td>
 
-                        <td>{{ t.created_at }}</td>
-
+                        <!-- Team Name -->
                         <td>
-                            <a class="outline-btn"
-                               href="{{ url_for('admin_team', team_id=t.id) }}">
-                                View
-                            </a>
-                            {% if t.status == 'Approved' %}
-                            <a class="outline-btn card-btn"
-                               href="{{ url_for('team_id_card', registration_code=t.registration_code) }}"
-                               target="_blank"
-                               title="View / Print Team ID Card">
-                                🪪 ID Card
-                            </a>
+                            <strong class="team-name-primary">{{ t.team_name }}</strong>
+                            {% if t.college_name %}
+                            <span class="team-subtext">{{ t.college_name }}{% if t.college_city %}, {{ t.college_city }}{% endif %}</span>
                             {% else %}
-                            <span class="muted" style="font-size: 11px; display: block; margin-top: 4px;">(Pending Approval)</span>
+                            <span class="team-subtext muted">JG University</span>
                             {% endif %}
+                        </td>
+
+                        <!-- Leader -->
+                        <td>
+                            <div class="leader-cell">
+                                <span class="leader-name">{{ t.leader_name }}</span>
+                                <span class="leader-email">{{ t.leader_email }}</span>
+                                {% if t.leader_phone %}
+                                <span class="leader-phone">{{ t.leader_phone }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+
+                        <!-- Members -->
+                        <td style="text-align: center;">
+                            <span class="member-count-pill" title="{{ 1 + t.member_count }} Total Members">
+                                {{ 1 + t.member_count }}
+                            </span>
+                        </td>
+
+                        <!-- Arenas -->
+                        <td>
+                            {% if t.arena_list %}
+                                <div class="arena-tags-wrap">
+                                    {% for arena_item in t.arena_list.split(',') %}
+                                        <span class="arena-tag-badge {{ arena_item.strip() }}">
+                                            {{ arena_item.strip() }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <span class="muted" style="font-size: 12px;">No arenas assigned</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Photos -->
+                        <td style="text-align: center;">
+                            <span class="photo-count-badge {{ 'has-photos' if t.photo_count > 0 else 'empty' }}">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                                <span>{{ t.photo_count }}</span>
+                            </span>
+                        </td>
+
+                        <!-- Status & Inline Update -->
+                        <td>
+                            <div class="status-cell-wrap">
+                                <span class="badge {{ t.status|lower }}">
+                                    <span class="status-indicator-dot" aria-hidden="true"></span>
+                                    {{ t.status }}
+                                </span>
+
+                                <form method="POST"
+                                      action="{{ url_for('admin_update_status', team_id=t.id) }}"
+                                      class="inline-status-form">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <label for="statusSelect_{{ t.id }}" class="visually-hidden">Update status for {{ t.team_name }}</label>
+                                    <select id="statusSelect_{{ t.id }}" name="status" class="inline-status-select" required>
+                                        {% for s in statuses %}
+                                        <option value="{{ s }}" {% if s == t.status %}selected{% endif %}>
+                                            {{ s }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="admin-btn admin-btn-xs" type="submit" title="Save status change">
+                                        Update
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+
+                        <!-- Created At -->
+                        <td>
+                            <span class="timestamp-text">{{ t.created_at }}</span>
+                        </td>
+
+                        <!-- Details / Actions -->
+                        <td style="text-align: right;">
+                            <div class="row-actions-group">
+                                <a class="admin-btn admin-btn-sm admin-btn-outline"
+                                   href="{{ url_for('admin_team', team_id=t.id) }}"
+                                   title="Inspect team records, projects, and evidence">
+                                    <span>Details</span>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <polyline points="9 18 15 12 9 6"></polyline>
+                                    </svg>
+                                </a>
+
+                                {% if t.status == 'Approved' %}
+                                <a class="admin-btn admin-btn-sm admin-btn-gold"
+                                   href="{{ url_for('team_id_card', registration_code=t.registration_code) }}"
+                                   target="_blank"
+                                   title="View &amp; Print Official Event Credential ID Card">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                                        <circle cx="9" cy="10" r="2"></circle>
+                                        <line x1="15" y1="8" x2="17" y2="8"></line>
+                                        <line x1="15" y1="12" x2="17" y2="12"></line>
+                                        <line x1="7" y1="16" x2="17" y2="16"></line>
+                                    </svg>
+                                    <span>ID Card</span>
+                                </a>
+                                {% endif %}
+                            </div>
                         </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="9">No registrations found.</td>
+                        <td colspan="9">
+                            <div class="admin-empty-state">
+                                <div class="empty-state-icon-box">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    </svg>
+                                </div>
+                                <h3 class="empty-state-title">No Matching Registrations Found</h3>
+                                <p class="empty-state-desc">
+                                    No team records match the search term or status filter. Try clearing query filters to view all entries.
+                                </p>
+                                {% if q or status %}
+                                <div style="margin-top: 14px;">
+                                    <a href="{{ url_for('admin_home') }}" class="admin-btn admin-btn-outline">
+                                        View All Registrations
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -132,5 +285,7 @@
         </div>
     </section>
 </main>
+
+{% include '_footer.html' %}
 </body>
 </html>

@@ -1,28 +1,130 @@
-<header class="site-header">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=JetBrains+Mono:wght@500;600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+/* Accessibility Skip Link (WCAG 2.2 AA) - Embedded defensive styles */
+.skip-link {
+    position: absolute !important;
+    top: -9999px !important;
+    left: 16px !important;
+    background: #9e1c14 !important;
+    color: #ffffff !important;
+    padding: 10px 18px !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 13.5px !important;
+    border-radius: 0 0 8px 8px !important;
+    text-decoration: none !important;
+    z-index: 999999 !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+    transition: top 0.2s ease !important;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+    top: 0 !important;
+    outline: 3px solid #d4af37 !important;
+    outline-offset: 2px !important;
+}
+.visually-hidden-focusable:not(:focus):not(:focus-within) {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+</style>
+<a href="#main-content" class="skip-link visually-hidden-focusable" style="position: absolute; top: -9999px; left: 16px;">Skip to main content</a>
+<header class="site-header" role="banner">
     <div class="header-container">
         <!-- University Logo (Left) -->
         <div class="header-left">
-            <a href="{{ url_for('home') }}" class="univ-logo-link" aria-label="JG University Homepage">
+            <a href="{{ url_for('home') }}" class="univ-logo-link" aria-label="JG University Homepage — TechVerse 2026">
                 <img src="{{ url_for('static', filename='jglogo.png') }}"
                      alt="JG University Logo"
-                     class="univ-logo-img">
+                     class="univ-logo-img"
+                     width="170"
+                     height="36">
             </a>
+            <span class="header-collab-x" aria-hidden="true">×</span>
+            <div class="header-sponsor-wrap" title="Official Title Sponsor: Coding Pro">
+                <img src="{{ url_for('static', filename='codingpro_logo.png') }}"
+                     alt="Coding Pro Logo"
+                     class="header-sponsor-logo"
+                     width="115"
+                     height="34">
+            </div>
         </div>
 
-        <!-- Desktop Navigation Tabs (Center - Exactly 3 tabs) -->
+        <!-- Desktop Navigation Tabs (Center) - Student & Public Navigation -->
         <nav class="desktop-nav" aria-label="Main Navigation">
-            <a href="{{ url_for('home') }}"
-               class="nav-tab-link {% if request.path == '/' or active_tab == 'register' %}active{% endif %}">
-                Registration
+            <a href="{{ url_for('home') }}#registration"
+               class="nav-tab-link {% if request.path == '/' or active_tab == 'register' %}active{% endif %}"
+               {% if request.path == '/' or active_tab == 'register' %}aria-current="page"{% endif %}>
+                <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+                <span>Registration</span>
             </a>
-            <a href="{{ url_for('login') }}"
-               class="nav-tab-link {% if request.path.startswith('/admin') or request.path == '/login' or active_tab == 'admin' %}active{% endif %}">
-                Admin Portal
+            <a href="{{ url_for('home') }}#arenas"
+               class="nav-tab-link"
+               data-scroll-nav="arenas">
+                <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                </svg>
+                <span>Arenas</span>
             </a>
             <a href="{{ url_for('verify_lookup') }}"
-               class="nav-tab-link {% if request.path.startswith('/verify') or active_tab == 'verify' %}active{% endif %}">
-                Verify Team
+               class="nav-tab-link {% if request.path.startswith('/verify') or active_tab == 'verify' %}active{% endif %}"
+               {% if request.path.startswith('/verify') or active_tab == 'verify' %}aria-current="page"{% endif %}>
+                <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <polyline points="9 12 11 14 15 10"></polyline>
+                </svg>
+                <span>Verify Team</span>
             </a>
+            <a href="{{ url_for('id_card_portal') }}"
+               class="nav-tab-link {% if request.path in ('/card', '/id-card') or active_tab == 'card' %}active{% endif %}"
+               {% if request.path in ('/card', '/id-card') or active_tab == 'card' %}aria-current="page"{% endif %}>
+                <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                    <circle cx="9" cy="10" r="2"></circle>
+                    <line x1="15" y1="8" x2="17" y2="8"></line>
+                    <line x1="15" y1="12" x2="17" y2="12"></line>
+                    <line x1="7" y1="16" x2="17" y2="16"></line>
+                </svg>
+                <span>Team ID Card</span>
+            </a>
+            {% if current_user %}
+            <a href="{{ url_for('admin_home') }}"
+               class="nav-tab-link admin-active-tab {% if request.path.startswith('/admin') or request.path == '/login' or active_tab == 'admin' %}active{% endif %}"
+               {% if request.path.startswith('/admin') or request.path == '/login' or active_tab == 'admin' %}aria-current="page"{% endif %}>
+                <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span>Admin Panel ({{ current_user.username }})</span>
+            </a>
+            {% else %}
+            <a href="{{ url_for('login') }}"
+               class="nav-tab-link nav-login-link {% if request.path == '/login' or active_tab == 'login' %}active{% endif %}"
+               {% if request.path == '/login' or active_tab == 'login' %}aria-current="page"{% endif %}>
+                <svg class="nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <span>Login</span>
+            </a>
+            {% endif %}
         </nav>
 
         <!-- TechVerse 2026 Branding (Right) -->
@@ -32,7 +134,7 @@
                 <div class="tv-brand-tagline">INNOVATE · BUILD · TRANSFORM</div>
             </div>
 
-            <!-- Mobile Hamburger Button (Exactly 3 horizontal lines) -->
+            <!-- Mobile Hamburger Button -->
             <button type="button"
                     class="hamburger-btn"
                     id="mobileNavToggle"
@@ -46,24 +148,115 @@
         </div>
     </div>
 
+    <!-- Mobile Drawer Backdrop -->
+    <div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" hidden></div>
+
     <!-- Responsive Mobile Navigation Menu -->
     <nav class="mobile-nav-drawer" id="mobileNavDrawer" aria-label="Mobile Navigation" hidden>
         <div class="mobile-nav-inner">
-            <a href="{{ url_for('home') }}"
+            <div class="mobile-nav-heading">STUDENT PORTAL</div>
+
+            <a href="{{ url_for('home') }}#registration"
                class="mobile-nav-item {% if request.path == '/' or active_tab == 'register' %}active{% endif %}">
-                <span class="icon">📝</span>
-                <span class="label">Registration</span>
+                <span class="icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                </span>
+                <div class="mobile-nav-content">
+                    <span class="label">Team Registration</span>
+                    <span class="sub">Register &amp; Submit Projects</span>
+                </div>
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </a>
-            <a href="{{ url_for('login') }}"
-               class="mobile-nav-item {% if request.path.startswith('/admin') or request.path == '/login' or active_tab == 'admin' %}active{% endif %}">
-                <span class="icon">🔐</span>
-                <span class="label">Admin Portal</span>
+
+            <a href="{{ url_for('home') }}#arenas"
+               class="mobile-nav-item">
+                <span class="icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                    </svg>
+                </span>
+                <div class="mobile-nav-content">
+                    <span class="label">Challenge Arenas</span>
+                    <span class="sub">Explore 6 Specialized Tracks</span>
+                </div>
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </a>
+
             <a href="{{ url_for('verify_lookup') }}"
                class="mobile-nav-item {% if request.path.startswith('/verify') or active_tab == 'verify' %}active{% endif %}">
-                <span class="icon">✓</span>
-                <span class="label">Verify Team</span>
+                <span class="icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        <polyline points="9 12 11 14 15 10"></polyline>
+                    </svg>
+                </span>
+                <div class="mobile-nav-content">
+                    <span class="label">Verify Team Status</span>
+                    <span class="sub">Check Approval &amp; Arenas</span>
+                </div>
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </a>
+
+            <a href="{{ url_for('id_card_portal') }}"
+               class="mobile-nav-item {% if request.path in ('/card', '/id-card') or active_tab == 'card' %}active{% endif %}">
+                <span class="icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                        <circle cx="9" cy="10" r="2"></circle>
+                        <line x1="15" y1="8" x2="17" y2="8"></line>
+                        <line x1="15" y1="12" x2="17" y2="12"></line>
+                        <line x1="7" y1="16" x2="17" y2="16"></line>
+                    </svg>
+                </span>
+                <div class="mobile-nav-content">
+                    <span class="label">Team ID Card</span>
+                    <span class="sub">Official Credential &amp; QR Code</span>
+                </div>
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+
+            <div class="mobile-nav-divider"></div>
+
+            {% if current_user %}
+            <div class="mobile-nav-heading">ADMINISTRATION</div>
+            <a href="{{ url_for('admin_home') }}"
+               class="mobile-nav-item admin-item {% if request.path.startswith('/admin') or request.path == '/login' or active_tab == 'admin' %}active{% endif %}">
+                <span class="icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                </span>
+                <div class="mobile-nav-content">
+                    <span class="label">Admin Panel</span>
+                    <span class="sub">Logged in as {{ current_user.username }} ({{ current_user.role }})</span>
+                </div>
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+            {% else %}
+            <a href="{{ url_for('login') }}"
+               class="mobile-nav-item login-item {% if request.path == '/login' or active_tab == 'login' %}active{% endif %}">
+                <span class="icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </span>
+                <div class="mobile-nav-content">
+                    <span class="label">Staff Login</span>
+                    <span class="sub">Admins &amp; Judges</span>
+                </div>
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+            {% endif %}
         </div>
     </nav>
 </header>
@@ -72,18 +265,23 @@
     function setupMobileNav() {
         var toggle = document.getElementById('mobileNavToggle');
         var drawer = document.getElementById('mobileNavDrawer');
+        var backdrop = document.getElementById('mobileDrawerBackdrop');
         if (!toggle || !drawer) return;
 
         function closeNav() {
             toggle.setAttribute('aria-expanded', 'false');
             toggle.classList.remove('is-active');
             drawer.hidden = true;
+            if (backdrop) backdrop.hidden = true;
+            document.body.classList.remove('nav-open');
         }
 
         function openNav() {
             toggle.setAttribute('aria-expanded', 'true');
             toggle.classList.add('is-active');
             drawer.hidden = false;
+            if (backdrop) backdrop.hidden = false;
+            document.body.classList.add('nav-open');
         }
 
         toggle.addEventListener('click', function(e) {
@@ -95,6 +293,12 @@
                 openNav();
             }
         });
+
+        if (backdrop) {
+            backdrop.addEventListener('click', function() {
+                closeNav();
+            });
+        }
 
         document.addEventListener('click', function(e) {
             if (!drawer.hidden && !drawer.contains(e.target) && e.target !== toggle && !toggle.contains(e.target)) {

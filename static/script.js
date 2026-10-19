@@ -63,44 +63,46 @@ function setMode(mode) {
     : "Create account";
 }
 
-loginTab.addEventListener("click", () => setMode("login"));
-registerTab.addEventListener("click", () => setMode("register"));
+if (authForm && loginTab && registerTab && switchButton) {
+  loginTab.addEventListener("click", () => setMode("login"));
+  registerTab.addEventListener("click", () => setMode("register"));
 
-switchButton.addEventListener("click", () => {
-  setMode(currentMode === "login" ? "register" : "login");
-});
+  switchButton.addEventListener("click", () => {
+    setMode(currentMode === "login" ? "register" : "login");
+  });
 
-authForm.addEventListener("submit", (event) => {
-  event.preventDefault();
+  authForm.addEventListener("submit", (event) => {
+    event.preventDefault();
 
-  const email = document.getElementById("email").value.trim();
-  const password = passwordInput.value;
+    const email = document.getElementById("email") ? document.getElementById("email").value.trim() : "";
+    const password = passwordInput ? passwordInput.value : "";
 
-  if (!email || !password) {
-    showMessage("Please fill in all required fields.");
-    return;
-  }
-
-  if (password.length < 8) {
-    showMessage("Password must be at least 8 characters.");
-    return;
-  }
-
-  if (currentMode === "register") {
-    if (nameInput.value.trim().length < 2) {
-      showMessage("Please enter your full name.");
+    if (!email || !password) {
+      showMessage("Please fill in all required fields.");
       return;
     }
 
-    if (!/^[0-9]{10}$/.test(phoneInput.value.trim())) {
-      showMessage("Enter a valid 10-digit mobile number.");
+    if (password.length < 8) {
+      showMessage("Password must be at least 8 characters.");
       return;
     }
-  }
 
-  showMessage(
-    currentMode === "register"
-      ? "Form validated! Backend connection is our next step."
-      : "Form validated! Real login will work after backend setup."
-  );
-});
+    if (currentMode === "register") {
+      if (nameInput && nameInput.value.trim().length < 2) {
+        showMessage("Please enter your full name.");
+        return;
+      }
+
+      if (phoneInput && !/^[0-9]{10}$/.test(phoneInput.value.trim())) {
+        showMessage("Enter a valid 10-digit mobile number.");
+        return;
+      }
+    }
+
+    showMessage(
+      currentMode === "register"
+        ? "Form validated! Backend connection is our next step."
+        : "Form validated! Real login will work after backend setup."
+    );
+  });
+}

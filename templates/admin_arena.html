@@ -3,93 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ arena_name or 'Arenas' }} | TechVerse Admin</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='team-registration.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <title>{{ arena_name or 'Arena Tracks' }} | TechVerse Operations</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='team-registration.css') }}?v=9.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}?v=9.0">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
-<body>
+<body class="admin-body">
 {% set active_tab = 'admin' %}
 {% include '_header.html' %}
 
-<main class="container">
+<main class="container admin-container" id="main-content">
     {% include '_admin_nav.html' %}
 
-    <section class="card">
-        {% if not arena_name %}
-        <div class="section-heading"><div><h2>Select an Arena</h2>
-            <p>Click an arena to see all of its teams.</p></div></div>
-        <div class="arena-cards">
+    {% if not arena_name %}
+    <!-- ARENA SELECTION DASHBOARD -->
+    <header class="admin-page-header">
+        <div class="admin-header-main">
+            <p class="admin-eyebrow">
+                <span class="admin-eyebrow-tag">ARENA OPERATIONS</span>
+                {% if current_user.role == 'judge' %}
+                <span>ASSIGNED JUDGE TRACKS</span>
+                {% else %}
+                <span>ALL COMPETITION ARENAS</span>
+                {% endif %}
+            </p>
+            <h1 class="admin-page-title">Arena Engineering Tracks</h1>
+            <p class="admin-page-desc">
+                {% if current_user.role == 'judge' %}
+                Select one of your authorized arena tracks to review assigned team submissions, engineering problem statements, and repository artifacts.
+                {% else %}
+                Inspect submissions partitioned by technical domain, verify track-specific problem statements, and monitor arena review progress.
+                {% endif %}
+            </p>
+        </div>
+    </header>
+
+    <section class="admin-card card">
+        <div class="admin-card-header section-heading">
+            <span class="section-indicator-num number">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+            </span>
+            <div>
+                <h2 class="admin-card-title">Select an Arena Track</h2>
+                <p class="admin-card-subtitle">Choose an arena to review projects, repository links, and architectural evidence.</p>
+            </div>
+        </div>
+
+        <div class="admin-arena-deck arena-cards">
             {% for a in arenas %}
-            <a href="{{ url_for('admin_arena', arena_name=a) }}">
-                <strong>{{ a }}</strong>
-                <span>{{ counts.get(a, 0) }} teams</span>
+            <a href="{{ url_for('admin_arena', arena_name=a) }}" class="admin-arena-launch-card">
+                <div class="arena-card-top">
+                    <span class="arena-tag-badge {{ a }}">{{ a }} Track</span>
+                    <span class="arena-team-badge">
+                        <strong>{{ counts.get(a, 0) }}</strong> project{{ 's' if counts.get(a, 0) != 1 else '' }}
+                    </span>
+                </div>
+                <div class="arena-card-body">
+                    <h3 class="arena-card-title">{{ a }}</h3>
+                    <p class="arena-card-desc">
+                        {% if a == 'Buddhi' %}AI Model Building, Machine Learning &amp; Predictive Systems
+                        {% elif a == 'Fiontar' %}Startup Incubation, Venture Pitch &amp; Business Models
+                        {% elif a == 'Talos' %}Robotics Engineering, Embedded Systems &amp; Hardware
+                        {% elif a == 'Pegasus' %}Drone Technology, Flight Controls &amp; Aerial Robotics
+                        {% elif a == 'Promethia' %}Competitive Algorithmic Coding &amp; Software Systems
+                        {% elif a == 'Mercatus' %}FinTech, Trading Strategies &amp; Financial Analytics
+                        {% else %}Engineering Competition Track
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="arena-card-footer">
+                    <span>Enter Track Console</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </div>
             </a>
             {% endfor %}
         </div>
-        {% else %}
-        <div class="chips">
-            {% for a in arenas %}
-            <a href="{{ url_for('admin_arena', arena_name=a) }}"
-               class="{{ 'active' if a == arena_name }}">{{ a }} ({{ counts.get(a, 0) }})</a>
-            {% endfor %}
-        </div>
-        {% endif %}
     </section>
 
-    {% if arena_name %}
-    <p class="muted" style="color:#bbb">{{ arena_name }} — Total: {{ entries|length }} teams</p>
+    {% else %}
+    <!-- DEDICATED ARENA TRACK VIEW -->
+    <header class="admin-page-header">
+        <div class="admin-header-main">
+            <p class="admin-eyebrow">
+                <span class="admin-eyebrow-tag">ARENA TRACK</span>
+                <span>{{ arena_name|upper }} · TECHVERSE 2026</span>
+            </p>
+            <h1 class="admin-page-title">{{ arena_name }} Arena Console</h1>
+            <p class="admin-page-desc">
+                Reviewing {{ entries|length }} submitted project{{ 's' if entries|length != 1 else '' }} registered for the {{ arena_name }} technical track.
+            </p>
+        </div>
+    </header>
 
+    <!-- Horizontal Arena Switcher Bar -->
+    <div class="admin-arena-switcher-bar chips" role="navigation" aria-label="Arena Tracks">
+        {% for a in arenas %}
+        <a href="{{ url_for('admin_arena', arena_name=a) }}"
+           class="switcher-chip {{ 'active' if a == arena_name }}"
+           {% if a == arena_name %}aria-current="page"{% endif %}>
+            <span>{{ a }}</span>
+            <span class="switcher-count">({{ counts.get(a, 0) }})</span>
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Arena Submissions Stream -->
     {% for e in entries %}
     {% set r = e.row %}
-    <section class="card">
-        <div class="entry-head">
-            <h2>{{ loop.index }}. {{ r.team_name }}
-                <small class="muted">({{ r.registration_code }})</small></h2>
-            <span>
-                <span class="badge {{ r.status|lower }}">{{ r.status }}</span>
+    <section class="admin-card card arena-entry-card" id="project-{{ r.id }}">
+        <!-- Entry Header -->
+        <div class="arena-entry-header entry-head">
+            <div class="entry-title-wrap">
+                <span class="entry-index-pill">{{ loop.index }}</span>
+                <div class="entry-titles">
+                    <h2 class="entry-team-name">
+                        {{ r.team_name }}
+                        {% if r.title %}
+                        <span class="entry-project-title">— {{ r.title }}</span>
+                        {% endif %}
+                    </h2>
+                    <div class="entry-subtitles">
+                        <span class="code-pill code-pill-sm">
+                            <code>{{ r.registration_code }}</code>
+                        </span>
+                        <span class="entry-meta-item">Team No: {{ r.team_number or 'N/A' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="entry-actions-top">
+                <span class="badge {{ r.status|lower }}">
+                    <span class="status-indicator-dot" aria-hidden="true"></span>
+                    {{ r.status }}
+                </span>
                 {% if current_user.role == 'admin' %}
-                <a class="outline-btn" href="{{ url_for('admin_team', team_id=r.team_id) }}">Full team</a>
+                <a class="admin-btn admin-btn-sm admin-btn-outline outline-btn" href="{{ url_for('admin_team', team_id=r.team_id) }}">
+                    <span>Full Team Details →</span>
+                </a>
                 {% endif %}
-            </span>
+            </div>
         </div>
 
-        <p class="members-line">
-            {% if current_user.role == 'admin' %}Leader: {{ r.leader_name }} · {{ r.leader_email }} · {{ r.leader_phone }}<br>{% endif %}
-            Members: {% for m in e.members %}{{ m.name }} (Sec {{ m.section }}, Year {{ m.year }}){{ ', ' if not loop.last }}{% endfor %}
-        </p>
-
-        <h3>Problem Statement</h3>
-        <p class="prewrap">{{ r.problem_statement }}</p>
-
-        <h3>Proposed Solution</h3>
-        <p class="prewrap">{{ r.proposed_solution }}</p>
-
-        <h3>GitHub</h3>
-        {% if r.github_link %}
-        <p><a href="{{ r.github_link }}" target="_blank" rel="noopener noreferrer">{{ r.github_link }}</a></p>
-        {% else %}<p class="muted">Not provided</p>{% endif %}
-
-        <h3>Evidence Photos ({{ e.photos|length }})</h3>
-        <div class="photo-grid">
-            {% for p in e.photos %}
-                {% if p.exists %}
-                <a href="{{ url_for('admin_file', stored_name=p.stored_name) }}" target="_blank">
-                    <img src="{{ url_for('admin_file', stored_name=p.stored_name) }}"
-                         alt="{{ p.original_name }}" loading="lazy">
-                    <small>{{ p.original_name }}</small>
-                </a>
-                {% else %}
-                <div class="missing">⚠ File missing on disk<br><small>{{ p.stored_name }}</small></div>
-                {% endif %}
+        <!-- Participants & Leadership -->
+        <div class="arena-roster-strip members-line">
+            {% if current_user.role == 'admin' %}
+            <div class="leader-contact-row">
+                <span class="roster-role-tag">Team Leader:</span>
+                <strong>{{ r.leader_name }}</strong>
+                <span class="contact-sep">·</span>
+                <code>{{ r.leader_email }}</code>
+                <span class="contact-sep">·</span>
+                <span>{{ r.leader_phone }}</span>
+            </div>
             {% else %}
-            <p class="muted">No photos found.</p>
-            {% endfor %}
+            <div class="leader-contact-row">
+                <span class="roster-role-tag">Team Leader:</span>
+                <strong>{{ r.leader_name }}</strong>
+            </div>
+            {% endif %}
+
+            <div class="members-roster-row">
+                <span class="roster-role-tag">Team Members ({{ e.members|length }}):</span>
+                {% for m in e.members %}
+                <span class="member-name-tag">
+                    {{ m.name }}
+                    <small>(Sec {{ m.section or 'N/A' }}, Year {{ m.year or 'N/A' }})</small>{{ ',' if not loop.last else '' }}
+                </span>
+                {% else %}
+                <span class="muted">No additional members</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Problem Statement -->
+        <div class="project-statement-block">
+            <h3 class="technical-subheading">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span>Problem Statement</span>
+            </h3>
+            <p class="prewrap statement-text">{{ r.problem_statement }}</p>
+        </div>
+
+        <!-- Proposed Solution -->
+        <div class="project-statement-block">
+            <h3 class="technical-subheading">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Proposed Solution &amp; Technical Approach</span>
+            </h3>
+            <p class="prewrap statement-text">{{ r.proposed_solution }}</p>
+        </div>
+
+        <!-- GitHub Repository Link -->
+        <div class="project-github-block">
+            <h3 class="technical-subheading">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+                <span>GitHub Repository</span>
+            </h3>
+            {% if r.github_link %}
+            <div class="repo-display-card">
+                <svg class="github-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                </svg>
+                <a href="{{ r.github_link }}" target="_blank" rel="noopener noreferrer" class="repo-url-link">
+                    {{ r.github_link }}
+                </a>
+                <button type="button" class="admin-copy-repo-btn copy-repo-btn" data-clipboard="{{ r.github_link }}" title="Copy repository link" aria-label="Copy repository link">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy</span>
+                </button>
+            </div>
+            {% else %}
+            <p class="muted no-repo-text">No GitHub repository link provided.</p>
+            {% endif %}
+        </div>
+
+        <!-- Evidence Photos -->
+        <div class="project-evidence-section">
+            <h3 class="technical-subheading">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <span>Evidence Photos &amp; Architecture Diagrams ({{ e.photos|length }})</span>
+            </h3>
+
+            <div class="admin-photo-grid photo-grid">
+                {% for p in e.photos %}
+                    {% if p.exists %}
+                    <a href="{{ url_for('admin_file', stored_name=p.stored_name) }}" target="_blank" rel="noopener noreferrer" class="admin-photo-card" title="Click to open full-resolution image">
+                        <div class="photo-img-wrap">
+                            <img src="{{ url_for('admin_file', stored_name=p.stored_name) }}"
+                                 alt="{{ p.original_name }}"
+                                 loading="lazy">
+                        </div>
+                        <div class="photo-meta">
+                            <span class="photo-filename">{{ p.original_name }}</span>
+                            <span class="photo-inspect-tag">Inspect ↗</span>
+                        </div>
+                    </a>
+                    {% else %}
+                    <div class="admin-photo-missing missing" role="alert">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span>File Missing on Disk<br><small><code>{{ p.stored_name }}</code></small></span>
+                    </div>
+                    {% endif %}
+                {% else %}
+                <div class="admin-empty-photos muted">
+                    <p>No photos found.</p>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </section>
     {% else %}
-    <section class="card"><p class="muted">There are no teams in this arena yet.</p></section>
+    <section class="admin-card card">
+        <div class="admin-empty-state">
+            <div class="empty-state-icon-box">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+            </div>
+            <h3 class="empty-state-title">No Projects in this Arena</h3>
+            <p class="empty-state-desc muted">There are no teams in this arena yet.</p>
+        </div>
+    </section>
     {% endfor %}
     {% endif %}
 </main>
+
+{% include '_footer.html' %}
 </body>
 </html>

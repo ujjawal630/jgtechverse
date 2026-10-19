@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Repositories Management | TechVerse Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='team-registration.css') }}?v=9.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}?v=9.0">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body class="admin-body">
+{% set active_tab = 'admin' %}
+{% include '_header.html' %}
+
+<main class="container admin-container" id="main-content">
+    {% include '_admin_nav.html' %}
+
+    <!-- Page Header -->
+    <header class="admin-page-header">
+        <div class="admin-header-main">
+            <p class="admin-eyebrow">
+                <span class="admin-eyebrow-tag">CODE REGISTRY</span>
+                <span>ADMINISTRATIVE ARTIFACT AUDIT</span>
+            </p>
+            <h1 class="admin-page-title">GitHub Project Repositories</h1>
+            <p class="admin-page-desc">
+                Centralized directory of submitted project source code repositories across all competition arena tracks, structured for technical code audits, AI evaluation, and export workflows.
+            </p>
+        </div>
+    </header>
+
+    <!-- Operational KPI Metrics Strip -->
+    <section class="admin-kpi-strip" aria-label="Repository Statistics">
+        <div class="admin-kpi-card total">
+            <div class="kpi-header">
+                <span class="kpi-label">Filtered Projects</span>
+                <span class="kpi-icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-value">{{ projects|length }}</div>
+            <div class="kpi-subtext">Shown in active view</div>
+        </div>
+
+        <div class="admin-kpi-card">
+            <div class="kpi-header">
+                <span class="kpi-label">Total Submissions</span>
+                <span class="kpi-indicator" aria-hidden="true"></span>
+            </div>
+            <div class="kpi-value">{{ total_projects }}</div>
+            <div class="kpi-subtext">Across all arena tracks</div>
+        </div>
+
+        <div class="admin-kpi-card approved">
+            <div class="kpi-header">
+                <span class="kpi-label">Repositories On File</span>
+                <span class="kpi-indicator approved" aria-hidden="true"></span>
+            </div>
+            <div class="kpi-value">{{ repo_count }}</div>
+            <div class="kpi-subtext">Validated GitHub URLs</div>
+        </div>
+    </section>
+
+    <!-- Main Table Card -->
+    <section class="admin-card card">
+        <!-- Search & Filter Controls Toolbar -->
+        <div class="admin-toolbar">
+            <form method="get" class="admin-search-form" role="search" aria-label="Filter repositories">
+                <div class="admin-search-field">
+                    <svg class="admin-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <label for="repoSearchInput" class="visually-hidden">Search repositories</label>
+                    <input
+                        type="search"
+                        id="repoSearchInput"
+                        name="q"
+                        value="{{ q }}"
+                        placeholder="Search team name, project title, or registration ID..."
+                        aria-label="Search repositories"
+                        class="admin-input-search"
+                    >
+                    {% if q %}
+                    <a href="{{ url_for('admin_repositories', arena=arena, status=status) }}" class="search-clear-btn" title="Clear query" aria-label="Clear search">✕</a>
+                    {% endif %}
+                </div>
+
+                <div class="admin-select-field">
+                    <label for="repoArenaSelect" class="visually-hidden">Filter by Arena</label>
+                    <select id="repoArenaSelect" name="arena" class="admin-select">
+                        <option value="">All Arenas</option>
+                        {% for a in arenas %}
+                        <option value="{{ a }}" {% if a == arena %}selected{% endif %}>{{ a }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="admin-select-field">
+                    <label for="repoStatusSelect" class="visually-hidden">Filter by Status</label>
+                    <select id="repoStatusSelect" name="status" class="admin-select">
+                        <option value="">All Statuses</option>
+                        {% for s in statuses %}
+                        <option value="{{ s }}" {% if s == status %}selected{% endif %}>{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button class="admin-btn admin-btn-primary" type="submit">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                    <span>Filter</span>
+                </button>
+
+                {% if q or arena or status %}
+                <a href="{{ url_for('admin_repositories') }}" class="admin-btn admin-btn-ghost">Reset</a>
+                {% endif %}
+
+                <div class="toolbar-spacer"></div>
+
+                <!-- Export & Batch Actions -->
+                <button type="button" class="admin-btn admin-btn-outline copy-all-btn" id="copyAllReposBtn" title="Copy all visible repository URLs to clipboard">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span id="copyAllText">Copy All URLs</span>
+                </button>
+
+                <a
+                    href="{{ url_for('admin_repositories_export', q=q, arena=arena, status=status) }}"
+                    class="admin-btn admin-btn-primary export-btn"
+                    id="exportCsvBtn"
+                    title="Download filtered project repository records as CSV"
+                >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Export CSV</span>
+                </a>
+            </form>
+        </div>
+
+        <!-- Dense Repositories Table -->
+        <div class="table-wrapper admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 120px;">Reg ID</th>
+                        <th scope="col" style="min-width: 170px;">Team Name</th>
+                        <th scope="col" style="min-width: 190px;">Project Title</th>
+                        <th scope="col" style="width: 130px;">Arena Track</th>
+                        <th scope="col" style="min-width: 250px;">GitHub Repository URL</th>
+                        <th scope="col" style="width: 120px;">Status</th>
+                        <th scope="col" style="text-align: right; width: 100px;">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                {% for p in projects %}
+                    <tr class="admin-row" data-github-url="{{ p.github_link or '' }}">
+                        <!-- Registration ID -->
+                        <td>
+                            <span class="code-pill code-pill-sm">
+                                <code>{{ p.registration_code }}</code>
+                            </span>
+                        </td>
+
+                        <!-- Team Name -->
+                        <td>
+                            <strong class="team-name-primary">{{ p.team_name }}</strong>
+                            {% if p.team_number %}
+                            <span class="team-subtext">{{ p.team_number }}</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Project Title -->
+                        <td>
+                            <span class="project-title-text">{{ p.project_title if p.project_title else (p.arena_name ~ ' Project') }}</span>
+                            {% if p.flagged_for_review %}
+                            <span class="review-flag" title="Flagged for review">Review Flag</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Arena Track -->
+                        <td>
+                            <span class="arena-tag-badge {{ p.arena_name }}">
+                                {{ p.arena_name }}
+                            </span>
+                        </td>
+
+                        <!-- GitHub Link -->
+                        <td>
+                            {% if p.github_link %}
+                            <div class="repo-url-cell">
+                                <a
+                                    href="{{ p.github_link }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="repo-link"
+                                    title="{{ p.github_link }}"
+                                >
+                                    {{ p.github_link }}
+                                </a>
+                                <button
+                                    type="button"
+                                    class="copy-repo-btn admin-copy-repo-btn"
+                                    data-url="{{ p.github_link }}"
+                                    title="Copy repository URL"
+                                    aria-label="Copy GitHub URL"
+                                >
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                    <span>Copy</span>
+                                </button>
+                            </div>
+                            {% else %}
+                            <span class="muted" style="font-size: 12px;">Not provided</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Status -->
+                        <td>
+                            <span class="badge {{ (p.registration_status or p.status)|lower }}">
+                                <span class="status-indicator-dot" aria-hidden="true"></span>
+                                {{ p.registration_status or p.status }}
+                            </span>
+                        </td>
+
+                        <!-- Actions -->
+                        <td style="text-align: right;">
+                            <a class="admin-btn admin-btn-sm admin-btn-outline"
+                               href="{{ url_for('admin_team', team_id=p.team_id) }}"
+                               title="Inspect full team record">
+                                <span>Inspect</span>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="admin-empty-state">
+                                <div class="empty-state-icon-box">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <polyline points="16 18 22 12 16 6"></polyline>
+                                        <polyline points="8 6 2 12 8 18"></polyline>
+                                    </svg>
+                                </div>
+                                <h3 class="empty-state-title">No Matching Repositories</h3>
+                                <p class="empty-state-desc">
+                                    No project repositories match the current search query or arena filter.
+                                </p>
+                                {% if q or arena or status %}
+                                <div style="margin-top: 14px;">
+                                    <a href="{{ url_for('admin_repositories') }}" class="admin-btn admin-btn-outline">
+                                        View All Repositories
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<script>
+    // Copy single repo URL handler
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.copy-repo-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var url = this.getAttribute('data-url');
+                if (!url) return;
+                var button = this;
+                navigator.clipboard.writeText(url).then(function () {
+                    var originalHtml = button.innerHTML;
+                    button.classList.add('copied');
+                    button.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
+                    setTimeout(function () {
+                        button.innerHTML = originalHtml;
+                        button.classList.remove('copied');
+                    }, 1800);
+                }).catch(function () {
+                    // Fallback
+                    var ta = document.createElement('textarea');
+                    ta.value = url;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                });
+            });
+        });
+
+        // Copy all visible repository URLs
+        var copyAllBtn = document.getElementById('copyAllReposBtn');
+        if (copyAllBtn) {
+            copyAllBtn.addEventListener('click', function () {
+                var urls = [];
+                document.querySelectorAll('.admin-row').forEach(function (row) {
+                    var u = row.getAttribute('data-github-url');
+                    if (u && u.trim().length > 0) {
+                        urls.push(u.trim());
+                    }
+                });
+
+                if (urls.length === 0) {
+                    alert('No repository URLs available in current view.');
+                    return;
+                }
+
+                var combined = urls.join('\n');
+                navigator.clipboard.writeText(combined).then(function () {
+                    var label = document.getElementById('copyAllText');
+                    var orig = label.textContent;
+                    copyAllBtn.classList.add('copied');
+                    label.textContent = 'Copied ' + urls.length + ' URLs!';
+                    setTimeout(function () {
+                        label.textContent = orig;
+                        copyAllBtn.classList.remove('copied');
+                    }, 2200);
+                });
+            });
+        }
+    });
+</script>
+
+{% include '_footer.html' %}
+</body>
+</html>

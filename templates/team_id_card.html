@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team ID Card | {{ registration_code }} | TechVerse 2026</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='team-registration.css') }}">
+    <title>Team ID Card{% if registration_code %} | {{ registration_code }}{% endif %} | TechVerse 2026</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='team-registration.css') }}?v=9.0">
     <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 
     <style>
@@ -14,10 +14,305 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 30px 16px 60px;
+            padding: 36px 16px 60px;
+            box-sizing: border-box;
+            width: 100%;
         }
 
-        /* Printable ID Card Container */
+        /* --------------------------------------------------
+           TWO-COLUMN PORTAL RETRIEVAL COMPOSITION
+           -------------------------------------------------- */
+        .idcard-portal-container {
+            width: 100%;
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: clamp(32px, 5vw, 60px) 20px;
+            box-sizing: border-box;
+        }
+
+        .idcard-portal-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: clamp(36px, 4.5vw, 60px);
+            align-items: start;
+            box-sizing: border-box;
+        }
+
+        /* Left Column: Information Section */
+        .idcard-info-col {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .idcard-badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: var(--color-crimson-light, #fdf2f4);
+            border: 1px solid var(--color-crimson-border, #fecdd3);
+            border-radius: var(--radius-pill, 9999px);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-crimson, #9e1c14);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            width: fit-content;
+        }
+
+        .idcard-hero-title {
+            font-family: var(--font-heading, 'Archivo', sans-serif);
+            font-size: clamp(26px, 3.2vw, 34px);
+            font-weight: 700;
+            color: var(--color-text-primary, #111827);
+            line-height: 1.18;
+            margin: 0;
+        }
+
+        .idcard-hero-desc {
+            font-size: 15px;
+            color: var(--color-text-muted, #64748b);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .idcard-guidance-deck {
+            margin: 8px 0 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .idcard-guidance-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13.5px;
+            color: var(--color-text-body, #374151);
+            line-height: 1.45;
+        }
+
+        .idcard-guidance-icon {
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            color: var(--color-crimson, #9e1c14);
+            margin-top: 2px;
+        }
+
+        .idcard-guidance-item strong {
+            color: var(--color-text-primary, #111827);
+            font-weight: 600;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .idcard-guidance-item p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--color-text-muted, #64748b);
+        }
+
+        .idcard-nav-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .idcard-nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-text-primary, #111827);
+            padding: 8px 14px;
+            background: #ffffff;
+            border: 1px solid var(--color-border-subtle, #e5e7eb);
+            border-radius: var(--radius-sm, 6px);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .idcard-nav-btn:hover {
+            border-color: var(--color-crimson, #9e1c14);
+            color: var(--color-crimson, #9e1c14);
+            background: #fafafa;
+        }
+
+        /* Right Column: Retrieval Section Card */
+        .idcard-retrieval-card {
+            background: #ffffff;
+            border: 1px solid var(--color-border-subtle, #e5e7eb);
+            border-top: 3.5px solid var(--color-crimson, #9e1c14);
+            border-radius: 12px;
+            padding: clamp(24px, 3vw, 32px) clamp(20px, 3vw, 28px);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.03);
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .idcard-card-header {
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--color-border-subtle, #e5e7eb);
+        }
+
+        .idcard-card-title {
+            font-family: var(--font-heading, 'Archivo', sans-serif);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-text-primary, #111827);
+            margin: 0 0 4px;
+            line-height: 1.2;
+        }
+
+        .idcard-card-subtitle {
+            font-size: 13px;
+            color: var(--color-text-muted, #64748b);
+            margin: 0;
+            line-height: 1.45;
+        }
+
+        .idcard-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .idcard-input-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .idcard-code-input {
+            width: 100%;
+            height: 46px;
+            padding: 0 14px;
+            font-family: var(--font-mono, 'JetBrains Mono', monospace);
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #0f172a;
+            background: #f8fafc;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: all 0.18s ease;
+        }
+
+        .idcard-code-input:focus {
+            background: #ffffff;
+            border-color: var(--color-crimson, #9e1c14);
+            box-shadow: 0 0 0 3px rgba(158, 28, 20, 0.12);
+            outline: none;
+        }
+
+        .idcard-input-hint {
+            font-size: 12px;
+            color: var(--color-text-muted, #64748b);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-lookup-submit {
+            width: 100%;
+            height: 44px;
+            background: var(--color-crimson, #9e1c14);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-family: var(--font-body, 'Source Sans 3', sans-serif);
+            font-size: 14.5px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px var(--color-crimson-glow, rgba(158, 28, 20, 0.22));
+            transition: all 0.18s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-lookup-submit:hover {
+            background: var(--color-crimson-hover, #7a1018);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(158, 28, 20, 0.32);
+        }
+
+        .idcard-status-banner {
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            line-height: 1.45;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .idcard-status-banner.error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .idcard-status-banner.warning {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+
+        .idcard-status-banner.warning strong {
+            color: #78350f;
+        }
+
+        .portal-inline-link {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--color-crimson, #9e1c14);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .portal-inline-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Mobile Stacking for Portal */
+        @media (max-width: 820px) {
+            .idcard-portal-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .idcard-guidance-deck {
+                display: none;
+            }
+
+            .idcard-nav-actions {
+                margin-top: 4px;
+            }
+        }
+
+        /* --------------------------------------------------
+           PRINTABLE OFFICIAL ID CARD STYLES
+           -------------------------------------------------- */
+        .id-card-approved-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
         .official-id-card {
             width: 380px;
             max-width: 100%;
@@ -25,15 +320,16 @@
             border: 3px solid #d4af37;
             border-radius: 18px;
             overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14);
             position: relative;
             text-align: center;
             color: #171717;
+            margin: 0 auto;
         }
 
         /* Header of Card */
         .id-card-header {
-            background: #9e2028;
+            background: linear-gradient(135deg, #7a1018 0%, #9e1c14 100%);
             color: #ffffff;
             padding: 24px 18px 20px;
             border-bottom: 4px solid #d4af37;
@@ -49,18 +345,20 @@
         }
 
         .id-card-univ-sub {
+            font-family: var(--font-mono, 'JetBrains Mono', monospace);
             font-size: 10px;
-            letter-spacing: 2.5px;
+            letter-spacing: 1.5px;
             color: #f2dca7;
-            font-weight: 700;
+            font-weight: 600;
             text-transform: uppercase;
             margin-bottom: 14px;
         }
 
         .id-card-fest-title {
-            font-size: 28px;
-            font-weight: 900;
-            letter-spacing: 2px;
+            font-family: var(--font-heading, 'Archivo', sans-serif);
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
             color: #ffffff;
             line-height: 1.15;
             margin-bottom: 4px;
@@ -72,15 +370,16 @@
 
         .id-card-badge {
             display: inline-block;
-            background: rgba(0, 0, 0, 0.25);
+            background: rgba(0, 0, 0, 0.28);
             border: 1px solid #d4af37;
             border-radius: 99px;
             padding: 3px 12px;
+            font-family: var(--font-mono, 'JetBrains Mono', monospace);
             font-size: 10px;
-            letter-spacing: 2px;
+            letter-spacing: 1.2px;
             color: #f2dca7;
             margin-top: 6px;
-            font-weight: 700;
+            font-weight: 600;
         }
 
         /* Card Content */
@@ -90,18 +389,20 @@
         }
 
         .id-card-field-label {
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            color: #777777;
+            font-family: var(--font-body, 'Source Sans 3', sans-serif);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            color: #64748b;
             text-transform: uppercase;
             margin-bottom: 4px;
         }
 
         .id-card-team-name {
+            font-family: var(--font-heading, 'Archivo', sans-serif);
             font-size: 22px;
-            font-weight: 900;
-            color: #111111;
+            font-weight: 700;
+            color: #0f172a;
             line-height: 1.25;
             margin-bottom: 16px;
             overflow-wrap: anywhere;
@@ -109,7 +410,7 @@
 
         /* Code highlight box */
         .id-card-code-box {
-            background: #fff8e8;
+            background: #fffdf5;
             border: 1.5px solid #d4af37;
             border-radius: 10px;
             padding: 10px 12px;
@@ -117,11 +418,11 @@
         }
 
         .id-card-code-val {
-            font-size: 24px;
-            font-weight: 900;
-            color: #9e2028;
-            letter-spacing: 1.5px;
-            font-family: monospace;
+            font-size: 22px;
+            font-weight: 700;
+            color: #9e1c14;
+            letter-spacing: 1px;
+            font-family: var(--font-mono, 'JetBrains Mono', monospace);
         }
 
         /* QR Frame */
@@ -130,13 +431,13 @@
             height: 160px;
             margin: 0 auto 10px;
             background: #ffffff;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 6px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
         }
 
         .id-card-qr-img {
@@ -147,26 +448,67 @@
         }
 
         .id-card-scan-text {
-            font-size: 10px;
-            letter-spacing: 2px;
-            font-weight: 800;
-            color: #333333;
+            font-family: var(--font-body, 'Source Sans 3', sans-serif);
+            font-size: 11px;
+            letter-spacing: 0.8px;
+            font-weight: 600;
+            color: #334155;
         }
 
         /* Card Footer */
         .id-card-footer {
-            background: #111111;
+            background: #111827;
             color: #d4af37;
-            padding: 12px 10px;
-            font-size: 10px;
-            letter-spacing: 2px;
-            font-weight: 700;
+            padding: 12px 14px;
+            font-family: var(--font-body, 'Source Sans 3', sans-serif);
+            font-size: 11px;
+            letter-spacing: 0.6px;
+            font-weight: 600;
             border-top: 3px solid #d4af37;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .id-card-footer-title {
+            font-size: 10.5px;
+            letter-spacing: 0.8px;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+
+        .id-card-sponsor-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 3px 10px;
+            border-radius: 4px;
+        }
+
+        .id-card-sponsor-label {
+            font-family: var(--font-mono, monospace);
+            font-size: 8px;
+            letter-spacing: 1.2px;
+            color: #94a3b8;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .id-card-sponsor-logo {
+            height: 18px;
+            width: auto;
+            max-width: 95px;
+            object-fit: contain;
+            display: block;
         }
 
         /* Actions bar */
         .id-card-actions {
-            margin-top: 26px;
+            margin-top: 28px;
             display: flex;
             gap: 12px;
             justify-content: center;
@@ -174,21 +516,26 @@
         }
 
         .btn-print-action {
-            background: #9e2028;
+            background: var(--color-crimson);
             color: #ffffff;
             border: none;
             padding: 12px 24px;
             border-radius: 8px;
+            font-family: var(--font-body, 'Source Sans 3', sans-serif);
             font-size: 15px;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(158, 32, 40, 0.45);
+            box-shadow: 0 4px 14px rgba(158, 28, 20, 0.35);
             transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-print-action:hover {
-            background: #7a141b;
+            background: #7a1018;
             transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(158, 28, 20, 0.45);
         }
 
         /* Print Optimization */
@@ -200,7 +547,7 @@
                 margin: 0 !important;
             }
 
-            .site-header, .mobile-nav-drawer, .id-card-actions, footer, .hero, .card-unavailable {
+            .site-header, .mobile-nav-drawer, .id-card-actions, footer, .hero, .card-unavailable, .tv-dash-hero {
                 display: none !important;
             }
 
@@ -221,13 +568,13 @@
             }
 
             .id-card-header {
-                background: #9e2028 !important;
+                background: #9e1c14 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
 
             .id-card-footer {
-                background: #111111 !important;
+                background: #111827 !important;
                 color: #d4af37 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
@@ -237,120 +584,239 @@
 </head>
 <body>
 
+    {% set active_tab = 'card' %}
     {% include '_header.html' %}
 
-    <main class="id-card-viewport">
+    <main class="id-card-viewport" id="main-content">
 
-        {% if not_found %}
-        <!-- 404 / NOT FOUND STATE -->
-        <div class="card card-unavailable" style="max-width: 520px; text-align: center; padding: 36px 24px;">
-            <div style="font-size: 48px; margin-bottom: 12px;">🔍</div>
-            <h2 style="color: var(--red); margin-bottom: 10px;">Team Not Found</h2>
-            <p style="font-size: 15px; color: #444; margin-bottom: 16px;">
-                No registration record was found matching code <strong>{{ registration_code }}</strong>.
-            </p>
-            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-                <a href="{{ url_for('verify_lookup') }}" class="outline-btn" style="text-decoration: none;">
-                    🔍 Verify Another Team
-                </a>
-                <a href="{{ url_for('home') }}" class="submit-btn" style="text-decoration: none;">
-                    📝 Team Registration
-                </a>
-            </div>
-        </div>
+        {% if is_approved %}
+        <!-- ============================================== -->
+        <!-- OFFICIAL APPROVED CREDENTIAL (PRINTABLE)       -->
+        <!-- ============================================== -->
+        <div class="id-card-approved-wrapper">
+            <h1 class="visually-hidden">Official Event Credential &amp; ID Card</h1>
 
-        {% elif not_approved %}
-        <!-- UNAVAILABLE STATE (Pending or Rejected) -->
-        <div class="card card-unavailable" style="max-width: 520px; text-align: center; padding: 36px 24px;">
-            <div style="font-size: 48px; margin-bottom: 12px;">🔒</div>
-            <h2 style="color: var(--red); margin-bottom: 10px;">ID Card Unavailable</h2>
-            <p style="font-size: 15px; color: #444; margin-bottom: 16px;">
-                Official Team ID cards with verification QR codes are issued <strong>only to Approved teams</strong>.
-            </p>
-            <div style="background: #fdf3f4; border: 1px solid #f8c9cd; border-radius: 8px; padding: 12px; margin-bottom: 22px;">
-                <p style="margin: 0; font-size: 13px; color: #842029;">
-                    Team Registration <strong>{{ registration_code }}</strong> status: <strong>{{ status }}</strong>.
-                </p>
-            </div>
-            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-                <a href="{{ url_for('verify_lookup') }}" class="outline-btn" style="text-decoration: none;">
-                    🔍 Verify Team Status
+            <article class="official-id-card" aria-label="Official Team ID Card for {{ team_name }}">
+                <!-- Card Header -->
+                <header class="id-card-header">
+                    <img src="{{ url_for('static', filename='jglogo.png') }}"
+                         alt="JG University Logo"
+                         class="id-card-univ-logo">
+                    <div class="id-card-univ-sub">AHMEDABAD, GUJARAT</div>
+
+                    <div class="id-card-fest-title">TECHVERSE <span>2026</span></div>
+                    <div class="id-card-badge">OFFICIAL TEAM CREDENTIAL</div>
+                </header>
+
+                <!-- Card Body -->
+                <div class="id-card-body">
+                    <div class="id-card-field-label">TEAM NAME</div>
+                    <div class="id-card-team-name">{{ team_name }}</div>
+
+                    {% if team is defined and team and team.college_name %}
+                    <div class="id-card-field-label" style="font-size: 9px; margin-top: -8px; margin-bottom: 2px;">AFFILIATED INSTITUTION</div>
+                    <div style="font-size: 12px; font-weight: 700; color: #555555; margin-bottom: 14px; line-height: 1.2;">
+                        {{ team.college_name }}{% if team.college_city %}, {{ team.college_city }}{% endif %}
+                    </div>
+                    {% endif %}
+
+                    <div class="id-card-code-box">
+                        <div class="id-card-field-label" style="color: #8a6a00;">UNIQUE TEAM REGISTRATION ID</div>
+                        <div class="id-card-code-val">{{ registration_code }}</div>
+                    </div>
+
+                    <div class="id-card-qr-frame">
+                        {% if qr_data_uri %}
+                            <img src="{{ qr_data_uri }}"
+                                 alt="Verification QR code for {{ registration_code }}"
+                                 class="id-card-qr-img">
+                        {% else %}
+                            <p style="font-size: 12px; color: #777;">QR Code</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="id-card-scan-text">SCAN QR TO VERIFY TEAM</div>
+                </div>
+
+                <!-- Card Footer -->
+                <footer class="id-card-footer">
+                    <div class="id-card-footer-title">OFFICIAL TECHVERSE 2026 · JG UNIVERSITY × CODING PRO</div>
+                    <div class="id-card-sponsor-badge" title="Official Title Sponsor: Coding Pro">
+                        <span class="id-card-sponsor-label">OFFICIAL SPONSOR</span>
+                        <img src="{{ url_for('static', filename='codingpro_logo.png') }}"
+                             alt="Coding Pro Logo"
+                             class="id-card-sponsor-logo"
+                             width="95"
+                             height="28">
+                    </div>
+                </footer>
+            </article>
+
+            <!-- Screen Actions -->
+            <div class="id-card-actions">
+                <button type="button" class="btn-print-action" onclick="window.print()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    <span>Print / Save as PDF</span>
+                </button>
+                <a href="{{ url_for('team_details', registration_code=registration_code) }}"
+                   class="tv-dash-btn-outline">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    </svg>
+                    <span>View Full Team &amp; Problem Details</span>
                 </a>
-                <a href="{{ url_for('home') }}" class="submit-btn" style="text-decoration: none;">
-                    📝 Team Registration
+                <a href="{{ url_for('home') }}"
+                   class="tv-dash-btn-outline">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    <span>Home</span>
                 </a>
             </div>
         </div>
 
         {% else %}
-        <!-- OFFICIAL APPROVED CREDENTIAL -->
-        <article class="official-id-card" aria-label="Official Team ID Card for {{ team_name }}">
-            <!-- Card Header -->
-            <header class="id-card-header">
-                <img src="{{ url_for('static', filename='jglogo.png') }}"
-                     alt="JG University Logo"
-                     class="id-card-univ-logo">
-                <div class="id-card-univ-sub">AHMEDABAD, GUJARAT</div>
+        <!-- ============================================== -->
+        <!-- TWO-COLUMN PORTAL SEARCH & RETRIEVAL INTERFACE -->
+        <!-- ============================================== -->
+        <div class="idcard-portal-container">
+            <div class="idcard-portal-grid">
+                <!-- Left Column: Information, Context & Guidance -->
+                <section class="idcard-info-col" aria-label="Portal Instructions">
+                    <span class="idcard-badge-pill">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                            <circle cx="9" cy="10" r="2"></circle>
+                            <line x1="15" y1="8" x2="17" y2="8"></line>
+                            <line x1="15" y1="12" x2="17" y2="12"></line>
+                            <line x1="7" y1="16" x2="17" y2="16"></line>
+                        </svg>
+                        <span>Official Event Credentials</span>
+                    </span>
 
-                <div class="id-card-fest-title">TECHVERSE <span>2026</span></div>
-                <div class="id-card-badge">OFFICIAL TEAM CREDENTIAL</div>
-            </header>
+                    <h1 class="idcard-hero-title">Team ID Card Portal</h1>
 
-            <!-- Card Body -->
-            <div class="id-card-body">
-                <div class="id-card-field-label">TEAM NAME</div>
-                <div class="id-card-team-name">{{ team_name }}</div>
+                    <p class="idcard-hero-desc">
+                        Official Team ID cards with tamper-evident verification QR codes are issued to all approved teams participating in <strong>JG TechVerse 2026</strong>. Use this portal to retrieve and print your team badge before reporting to the campus arenas.
+                    </p>
 
-                {% if team.college_name %}
-                <div class="id-card-field-label" style="font-size: 9px; margin-top: -8px; margin-bottom: 2px;">AFFILIATED INSTITUTION</div>
-                <div style="font-size: 12px; font-weight: 700; color: #555555; margin-bottom: 14px; line-height: 1.2;">
-                    {{ team.college_name }}{% if team.college_city %}, {{ team.college_city }}{% endif %}
-                </div>
-                {% endif %}
+                    <div class="idcard-guidance-deck">
+                        <div class="idcard-guidance-item">
+                            <svg class="idcard-guidance-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            <div>
+                                <strong>Unique Registration ID</strong>
+                                <p>Enter your assigned code from registration confirmation (format: <code>TV26-XXXX</code>).</p>
+                            </div>
+                        </div>
 
-                <div class="id-card-code-box">
-                    <div class="id-card-field-label" style="color: #8a6a00;">UNIQUE TEAM REGISTRATION ID</div>
-                    <div class="id-card-code-val">{{ registration_code }}</div>
-                </div>
+                        <div class="idcard-guidance-item">
+                            <svg class="idcard-guidance-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                            <div>
+                                <strong>Approved Status Requirement</strong>
+                                <p>QR-equipped credentials become active once your registration is evaluated and approved by the event committee.</p>
+                            </div>
+                        </div>
 
-                <div class="id-card-qr-frame">
-                    {% if qr_data_uri %}
-                        <img src="{{ qr_data_uri }}"
-                             alt="Verification QR code for {{ registration_code }}"
-                             class="id-card-qr-img">
-                    {% else %}
-                        <p style="font-size: 12px; color: #777;">QR Code</p>
+                        <div class="idcard-guidance-item">
+                            <svg class="idcard-guidance-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            <div>
+                                <strong>Pending Verification Status</strong>
+                                <p>If your team status is currently Pending or Under Review, check evaluation progress via the team registry.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="idcard-nav-actions">
+                        <a href="{{ url_for('verify_lookup') }}" class="idcard-nav-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <span>Verify Team Status</span>
+                        </a>
+                        <a href="{{ url_for('home') }}#registration" class="idcard-nav-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            <span>Team Registration</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Right Column: Retrieval Form & Status Feedback -->
+                <section class="idcard-retrieval-card" aria-label="Retrieve ID Card">
+                    <div class="idcard-card-header">
+                        <h2 class="idcard-card-title">Retrieve Credential</h2>
+                        <p class="idcard-card-subtitle">Enter your registration code to view and print your team badge.</p>
+                    </div>
+
+                    {% if not_found %}
+                    <div class="idcard-status-banner error" role="alert">
+                        <strong>Team Record Not Found</strong>
+                        <span>No registration record was found matching code <strong style="font-family: var(--font-mono, 'JetBrains Mono', monospace);">{{ registration_code }}</strong>. Please check your confirmation code and try again.</span>
+                    </div>
+                    {% elif not_approved %}
+                    <div class="idcard-status-banner warning" role="alert">
+                        <strong>ID Card Under Committee Review</strong>
+                        <span>Team registration <strong style="font-family: var(--font-mono, 'JetBrains Mono', monospace);">{{ registration_code }}</strong> is currently <strong>{{ status }}</strong>. Official ID cards with verification QR codes are issued once reviewed and approved.</span>
+                        <a href="{{ url_for('team_details', registration_code=registration_code) }}" class="portal-inline-link">View Full Team &amp; Evidence Details →</a>
+                    </div>
                     {% endif %}
-                </div>
 
-                <div class="id-card-scan-text">SCAN QR TO VERIFY TEAM</div>
+                    <form action="{{ url_for('id_card_portal') }}" method="get" class="idcard-form">
+                        <div class="idcard-input-wrap">
+                            <label for="idCardCodeInput" class="form-label">
+                                <span>Unique Registration ID</span>
+                                <span class="required" aria-hidden="true">*</span>
+                            </label>
+                            <input
+                                id="idCardCodeInput"
+                                type="text"
+                                name="code"
+                                placeholder="e.g. TV26-4827"
+                                value="{{ registration_code if registration_code else '' }}"
+                                pattern="[A-Za-z0-9\-_]+"
+                                maxlength="20"
+                                required
+                                autofocus
+                                class="idcard-code-input"
+                            >
+                            <span class="idcard-input-hint">Format: TV26-XXXX · Case-insensitive</span>
+                        </div>
+
+                        <button type="submit" class="btn-lookup-submit">
+                            <span>Get ID Card</span>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </form>
+                </section>
             </div>
-
-            <!-- Card Footer -->
-            <footer class="id-card-footer">
-                OFFICIAL TECHVERSE 2026 · JG UNIVERSITY
-            </footer>
-        </article>
-
-        <!-- Screen Actions -->
-        <div class="id-card-actions">
-            <button type="button" class="btn-print-action" onclick="window.print()">
-                🖨️ Print / Save as PDF
-            </button>
-            <a href="{{ url_for('team_details', registration_code=registration_code) }}"
-               class="outline-btn"
-               style="text-decoration: none; display: inline-flex; align-items: center;">
-                📋 View Full Team &amp; Problem Details
-            </a>
-            <a href="{{ url_for('home') }}"
-               class="outline-btn"
-               style="text-decoration: none; display: inline-flex; align-items: center;">
-                ← Home
-            </a>
         </div>
         {% endif %}
 
     </main>
+
+    {% include '_footer.html' %}
 
 </body>
 </html>

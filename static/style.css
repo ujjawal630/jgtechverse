@@ -23,7 +23,7 @@ body {
     radial-gradient(ellipse at 85% 85%, #20204a 0, transparent 40%),
     var(--bg);
   color: var(--text);
-  font-family: "DM Sans", sans-serif;
+  font-family: var(--font-body, 'Source Sans 3', sans-serif);
 }
 
 button, input {
@@ -50,7 +50,7 @@ button {
 }
 
 .brand {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: var(--font-heading, 'Archivo', sans-serif);
   font-size: 35px;
   font-weight: 700;
   margin-bottom: 75px;
@@ -62,17 +62,18 @@ button {
 
 .eyebrow {
   color: #aaa0ff;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: 20px;
 }
 
 .intro h1 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: var(--font-heading, 'Archivo', sans-serif);
   font-size: clamp(48px, 6vw, 76px);
   line-height: 1.05;
-  letter-spacing: -3px;
+  letter-spacing: -1.5px;
+  font-weight: 800;
 }
 
 .intro h1 span {
@@ -99,7 +100,7 @@ button {
 
 .event-info strong {
   font-size: 27px;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: var(--font-heading, 'Archivo', sans-serif);
 }
 
 .event-info span {
@@ -142,7 +143,7 @@ button {
 }
 
 .form-heading h2 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: var(--font-heading, 'Archivo', sans-serif);
   font-size: 27px;
 }
 
