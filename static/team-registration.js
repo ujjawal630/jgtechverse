@@ -650,6 +650,19 @@ function updateProjectFileDisplay(card, projectId) {
     });
 }
 
+function updateCardArenaBadge(card, arena) {
+    const badge = card.querySelector(".project-arena-badge-display");
+    if (!badge) return;
+    if (arena) {
+        const desc = arenaDescriptions[arena] ? ` · ${arenaDescriptions[arena]}` : "";
+        badge.textContent = `Track: ${arena}${desc}`;
+        badge.style.display = "inline-block";
+    } else {
+        badge.textContent = "";
+        badge.style.display = "none";
+    }
+}
+
 function updateAllProjectArenaDropdowns() {
     if (!projectsContainer) return;
     const selectedArenas = getSelectedArenas();
@@ -657,7 +670,6 @@ function updateAllProjectArenaDropdowns() {
 
     cards.forEach(card => {
         const select = card.querySelector(".project-arena-select");
-        const badge = card.querySelector(".project-arena-badge-display");
         if (!select) return;
 
         const currentVal = select.value;
@@ -669,7 +681,7 @@ function updateAllProjectArenaDropdowns() {
             opt.textContent = "-- Select arena track(s) in Section 04 above first --";
             select.appendChild(opt);
             select.disabled = true;
-            if (badge) badge.style.display = "none";
+            updateCardArenaBadge(card, "");
             return;
         }
 
@@ -693,19 +705,19 @@ function updateAllProjectArenaDropdowns() {
             select.value = selectedArenas[0];
         }
 
-        if (badge) {
-            if (select.value) {
-                badge.textContent = `Track: ${select.value}`;
-                badge.style.display = "inline-block";
-            } else {
-                badge.style.display = "none";
-            }
-        }
+        updateCardArenaBadge(card, select.value);
     });
 }
 
 function addProject(preselectedArena = "") {
     if (!projectsContainer) return;
+
+    if (preselectedArena) {
+        const cb = document.querySelector(`input[name="arenas"][value="${preselectedArena}"]`);
+        if (cb && !cb.checked) {
+            cb.checked = true;
+        }
+    }
 
     const projectId = `proj_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
     projectFilesMap.set(projectId, []);
@@ -783,14 +795,8 @@ function addProject(preselectedArena = "") {
 
     // Event: Arena change updates badge
     const arenaSelect = card.querySelector(".project-arena-select");
-    const badge = card.querySelector(".project-arena-badge-display");
     arenaSelect.addEventListener("change", () => {
-        if (arenaSelect.value) {
-            badge.textContent = `Track: ${arenaSelect.value}`;
-            badge.style.display = "inline-block";
-        } else {
-            badge.style.display = "none";
-        }
+        updateCardArenaBadge(card, arenaSelect.value);
     });
 
     // Event: GitHub URL validation on blur & input
@@ -918,30 +924,136 @@ function addProject(preselectedArena = "") {
 
     if (preselectedArena) {
         arenaSelect.value = preselectedArena;
-        if (badge) {
-            badge.textContent = `Track: ${preselectedArena}`;
-            badge.style.display = "inline-block";
-        }
+        updateCardArenaBadge(card, preselectedArena);
     }
 
     updateProjectNumbers();
 }
 
+function getNextArenaForNewProject() {
+    const selected = getSelectedArenas();
+    if (selected.length === 0) return "";
+    if (selected.length === 1) return selected[0];
+
+    const cards = projectsContainer ? [...projectsContainer.querySelectorAll(".project-card")] : [];
+    const assignedArenas = cards.map(c => c.querySelector(".project-arena-select")?.value).filter(Boolean);
+
+    // 1. Any selected arena not yet assigned to any project card
+    const unassigned = selected.filter(arena => !assignedArenas.includes(arena));
+    if (unassigned.length > 0) {
+        return unassigned[0];
+    }
+
+    // 2. Rotate to the next arena after the last card's arena
+    const lastCard = cards[cards.length - 1];
+    const lastArena = lastCard?.querySelector(".project-arena-select")?.value;
+    const lastIndex = selected.indexOf(lastArena);
+    if (lastIndex !== -1) {
+        return selected[(lastIndex + 1) % selected.length];
+    }
+
+    // 3. Fallback: cycle based on least used
+    const counts = {};
+    selected.forEach(a => { counts[a] = 0; });
+    assignedArenas.forEach(a => { if (counts[a] !== undefined) counts[a]++; });
+    let bestArena = selected[0];
+    let minCount = Infinity;
+    selected.forEach(a => {
+        if (counts[a] < minCount) {
+            minCount = counts[a];
+            bestArena = a;
+        }
+    });
+    return bestArena;
+}
+
+function handleArenaCheckboxChange(event) {
+    const checkbox = event.target;
+    const arenaName = checkbox.value;
+    const isChecked = checkbox.checked;
+
+    if (isChecked) {
+        // User checked an arena track
+        updateAllProjectArenaDropdowns();
+
+        const cards = projectsContainer ? [...projectsContainer.querySelectorAll(".project-card")] : [];
+
+        // Check if there is an unassigned card (e.g. initial empty card)
+        const unassignedCard = cards.find(c => {
+            const sel = c.querySelector(".project-arena-select");
+            return !sel || !sel.value;
+        });
+
+        if (unassignedCard) {
+            const sel = unassignedCard.querySelector(".project-arena-select");
+            if (sel) {
+                sel.value = arenaName;
+                updateCardArenaBadge(unassignedCard, arenaName);
+            }
+        } else {
+            // Check if any card already has this arena assigned
+            const alreadyHasCard = cards.some(c => c.querySelector(".project-arena-select")?.value === arenaName);
+            if (!alreadyHasCard) {
+                // Open a new form specifically for this newly selected arena
+                addProject(arenaName);
+            }
+        }
+    } else {
+        // User unchecked an arena track
+        const cards = projectsContainer ? [...projectsContainer.querySelectorAll(".project-card")] : [];
+        const matchingCards = cards.filter(c => c.querySelector(".project-arena-select")?.value === arenaName);
+
+        matchingCards.forEach(card => {
+            const currentTotalCards = projectsContainer.querySelectorAll(".project-card").length;
+            if (currentTotalCards > 1) {
+                const pId = card.dataset.projectId;
+                projectFilesMap.delete(pId);
+                card.remove();
+            } else {
+                // If it's the only remaining card, don't remove the card, but reset its arena selection
+                const sel = card.querySelector(".project-arena-select");
+                if (sel) {
+                    sel.value = "";
+                }
+                updateCardArenaBadge(card, "");
+            }
+        });
+
+        updateAllProjectArenaDropdowns();
+        updateProjectNumbers();
+    }
+}
+
+function syncInitialArenasAndProjects() {
+    const selected = getSelectedArenas();
+    if (selected.length > 0) {
+        if (projectsContainer) {
+            projectsContainer.replaceChildren();
+            projectFilesMap.clear();
+        }
+        selected.forEach(arena => {
+            addProject(arena);
+        });
+    } else {
+        if (!projectsContainer || projectsContainer.querySelectorAll(".project-card").length === 0) {
+            addProject();
+        }
+    }
+}
+
 if (addProjectBtn) {
     addProjectBtn.addEventListener("click", () => {
-        const selected = getSelectedArenas();
-        addProject(selected.length > 0 ? selected[0] : "");
+        const nextArena = getNextArenaForNewProject();
+        addProject(nextArena);
     });
 }
 
 arenaCheckboxes.forEach(checkbox => {
-    checkbox.addEventListener("change", () => {
-        updateAllProjectArenaDropdowns();
-    });
+    checkbox.addEventListener("change", handleArenaCheckboxChange);
 });
 
-// Initialize with first default project
-addProject();
+// Initialize projects matching any checked arenas, or create default card
+syncInitialArenasAndProjects();
 
 // ==========================================================================
 // STEP 5: LIVE REVIEW SUMMARY GENERATOR
