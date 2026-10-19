@@ -151,9 +151,12 @@ ARENA_METADATA = {
 }
 
 
+DEFAULT_SUPABASE_URL = "https://okllgkrpmwkbmwhlkvxl.supabase.co"
+DEFAULT_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbGxna3JwbXdrYm13aGxrdnhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MDE5ODgsImV4cCI6MjEwNzk3Nzk4OH0.s1E8MkPRFtcE--ReAZiQf9AyTfDlyyeLqcYlZrk3hfc"
+
 DATABASE_URL = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+SUPABASE_URL = os.environ.get("SUPABASE_URL") or DEFAULT_SUPABASE_URL
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY") or DEFAULT_SUPABASE_KEY
 
 _supabase_client = None
 
@@ -1749,8 +1752,8 @@ def admin_file(stored_name):
     conn = get_db()
     try:
         row = conn.execute(
-            "SELECT arena_name FROM uploads WHERE stored_name = ?",
-            (stored_name,)
+            "SELECT arena_name, stored_name FROM uploads WHERE stored_name = ? OR stored_name LIKE ?",
+            (stored_name, f"%/{stored_name}")
         ).fetchone()
     finally:
         conn.close()
@@ -1761,14 +1764,15 @@ def admin_file(stored_name):
     if g.user["role"] != "admin" and row["arena_name"] not in g.user["arenas"]:
         abort(403)
 
-    local_file = UPLOAD_DIR / stored_name
+    target_name = row["stored_name"]
+    local_file = UPLOAD_DIR / target_name
     if local_file.is_file():
-        return send_from_directory(UPLOAD_DIR, stored_name)
+        return send_from_directory(UPLOAD_DIR, target_name)
 
     sb_client = get_supabase_client()
     if sb_client:
         try:
-            public_url = sb_client.storage.from_("techverse-uploads").get_public_url(stored_name)
+            public_url = sb_client.storage.from_("techverse-uploads").get_public_url(target_name)
             return redirect(public_url)
         except Exception:
             pass
@@ -2246,9 +2250,9 @@ def public_verification_snap(registration_code, stored_name):
             FROM uploads AS u
             JOIN teams AS t ON t.id = u.team_id
             WHERE t.registration_code = ?
-              AND u.stored_name = ?
+              AND (u.stored_name = ? OR u.stored_name LIKE ?)
             """,
-            (registration_code, stored_name)
+            (registration_code, stored_name, f"%/{stored_name}")
         ).fetchone()
 
     finally:
@@ -2257,18 +2261,19 @@ def public_verification_snap(registration_code, stored_name):
     if upload is None:
         abort(404)
 
-    local_file = UPLOAD_DIR / upload["stored_name"]
+    target_name = upload["stored_name"]
+    local_file = UPLOAD_DIR / target_name
     if local_file.is_file():
         return send_from_directory(
             UPLOAD_DIR,
-            upload["stored_name"],
+            target_name,
             as_attachment=False
         )
 
     sb_client = get_supabase_client()
     if sb_client:
         try:
-            public_url = sb_client.storage.from_("techverse-uploads").get_public_url(upload["stored_name"])
+            public_url = sb_client.storage.from_("techverse-uploads").get_public_url(target_name)
             return redirect(public_url)
         except Exception:
             pass
