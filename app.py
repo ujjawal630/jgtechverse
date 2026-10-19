@@ -15,6 +15,7 @@ import tempfile
 from functools import wraps
 from pathlib import Path
 from urllib.parse import urlparse
+import urllib.request
 
 from flask import (
     Flask,
@@ -174,6 +175,52 @@ def get_supabase_client():
 
 def is_postgres():
     return bool(DATABASE_URL and HAS_PSYCOPG2)
+
+
+def get_supabase_public_url(stored_path):
+    if not SUPABASE_URL:
+        return None
+    clean_path = str(stored_path).lstrip("/")
+    return f"{SUPABASE_URL.rstrip('/')}/storage/v1/object/public/techverse-uploads/{clean_path}"
+
+
+def upload_file_to_supabase(stored_path, file_bytes, content_type="image/jpeg"):
+    """Uploads file bytes directly to Supabase Storage bucket techverse-uploads."""
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        return False
+
+    clean_path = str(stored_path).lstrip("/")
+
+    # 1. Direct REST upload via urllib (reliable, zero extra dependencies)
+    endpoint = f"{SUPABASE_URL.rstrip('/')}/storage/v1/object/techverse-uploads/{clean_path}"
+    headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "Content-Type": content_type,
+        "x-upsert": "true"
+    }
+    try:
+        req = urllib.request.Request(endpoint, data=file_bytes, headers=headers, method="POST")
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            if resp.status in (200, 201):
+                return True
+    except Exception as e:
+        app.logger.warning("urllib Supabase upload error: %s", e)
+
+    # 2. Client fallback
+    sb_client = get_supabase_client()
+    if sb_client:
+        try:
+            sb_client.storage.from_("techverse-uploads").upload(
+                clean_path,
+                file_bytes,
+                {"content-type": content_type, "upsert": "true"}
+            )
+            return True
+        except Exception as e:
+            app.logger.warning("supabase-py upload error: %s", e)
+
+    return False
 
 
 class PgCursorWrapper:
@@ -1132,18 +1179,8 @@ def register():
                     pass
 
                 stored_path = f"{registration_code}/{stored_filename}"
-
-                sb_client = get_supabase_client()
-                if sb_client:
-                    try:
-                        content_type = file.content_type or "image/png"
-                        sb_client.storage.from_("techverse-uploads").upload(
-                            stored_path,
-                            file_bytes,
-                            {"content-type": content_type, "upsert": "true"}
-                        )
-                    except Exception as e:
-                        app.logger.warning("Supabase upload exception: %s", e)
+                content_type = file.content_type or "image/jpeg"
+                upload_file_to_supabase(stored_path, file_bytes, content_type)
 
                 conn.execute("""
                     INSERT INTO uploads (
@@ -1769,13 +1806,9 @@ def admin_file(stored_name):
     if local_file.is_file():
         return send_from_directory(UPLOAD_DIR, target_name)
 
-    sb_client = get_supabase_client()
-    if sb_client:
-        try:
-            public_url = sb_client.storage.from_("techverse-uploads").get_public_url(target_name)
-            return redirect(public_url)
-        except Exception:
-            pass
+    public_url = get_supabase_public_url(target_name)
+    if public_url:
+        return redirect(public_url)
 
     abort(404)
 
@@ -2270,13 +2303,9 @@ def public_verification_snap(registration_code, stored_name):
             as_attachment=False
         )
 
-    sb_client = get_supabase_client()
-    if sb_client:
-        try:
-            public_url = sb_client.storage.from_("techverse-uploads").get_public_url(target_name)
-            return redirect(public_url)
-        except Exception:
-            pass
+    public_url = get_supabase_public_url(target_name)
+    if public_url:
+        return redirect(public_url)
 
     abort(404)
 
