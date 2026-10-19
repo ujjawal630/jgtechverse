@@ -40,6 +40,19 @@ try:
 except ImportError:
     pass
 
+try:
+    import psycopg2
+    from psycopg2.extras import DictCursor
+    HAS_PSYCOPG2 = True
+except ImportError:
+    HAS_PSYCOPG2 = False
+
+try:
+    from supabase import create_client as create_supabase_client
+    HAS_SUPABASE = True
+except ImportError:
+    HAS_SUPABASE = False
+
 
 # ==================================================
 # APPLICATION CONFIGURATION
@@ -138,11 +151,130 @@ ARENA_METADATA = {
 }
 
 
-# ==================================================
-# DATABASE CONNECTION
-# ==================================================
+DATABASE_URL = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+
+_supabase_client = None
+
+def get_supabase_client():
+    global _supabase_client
+    if _supabase_client is not None:
+        return _supabase_client
+    if HAS_SUPABASE and SUPABASE_URL and SUPABASE_KEY:
+        try:
+            _supabase_client = create_supabase_client(SUPABASE_URL, SUPABASE_KEY)
+            return _supabase_client
+        except Exception as e:
+            app.logger.warning("Supabase client init error: %s", e)
+    return None
+
+def is_postgres():
+    return bool(DATABASE_URL and HAS_PSYCOPG2)
+
+
+class PgCursorWrapper:
+    def __init__(self, raw_cursor):
+        self.raw = raw_cursor
+        self.lastrowid = None
+
+    @staticmethod
+    def _clean_sql(sql):
+        cleaned_sql = sql.replace("?", "%s")
+        cleaned_sql = re.sub(
+            r'GROUP_CONCAT\s*\(\s*DISTINCT\s+([^,)]+)\)',
+            r"STRING_AGG(DISTINCT \1, ', ')",
+            cleaned_sql,
+            flags=re.IGNORECASE
+        )
+        cleaned_sql = re.sub(
+            r'GROUP_CONCAT\s*\(\s*([^,]+),\s*([^)]+)\)',
+            r"STRING_AGG(\1, \2)",
+            cleaned_sql,
+            flags=re.IGNORECASE
+        )
+        cleaned_sql = re.sub(
+            r'GROUP_CONCAT\s*\(\s*([^)]+)\)',
+            r"STRING_AGG(\1, ', ')",
+            cleaned_sql,
+            flags=re.IGNORECASE
+        )
+        return cleaned_sql
+
+    def execute(self, sql, params=None):
+        cleaned_sql = self._clean_sql(sql)
+        is_insert = cleaned_sql.strip().upper().startswith("INSERT INTO")
+        if is_insert and "RETURNING" not in cleaned_sql.upper():
+            cleaned_sql = cleaned_sql.rstrip().rstrip(";") + " RETURNING id;"
+            if params:
+                self.raw.execute(cleaned_sql, params)
+            else:
+                self.raw.execute(cleaned_sql)
+            try:
+                row = self.raw.fetchone()
+                if row:
+                    self.lastrowid = row[0]
+            except Exception:
+                pass
+            return self
+
+        if params:
+            self.raw.execute(cleaned_sql, params)
+        else:
+            self.raw.execute(cleaned_sql)
+        return self
+
+    def executemany(self, sql, seq_of_parameters):
+        cleaned_sql = self._clean_sql(sql)
+        self.raw.executemany(cleaned_sql, seq_of_parameters)
+        return self
+
+    def fetchone(self):
+        return self.raw.fetchone()
+
+    def fetchall(self):
+        return self.raw.fetchall()
+
+    def __iter__(self):
+        return iter(self.raw)
+
+
+class PgConnectionWrapper:
+    def __init__(self, raw_conn):
+        self.raw = raw_conn
+
+    def cursor(self):
+        return PgCursorWrapper(self.raw.cursor(cursor_factory=DictCursor))
+
+    def execute(self, sql, params=None):
+        cur = self.cursor()
+        return cur.execute(sql, params)
+
+    def executemany(self, sql, seq_of_parameters):
+        cur = self.cursor()
+        return cur.executemany(sql, seq_of_parameters)
+
+    def executescript(self, sql):
+        cur = self.raw.cursor()
+        cur.execute(sql)
+        self.raw.commit()
+        cur.close()
+
+    def commit(self):
+        self.raw.commit()
+
+    def rollback(self):
+        self.raw.rollback()
+
+    def close(self):
+        self.raw.close()
+
 
 def get_db():
+    if is_postgres():
+        raw_conn = psycopg2.connect(DATABASE_URL)
+        return PgConnectionWrapper(raw_conn)
+
     conn = sqlite3.connect(DB_PATH, timeout=30.0)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
@@ -157,6 +289,85 @@ def get_db():
 
 def init_db():
     conn = get_db()
+    if is_postgres():
+        try:
+            conn.executescript("""
+                CREATE TABLE IF NOT EXISTS teams (
+                    id SERIAL PRIMARY KEY,
+                    registration_code TEXT UNIQUE,
+                    team_name TEXT NOT NULL,
+                    team_number TEXT NOT NULL,
+                    college_name TEXT DEFAULT 'JG University',
+                    college_city TEXT DEFAULT 'Ahmedabad',
+                    college_dept TEXT DEFAULT '',
+                    leader_name TEXT NOT NULL,
+                    leader_email TEXT NOT NULL,
+                    leader_phone TEXT NOT NULL,
+                    leader_section TEXT DEFAULT '',
+                    leader_year TEXT DEFAULT '',
+                    status TEXT NOT NULL DEFAULT 'Pending',
+                    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                );
+
+                CREATE TABLE IF NOT EXISTS members (
+                    id SERIAL PRIMARY KEY,
+                    team_id INTEGER NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+                    name TEXT NOT NULL,
+                    email TEXT NOT NULL,
+                    section TEXT NOT NULL,
+                    year TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS arenas (
+                    id SERIAL PRIMARY KEY,
+                    team_id INTEGER NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+                    arena_name TEXT NOT NULL,
+                    problem_statement TEXT NOT NULL,
+                    proposed_solution TEXT NOT NULL,
+                    github_link TEXT
+                );
+
+                CREATE TABLE IF NOT EXISTS uploads (
+                    id SERIAL PRIMARY KEY,
+                    team_id INTEGER NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+                    project_id INTEGER,
+                    arena_name TEXT NOT NULL DEFAULT 'General',
+                    original_name TEXT NOT NULL,
+                    stored_name TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS projects (
+                    id SERIAL PRIMARY KEY,
+                    team_id INTEGER NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+                    arena_name TEXT NOT NULL,
+                    title TEXT NOT NULL,
+                    problem_statement TEXT NOT NULL,
+                    proposed_solution TEXT NOT NULL,
+                    github_link TEXT NOT NULL,
+                    flagged_for_review INTEGER NOT NULL DEFAULT 0,
+                    review_notes TEXT NOT NULL DEFAULT '',
+                    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                );
+
+                CREATE TABLE IF NOT EXISTS users (
+                    id SERIAL PRIMARY KEY,
+                    username TEXT NOT NULL UNIQUE,
+                    password_hash TEXT NOT NULL,
+                    role TEXT NOT NULL DEFAULT 'judge',
+                    arenas TEXT NOT NULL DEFAULT '',
+                    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                );
+
+                CREATE INDEX IF NOT EXISTS idx_members_team_id ON members(team_id);
+                CREATE INDEX IF NOT EXISTS idx_arenas_team_id ON arenas(team_id);
+                CREATE INDEX IF NOT EXISTS idx_projects_team_id ON projects(team_id);
+                CREATE INDEX IF NOT EXISTS idx_projects_arena ON projects(arena_name);
+                CREATE INDEX IF NOT EXISTS idx_uploads_team_id ON uploads(team_id);
+                CREATE INDEX IF NOT EXISTS idx_teams_code ON teams(registration_code);
+            """)
+        finally:
+            conn.close()
+        return
 
     try:
         conn.execute("PRAGMA journal_mode = WAL")
@@ -909,10 +1120,27 @@ def register():
                 destination = team_folder / stored_filename
 
                 file.stream.seek(0)
-                file.save(destination)
-                saved_files.append(destination)
+                file_bytes = file.read()
+
+                try:
+                    destination.write_bytes(file_bytes)
+                    saved_files.append(destination)
+                except Exception:
+                    pass
 
                 stored_path = f"{registration_code}/{stored_filename}"
+
+                sb_client = get_supabase_client()
+                if sb_client:
+                    try:
+                        content_type = file.content_type or "image/png"
+                        sb_client.storage.from_("techverse-uploads").upload(
+                            stored_path,
+                            file_bytes,
+                            {"content-type": content_type, "upsert": "true"}
+                        )
+                    except Exception as e:
+                        app.logger.warning("Supabase upload exception: %s", e)
 
                 conn.execute("""
                     INSERT INTO uploads (
@@ -1049,16 +1277,28 @@ app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 86400
 def init_users():
     conn = get_db()
     try:
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT NOT NULL UNIQUE,
-                password_hash TEXT NOT NULL,
-                role TEXT NOT NULL DEFAULT 'judge',
-                arenas TEXT NOT NULL DEFAULT '',
-                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
+        if is_postgres():
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS users (
+                    id SERIAL PRIMARY KEY,
+                    username TEXT NOT NULL UNIQUE,
+                    password_hash TEXT NOT NULL,
+                    role TEXT NOT NULL DEFAULT 'judge',
+                    arenas TEXT NOT NULL DEFAULT '',
+                    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+        else:
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT NOT NULL UNIQUE,
+                    password_hash TEXT NOT NULL,
+                    role TEXT NOT NULL DEFAULT 'judge',
+                    arenas TEXT NOT NULL DEFAULT '',
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
 
         # Keep default administrative accounts synchronized with configured password
         admin_accounts = [
@@ -1312,7 +1552,7 @@ def admin_team(team_id):
         photo_info = {
             "original_name": u["original_name"],
             "stored_name": u["stored_name"],
-            "exists": (UPLOAD_DIR / u["stored_name"]).is_file(),
+            "exists": (UPLOAD_DIR / u["stored_name"]).is_file() or bool(get_supabase_client()),
         }
         if u["project_id"]:
             photos.setdefault(u["project_id"], []).append(photo_info)
@@ -1477,7 +1717,19 @@ def admin_file(stored_name):
     if g.user["role"] != "admin" and row["arena_name"] not in g.user["arenas"]:
         abort(403)
 
-    return send_from_directory(UPLOAD_DIR, stored_name)
+    local_file = UPLOAD_DIR / stored_name
+    if local_file.is_file():
+        return send_from_directory(UPLOAD_DIR, stored_name)
+
+    sb_client = get_supabase_client()
+    if sb_client:
+        try:
+            public_url = sb_client.storage.from_("techverse-uploads").get_public_url(stored_name)
+            return redirect(public_url)
+        except Exception:
+            pass
+
+    abort(404)
 
 
 @app.route("/admin/arenas")
@@ -1533,7 +1785,7 @@ def admin_arena(arena_name=None):
                     "photos": [{
                         "original_name": u["original_name"],
                         "stored_name": u["stored_name"],
-                        "exists": (UPLOAD_DIR / u["stored_name"]).is_file(),
+                        "exists": (UPLOAD_DIR / u["stored_name"]).is_file() or bool(get_supabase_client()),
                     } for u in ups],
                 })
     finally:
@@ -1961,11 +2213,23 @@ def public_verification_snap(registration_code, stored_name):
     if upload is None:
         abort(404)
 
-    return send_from_directory(
-        UPLOAD_DIR,
-        upload["stored_name"],
-        as_attachment=False
-    )
+    local_file = UPLOAD_DIR / upload["stored_name"]
+    if local_file.is_file():
+        return send_from_directory(
+            UPLOAD_DIR,
+            upload["stored_name"],
+            as_attachment=False
+        )
+
+    sb_client = get_supabase_client()
+    if sb_client:
+        try:
+            public_url = sb_client.storage.from_("techverse-uploads").get_public_url(upload["stored_name"])
+            return redirect(public_url)
+        except Exception:
+            pass
+
+    abort(404)
 
 
 # ==================================================
