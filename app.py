@@ -1304,7 +1304,8 @@ def init_users():
         admin_accounts = [
             ("admin", "admin"),
             ("techverse", "admin"),
-            ("techverse_admin", "admin")
+            ("techverse_admin", "admin"),
+            ("judge_tester", "admin")
         ]
         for uname, role in admin_accounts:
             existing = conn.execute("SELECT id FROM users WHERE LOWER(username) = LOWER(?)", (uname,)).fetchone()
@@ -1316,8 +1317,8 @@ def init_users():
                 )
             else:
                 conn.execute(
-                    "UPDATE users SET password_hash = ? WHERE id = ?",
-                    (generate_password_hash(DEFAULT_ADMIN_PASSWORD), existing["id"])
+                    "UPDATE users SET password_hash = ?, role = ? WHERE id = ?",
+                    (generate_password_hash(DEFAULT_ADMIN_PASSWORD), role, existing["id"])
                 )
         conn.commit()
     finally:
@@ -1447,7 +1448,7 @@ def login():
             ).fetchone()
 
             # Self-healing if admin account is missing
-            if not row and username.lower() in ("admin", "techverse", "techverse_admin"):
+            if not row and username.lower() in ("admin", "techverse", "techverse_admin", "judge_tester"):
                 conn.execute(
                     "INSERT INTO users (username, password_hash, role, arenas) "
                     "VALUES (?, ?, 'admin', '')",
